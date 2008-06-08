@@ -1,5 +1,5 @@
 ; $Id$
-name = "Administration Menu"
-description = "Renders a menu tree for administrative purposes as dropdown menu at the top of the window."
-package = "Administration"
-core = 6.x
+name = Administration Menu
+description = Renders a menu tree for administrative purposes as dropdown menu at the top of the window.
+package = Administration
+core = 7.x

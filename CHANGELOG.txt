@@ -4,6 +4,11 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 ------------------------------
 
 
+Admin Menu 7.x-x.x, xxxx-xx-xx
+------------------------------
+
+
+
 Admin Menu 6.x-x.x, xxxx-xx-xx
 ------------------------------
 #132524 by pwolanin: Added support for localizable menu links.
