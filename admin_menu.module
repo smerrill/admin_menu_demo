@@ -59,6 +59,26 @@ function admin_menu_theme() {
 }
 
 /**
+ * Implementation of hook_menu().
+ */
+function admin_menu_menu() {
+  $items = array();
+  $items['admin/settings/admin_menu'] = array(
+    'title' => 'Administration Menu',
+    'description' => t('Adjust settings for the dropdown Administration Menu.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('admin_menu_theme_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin_menu/toggle-modules'] = array(
+    'page callback' => 'admin_menu_toggle_modules',
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
  * Implementation of hook_init().
  *
  * We can't move this into admin_menu_footer(), because PHP-only based themes
@@ -81,26 +101,6 @@ function admin_menu_init() {
 }
 
 /**
- * Implementation of hook_menu().
- */
-function admin_menu_menu() {
-  $items = array();
-  $items['admin/settings/admin_menu'] = array(
-    'title' => 'Administration Menu',
-    'description' => t('Adjust settings for the dropdown Administration Menu.'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('admin_menu_theme_settings'),
-    'access arguments' => array('administer site configuration'),
-  );
-  $items['admin_menu/toggle-modules'] = array(
-    'page callback' => 'admin_menu_toggle_modules',
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_CALLBACK,
-  );
-  return $items;
-}
-
-/**
  * Implementation of hook_footer().
  *
  * Admin menu was previously output via hook_block(), but suffered from
@@ -114,7 +114,7 @@ function admin_menu_menu() {
 function admin_menu_footer($main = 0) {
   // Check for the flag indicating that we need to rebuild.
   if (variable_get('admin_menu_rebuild_links', FALSE)) {
-    include_once(drupal_get_path('module', 'admin_menu') . '/admin_menu.inc');
+    module_load_include('inc', 'admin_menu');
     _admin_menu_rebuild_links();
     variable_del('admin_menu_rebuild_links');
   }
@@ -192,7 +192,7 @@ function theme_admin_menu_item($link, $has_children, $menu = '', $in_active_trai
  * Extends Devel module with Administration Menu developer settings.
  */
 function admin_menu_form_devel_admin_settings_alter(&$form, $form_state) {
-  include_once(drupal_get_path('module', 'admin_menu') .'/admin_menu.inc');
+  module_load_include('inc', 'admin_menu');
   _admin_menu_devel_settings_form_alter($form, $form_state);
 }
 
