@@ -189,14 +189,14 @@ function admin_menu_admin_menu(&$deleted) {
   ksort($deleted);
   foreach (node_get_types('types', NULL, TRUE) as $type) {
     $type_url_str = str_replace('_', '-', $type->type);
-    $type_path = 'admin/content/node-type/' . $type_url_str;
+    $type_path = 'admin/build/node-type/' . $type_url_str;
     $links[$type_path] = array(
       'title' => 'Edit @content-type',
       'path' => $type_path,
-      'parent_path' => 'admin/content/types',
+      'parent_path' => 'admin/build/types',
       'options' => array('t' => array('@content-type' => $type->name)),
     );
-    unset($deleted['admin/content/node-type/' . $type_url_str . '/edit']);
+    unset($deleted['admin/build/node-type/' . $type_url_str]);
     // CCK and other modules adding to node types handled here.
     foreach($deleted as $path => $item) {
       if (strpos($path, $type_path) !== FALSE) {
@@ -285,9 +285,9 @@ function admin_menu_adjust_items(&$menu_links, &$sort) {
   // Remove certain links to re-position them in admin_menu_admin_menu().
   foreach ($menu_links as $path => $link) {
     // Remove links below
-    // - admin/content/node-type/*
+    // - admin/build/node-type/*
     // - node/add*
-    if (strpos($path, 'admin/content/node-type/') !== FALSE || strpos($path, 'node/add') !== FALSE) {
+    if (strpos($path, 'admin/build/node-type/') !== FALSE || strpos($path, 'node/add') !== FALSE) {
       $deleted[$path] = $link;
       unset($menu_links[$path], $sort[$path]);
     }
@@ -360,16 +360,18 @@ function admin_menu_theme_settings() {
   $form['wipe'] = array(
     '#type' => 'submit',
     '#value' => t('Wipe and rebuild'),
-    '#submit' => array('admin_menu_wipe'),
+    '#submit' => array('admin_menu_flush_caches'),
   );
 
   return $form;
 }
 
 /**
+ * Implementation of hook_flush_caches().
+ *
  * Wipe the menu so it can be rebuilt from scratch.
  */
-function admin_menu_wipe() {
+function admin_menu_flush_caches() {
   db_query("DELETE FROM {menu_links} WHERE menu_name = 'admin_menu'");
   menu_cache_clear('admin_menu');
   variable_set('admin_menu_rebuild_links', TRUE);

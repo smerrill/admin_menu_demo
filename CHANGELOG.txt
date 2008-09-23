@@ -6,6 +6,8 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-x.x, xxxx-xx-xx
 ------------------------------
+by sun: Changed admin_menu_wipe() to admin_menu_flush_caches().
+by sun: Updated content-type edit menu item locations.
 by sun: Fixed sess_count() changed to drupal_session_count().
 #295476 by pwolanin, use <front> for icon path to fix front-page path-change
   bug and pathauto conflict, add wipe button to admin form
