@@ -9,8 +9,12 @@ Admin Menu 7.x-x.x, xxxx-xx-xx
 by sun: Changed admin_menu_wipe() to admin_menu_flush_caches().
 by sun: Updated content-type edit menu item locations.
 by sun: Fixed sess_count() changed to drupal_session_count().
+
+
+Admin Menu 6.x-1.1, 2008-09-12
+------------------------------
 #295476 by pwolanin, use <front> for icon path to fix front-page path-change
-  bug and pathauto conflict, add wipe button to admin form
+  bug and pathauto conflict, add wipe button to admin form.
 #301370 by sun: Disabled module fieldset collapsing behavior by default.
 #288672 by sun: Fixed JS hover behavior not working in IE.
 #290803 by sun: Fixed missing devel_themer in devel modules; added some others.
