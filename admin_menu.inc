@@ -45,7 +45,7 @@ function admin_menu_link_build($item) {
   $item['module'] = 'admin_menu';
   $item['menu_name'] = 'admin_menu';
   $item += array(
-    'link_title' => $item['title'],
+    'link_title' => isset($item['title']) ? $item['title'] : '',
     'link_path' => $item['path'],
     'hidden' => 0,
     'options' => array(),
@@ -72,7 +72,7 @@ function admin_menu_link_save($item) {
   $item = admin_menu_link_build($item);
 
   // Check whether we are able to update an existing item.
-  $existing_item = db_fetch_array(db_query("SELECT mlid, plid, has_children FROM {menu_links} WHERE link_path = '%s' AND menu_name = '%s'", $item['link_path'], 'admin_menu'));
+  $existing_item = db_query("SELECT mlid, plid, has_children FROM {menu_links} WHERE link_path = :link_path AND menu_name = :menu_name", array(':link_path' => $item['link_path'], ':menu_name' => 'admin_menu'))->fetch(PDO::FETCH_ASSOC);
   if ($existing_item) {
     $item['mlid'] = $existing_item['mlid'];
     $item['plid'] = $existing_item['plid'];
@@ -87,7 +87,7 @@ function admin_menu_link_save($item) {
       $item['plid'] = 0;
     }
     else {
-      $plid = db_result(db_query("SELECT mlid from {menu_links} WHERE link_path = '%s' AND menu_name = '%s'", $item['parent_path'], 'admin_menu'));
+      $plid = db_query("SELECT mlid from {menu_links} WHERE link_path = :link_path AND menu_name = :menu_name", array(':link_path' => $item['parent_path'], ':menu_name' => 'admin_menu'))->fetchField();
       if ($plid) {
         $item['plid'] = $plid;
       }
@@ -372,7 +372,7 @@ function admin_menu_theme_settings() {
  * Wipe the menu so it can be rebuilt from scratch.
  */
 function admin_menu_flush_caches() {
-  db_query("DELETE FROM {menu_links} WHERE menu_name = 'admin_menu'");
+  $num_deleted = db_delete('menu_links')->condition('menu_name', 'admin_menu')->execute();
   menu_cache_clear('admin_menu');
   variable_set('admin_menu_rebuild_links', TRUE);
 }
@@ -445,7 +445,7 @@ function admin_menu_toggle_modules() {
   if ($rebuild) {
     // Make sure everything is rebuilt, basically a combination of the calls
     // from system_modules() and system_modules_submit().
-    drupal_rebuild_theme_registry();
+    drupal_theme_rebuild();
     menu_rebuild();
     cache_clear_all('schema', 'cache');
     cache_clear_all();

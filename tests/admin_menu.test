@@ -24,7 +24,7 @@ class AdminMenuTestCase extends DrupalWebTestCase {
 
     // Create a user who can see the admin_menu links, but without the
     // permission 'display drupal links'.
-    $admin_user = $this->drupalCreateUser(array('administer site configuration', 'access administration pages', 'administer nodes', 'access administration menu', 'administer site-wide contact form'));
+    $admin_user = $this->drupalCreateUser(array('administer site configuration', 'access administration pages', 'administer nodes', 'bypass node access', 'access administration menu', 'administer site-wide contact form'));
     $this->drupalLogin($admin_user);
 
     // Check that the user can see the admin links, but not the drupal links.

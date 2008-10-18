@@ -6,7 +6,7 @@
  */
 function admin_menu_uninstall() {
   // Delete menu links.
-  db_query("DELETE FROM {menu_links} WHERE module = 'admin_menu'");
+  db_delete('menu_links')->condition('module', 'admin_menu')->execute();
   menu_cache_clear_all();
   // Delete variables.
   variable_del('admin_menu_rebuild_links');
@@ -21,7 +21,7 @@ function admin_menu_uninstall() {
 function admin_menu_update_6000() {
   $ret = array();
   // Delete menu links.
-  db_query("DELETE FROM {menu_links} WHERE module = 'admin_menu'");
+  db_delete('menu_links')->condition('module', 'admin_menu')->execute();
   variable_set('admin_menu_rebuild_links', TRUE);
   // Drop the {admin_menu} table in admin_menu_update_6000() on sites that used
   // one of the later patches in #132524.

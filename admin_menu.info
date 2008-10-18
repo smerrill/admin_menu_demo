@@ -5,3 +5,4 @@ package = "Administration"
 core = 7.x
 files[] = admin_menu.module
 files[] = admin_menu.inc
+files[] = admin_menu.install
