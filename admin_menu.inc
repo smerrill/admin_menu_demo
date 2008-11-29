@@ -147,7 +147,7 @@ function admin_menu_admin_menu(&$deleted) {
     'parent_path' => 'http://drupal.org',
   );
   $projects = array();
-  foreach (module_list(FALSE, FALSE, TRUE) as $module) {
+  foreach (module_list(FALSE, TRUE) as $module) {
     $info = drupal_parse_info_file(drupal_get_path('module', $module) .'/'. $module .'.info');
     if (!isset($info['project']) || (isset($info['project']) && ($info['project'] == 'drupal' || isset($projects[$info['project']])))) {
       continue;
