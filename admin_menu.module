@@ -101,9 +101,9 @@ function admin_menu_menu() {
 function admin_menu_init() {
   if (user_access('access administration menu')) {
     $path = drupal_get_path('module', 'admin_menu');
-    drupal_add_css($path .'/admin_menu.css', array('preprocess' => FALSE));
+    drupal_add_css($path . '/admin_menu.css', array('preprocess' => FALSE));
     // Performance: Defer execution.
-    drupal_add_js($path .'/admin_menu.js', 'module', 'header', TRUE);
+    drupal_add_js($path . '/admin_menu.js', array('defer' => TRUE));
 
     if ($setting = variable_get('admin_menu_margin_top', 1)) {
       drupal_add_js(array('admin_menu' => array('margin_top' => $setting)), 'setting');
