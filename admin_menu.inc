@@ -248,7 +248,7 @@ function admin_menu_admin_menu(&$deleted) {
             'path' => urldecode($match[1]),
             'weight' => 20,
             'query' => 'destination',
-            'parent_path' => 'logout',
+            'parent_path' => 'user/logout',
             'options' => array('html' => TRUE),
           );
         }
@@ -320,7 +320,7 @@ function admin_menu_adjust_items(&$menu_links, &$sort) {
   );
   $links[] = array(
     'title' => 'Log out @username',
-    'path' => 'logout',
+    'path' => 'user/logout',
     'weight' => -100,
     'parent_path' => '<root>',
     // Note: @username is dynamically replaced by default, we just invoke

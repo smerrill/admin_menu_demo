@@ -38,7 +38,7 @@ class AdminMenuTestCase extends DrupalWebTestCase {
     $this->drupalModuleEnable('contact');
     $this->drupalGet('node');
     $this->assertTrue(preg_match('@<div id="admin-menu">(.*\n)*.*admin/build/contact@',  $this->drupalGetContent()), 'Contact module link found');
-    $this->drupalGet('logout');
+    $this->drupalLogout();
 
     // A second user with the added permission 'display drupal links', but not
     // 'administer site-wide contact form'.
