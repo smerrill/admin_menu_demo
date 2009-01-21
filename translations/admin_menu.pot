@@ -3,15 +3,15 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  admin_menu.inc,v 1.33 2008/12/02 00:45:56 sun
-#  admin_menu.module,v 1.60 2008/11/30 12:50:23 sun
+#  admin_menu.inc,v 1.35 2008/12/28 15:22:57 sun
+#  admin_menu.module,v 1.63 2008/12/28 15:22:57 sun
 #  admin_menu.info,v 1.9 2008/11/30 12:50:23 sun
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-12-02 02:18+0100\n"
+"POT-Creation-Date: 2009-01-21 22:26+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -156,12 +156,16 @@ msgstr ""
 msgid "Provide Drupal.org links in the administration menu."
 msgstr ""
 
-#: admin_menu.module:308
+#: admin_menu.module:312
 msgid "Current anonymous / authenticated users"
 msgstr ""
 
-#: admin_menu.module:310
+#: admin_menu.module:314
 msgid "@count-anon / @count-auth !icon"
+msgstr ""
+
+#: admin_menu.module:327
+msgid "Home"
 msgstr ""
 
 #: admin_menu.module:32
