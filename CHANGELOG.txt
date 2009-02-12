@@ -4,8 +4,9 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 ------------------------------
 
 
-Admin Menu 7.x-1.x, xxxx-xx-xx
+Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#373372 by sun: Turned procedural JavaScript into admin menu behaviors.
 by sun: Fixed admin menu tests (and updated to 6.x for SimpleTest 2.x).
 #359158 by nitrospectide, sun: Fixed Devel Themer breaks admin menu.
 #365335 by sun: Fixed not all variables removed after uninstall.
