@@ -183,10 +183,10 @@ function admin_menu_admin_menu(&$deleted) {
     $type_url_str = str_replace('_', '-', $type->type);
     $type_path = 'admin/build/node-type/' . $type_url_str;
     $links[$type_path] = array(
-      'title' => 'Edit @content-type',
+      'title' => 'Edit !content-type',
       'path' => $type_path,
       'parent_path' => 'admin/build/types',
-      'options' => array('t' => array('@content-type' => $type->name)),
+      'options' => array('t' => array('!content-type' => $type->name)),
     );
     unset($deleted['admin/build/node-type/' . $type_url_str]);
     // CCK and other modules adding to node types handled here.
@@ -501,6 +501,10 @@ function admin_menu_flush_cache($name = NULL) {
 
     case 'menu':
       module_invoke('menu', 'rebuild');
+      break;
+
+    case 'registry':
+      registry_rebuild();
       break;
 
     case 'requisites':
