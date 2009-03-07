@@ -9,12 +9,14 @@ Drupal.adminMenu = Drupal.adminMenu || {};
  * This tests whether there is an administration menu is in the output and
  * executes all registered behaviors.
  */
-Drupal.behaviors.adminMenu = function (context) {
-  var $adminMenu = $('#admin-menu');
-  if ($adminMenu.size()) {
-    $.each(Drupal.adminMenu, function() {
-      this(context, $adminMenu);
-    });
+Drupal.behaviors.adminMenu = {
+  attach: function (context) {
+    var $adminMenu = $('#admin-menu');
+    if ($adminMenu.size()) {
+      $.each(Drupal.adminMenu, function() {
+        this(context, $adminMenu);
+      });
+    }
   }
 };
 
@@ -23,9 +25,11 @@ Drupal.behaviors.adminMenu = function (context) {
  *
  * For why multiple selectors see #111719.
  */
-Drupal.behaviors.adminMenuCollapseModules = function (context) {
-  if (Drupal.settings.admin_menu && Drupal.settings.admin_menu.tweak_modules) {
-    $('#system-modules fieldset:not(.collapsed), #system-modules-1 fieldset:not(.collapsed)', context).addClass('collapsed');
+Drupal.behaviors.adminMenuCollapseModules = {
+  attach: function (context) {
+    if (Drupal.settings.admin_menu && Drupal.settings.admin_menu.tweak_modules) {
+      $('#system-modules fieldset:not(.collapsed), #system-modules-1 fieldset:not(.collapsed)', context).addClass('collapsed');
+    }
   }
 };
 
@@ -58,6 +62,17 @@ Drupal.adminMenu.pageTabs = function (context, $adminMenu) {
     $('ul.tabs.secondary').appendTo('#admin-menu > ul > li.admin-menu-tab.active');
   }
 };
+
+/**
+ * Inject destination query strings for current page.
+ */
+Drupal.adminMenu.destination = function (context, $adminMenu) {
+  if (Drupal.settings.admin_menu && Drupal.settings.admin_menu.destination) {
+    $('.admin-menu-destination', $adminMenu).each(function() {
+      this.search += (!this.search.length ? '?' : '&') + Drupal.settings.admin_menu.destination;
+    });
+  }
+}
 
 /**
  * Apply JavaScript-based hovering behaviors.

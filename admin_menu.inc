@@ -211,7 +211,9 @@ function admin_menu_admin_menu(&$deleted) {
   $links[] = array(
     'title' => 'Flush all caches',
     'path' => 'admin_menu/flush-cache',
-    'query' => 'destination',
+    'options' => array(
+      'query' => drupal_get_destination(),
+    ),
     'weight' => 20,
     'parent_path' => $icon_path,
   );
@@ -226,7 +228,9 @@ function admin_menu_admin_menu(&$deleted) {
     $links[] = array(
       'title' => $title,
       'path' => 'admin_menu/flush-cache/' . $name,
-      'query' => 'destination',
+      'options' => array(
+        'query' => drupal_get_destination(),
+      ),
       'parent_path' => 'admin_menu/flush-cache',
     );
   }
@@ -248,10 +252,12 @@ function admin_menu_admin_menu(&$deleted) {
             'title' => $match[4],
             'description' => $match[3],
             'path' => urldecode($match[1]),
+            'options' => array(
+              'query' => drupal_get_destination(),
+              'html' => TRUE,
+            ),
             'weight' => 20,
-            'query' => 'destination',
             'parent_path' => 'user/%',
-            'options' => array('html' => TRUE),
           );
         }
       }
@@ -264,7 +270,9 @@ function admin_menu_admin_menu(&$deleted) {
     'path' => 'admin_menu/toggle-modules',
     'weight' => 88,
     'parent_path' => $icon_path,
-    'options' => array('query' => 'destination'),
+    'options' => array(
+      'query' => drupal_get_destination(),
+    ),
   );
 
   return $links;
