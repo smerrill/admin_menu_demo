@@ -250,7 +250,7 @@ function admin_menu_admin_menu(&$deleted) {
             'path' => urldecode($match[1]),
             'weight' => 20,
             'query' => 'destination',
-            'parent_path' => 'user/logout',
+            'parent_path' => 'user/%',
             'options' => array('html' => TRUE),
           );
         }
@@ -321,13 +321,20 @@ function admin_menu_adjust_items(&$menu_links, &$sort) {
     'options' => array('extra class' => 'admin-menu-action admin-menu-icon admin-menu-users', 'html' => TRUE),
   );
   $links[] = array(
-    'title' => 'Log out @username',
-    'path' => 'user/logout',
-    'weight' => -100,
+    'title' => '@username',
+    'path' => 'user/%',
+    'weight' => -99,
     'parent_path' => '<root>',
     // Note: @username is dynamically replaced by default, we just invoke
     // replacement by setting the 't' key here.
-    'options' => array('extra class' => 'admin-menu-action admin-menu-logout', 't' => array()),
+    'options' => array('extra class' => 'admin-menu-action', 't' => array()),
+  );
+  $links[] = array(
+    'title' => 'Log out',
+    'path' => 'user/logout',
+    'weight' => -100,
+    'parent_path' => '<root>',
+    'options' => array('extra class' => 'admin-menu-action'),
   );
   foreach ($links as $item) {
     $path = $item['path'];
