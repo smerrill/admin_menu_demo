@@ -56,10 +56,9 @@ Drupal.adminMenu.positionFixed = function (context, $adminMenu) {
  */
 Drupal.adminMenu.pageTabs = function (context, $adminMenu) {
   if (Drupal.settings.admin_menu && Drupal.settings.admin_menu.tweak_tabs) {
-    $('ul.tabs.primary li', context).each(function() {
-      $(this).addClass('admin-menu-tab').appendTo('#admin-menu > ul');
-    });
-    $('ul.tabs.secondary').appendTo('#admin-menu > ul > li.admin-menu-tab.active');
+    $('ul.tabs.primary li', context).addClass('admin-menu-tab').appendTo('#admin-menu > ul');
+    $('ul.tabs.secondary', context).appendTo('#admin-menu > ul > li.admin-menu-tab.active');
+    $('ul.tabs.primary', context).remove();
   }
 };
 
