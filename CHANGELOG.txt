@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#415196 by psynaptic: Updated for CSS coding standards.
 #406672 by mr.j, sun: Fixed "Move local tasks" option leaves stale UL.
 by sun: Major code clean-up and sync across 3.x branches.
 #349505 by smk-ka, sun: Performance: Added caching of entire menu output.
