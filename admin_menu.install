@@ -2,9 +2,28 @@
 // $Id$
 
 /**
+ * Implementation of hook_schema().
+ */
+function admin_menu_schema() {
+  $schema['cache_admin_menu'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_admin_menu']['description'] = 'Cache table for Administration menu to store client-side caching hashes.';
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function admin_menu_install() {
+  // Create cache table.
+  drupal_install_schema('admin_menu');
+}
+
+/**
  * Implementation of hook_uninstall().
  */
 function admin_menu_uninstall() {
+  // Remove cache table.
+  drupal_uninstall_schema('admin_menu');
   // Delete menu links.
   db_delete('menu_links')->condition('module', 'admin_menu')->execute();
   menu_cache_clear_all();
@@ -49,6 +68,20 @@ function admin_menu_update_6001() {
   module_load_include('inc', 'admin_menu');
   admin_menu_wipe();
   $ret[] = array('success' => TRUE, 'query' => 'Administration menu links deleted for clean rebuild.');
+  return $ret;
+}
+
+/**
+ * Add {cache_admin_menu} table.
+ */
+function admin_menu_update_7300() {
+  $ret = array();
+  if (db_table_exists('cache_admin_menu')) {
+    return $ret;
+  }
+  $schema = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['description'] = 'Cache table for Administration menu to store client-side caching hashes.';
+  db_create_table($ret, 'cache_admin_menu', $schema);
   return $ret;
 }
 

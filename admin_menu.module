@@ -58,6 +58,13 @@ function admin_menu_theme() {
  * Implementation of hook_menu().
  */
 function admin_menu_menu() {
+  // AJAX callback.
+  $items['js/admin_menu/cache'] = array(
+    'page callback' => 'admin_menu_js_cache',
+    'access arguments' => array('access administration menu'),
+    'type' => MENU_CALLBACK,
+  );
+  // Module settings.
   $items['admin/settings/admin_menu'] = array(
     'title' => 'Administration menu',
     'description' => 'Adjust administration menu settings.',
@@ -88,9 +95,15 @@ function admin_menu_menu() {
  * all pages via hook_init().
  */
 function admin_menu_init() {
-  if (!user_access('access administration menu')) {
+  if (!user_access('access administration menu') || admin_menu_suppress(FALSE)) {
     return;
   }
+  // Performance: Skip this entirely for AJAX requests.
+  if (strpos($_GET['q'], 'js/') === 0) {
+    return;
+  }
+  global $user, $language;
+
   $path = drupal_get_path('module', 'admin_menu');
   drupal_add_css($path . '/admin_menu.css', array('preprocess' => FALSE));
   // Performance: Defer execution.
@@ -98,6 +111,17 @@ function admin_menu_init() {
 
   // Destination query strings are applied via JS.
   $settings['destination'] = drupal_get_destination();
+
+  // Hash for client-side HTTP/AJAX caching.
+  $cid = 'admin_menu:' . $user->uid . ':' . $language->language;
+  if (!empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
+    $settings['hash'] = $hash;
+    // The base path to use for cache requests depends on whether clean URLs
+    // are enabled, whether Drupal runs in a sub-directory, and on the language
+    // system configuration. url() already provides us the proper path, but we
+    // additionally need to ensure that it ends with a slash.
+    $settings['basePath'] = rtrim(url(''), '/') . '/';
+  }
 
   if ($setting = variable_get('admin_menu_margin_top', 1)) {
     $settings['margin_top'] = $setting;
@@ -129,8 +153,10 @@ function admin_menu_init() {
  */
 function admin_menu_suppress($set = TRUE) {
   static $suppress = FALSE;
-  if (!empty($set)) {
+  // drupal_add_js() must only be invoked once.
+  if (!empty($set) && $suppress === FALSE) {
     $suppress = TRUE;
+    drupal_add_js(array('admin_menu' => array('suppress' => 1)), 'setting');
   }
   return $suppress;
 }
@@ -148,10 +174,24 @@ function admin_menu_footer($main = 0) {
   }
   global $user, $language;
 
+  // Determine whether we need to rebuild.
+  $rebuild = variable_get('admin_menu_rebuild_links', FALSE);
   $cid = 'admin_menu:' . $user->uid . ':' . $language->language;
 
+  // Do nothing at all here if the client supports client-side caching, no
+  // rebuild is needed, the user has a hash, and is NOT requesting the cache
+  // update path. Consult the hash cache last, since it requires a DB request.
+  // @todo Implement a sanity-check to prevent permanent double requests; i.e.
+  //   what if the client-side cache fails for any reason and performs a second
+  //   request on every page?
+  if (!empty($_COOKIE['has_js']) && !$rebuild && strpos($_GET['q'], 'js/admin_menu/cache') !== 0) {
+    if (admin_menu_cache_get($cid)) {
+      return;
+    }
+  }
+
   // Check for the flag indicating that we need to rebuild the menu.
-  if (variable_get('admin_menu_rebuild_links', FALSE)) {
+  if ($rebuild) {
     module_load_include('inc', 'admin_menu');
     _admin_menu_rebuild_links();
     variable_del('admin_menu_rebuild_links');
@@ -160,19 +200,100 @@ function admin_menu_footer($main = 0) {
   else {
     $cache = cache_get($cid, 'cache_menu');
     if ($cache && isset($cache->data)) {
-      return $cache->data;
+      $content = $cache->data;
     }
   }
 
   // Rebuild the output.
-  $content  = '<div id="admin-menu">';
-  $content .= admin_menu_tree_output(menu_tree_all_data('admin_menu'));
-  $content .= '</div>';
+  if (!isset($content)) {
+    $content  = '<div id="admin-menu">';
+    $content .= admin_menu_tree_output(menu_tree_all_data('admin_menu'));
+    $content .= '</div>';
 
-  // Cache the menu for this user.
-  cache_set($cid, $content, 'cache_menu');
+    // Cache the menu for this user.
+    cache_set($cid, $content, 'cache_menu');
+  }
+
+  // Store the new hash for this user.
+  if (!empty($_COOKIE['has_js'])) {
+    admin_menu_cache_set($cid, md5($content));
+  }
 
   return $content;
+}
+
+/**
+ * Retrieve a client-side cache hash from cache.
+ *
+ * The hash cache is consulted more than once per request; we therefore cache
+ * the results statically to avoid multiple database requests.
+ *
+ * This should only be used for client-side cache hashes. Use cache_menu for
+ * administration menu content.
+ *
+ * @param $cid
+ *   The cache ID of the data to retrieve.
+ */
+function admin_menu_cache_get($cid) {
+  static $cache = array();
+
+  if (!array_key_exists($cid, $cache)) {
+    $cache[$cid] = cache_get($cid, 'cache_admin_menu');
+    if ($cache[$cid] && isset($cache[$cid]->data)) {
+      $cache[$cid] = $cache[$cid]->data;
+    }
+  }
+
+  return $cache[$cid];
+}
+
+/**
+ * Store a client-side cache hash in persistent cache.
+ *
+ * This should only be used for client-side cache hashes. Use cache_menu for
+ * administration menu content.
+ *
+ * @param $cid
+ *   The cache ID of the data to retrieve.
+ */
+function admin_menu_cache_set($cid, $data) {
+  cache_set($cid, $data, 'cache_admin_menu');
+}
+
+/**
+ * Menu callback; Output administration menu for HTTP caching via AJAX request.
+ */
+function admin_menu_js_cache($hash = NULL) {
+  // Fetch the menu.
+  $content = admin_menu_footer();
+
+  // @todo According to http://www.mnot.net/blog/2006/05/11/browser_caching,
+  //   IE will only cache the content when it is compressed.
+  // Determine if the client accepts gzipped data.
+  if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && function_exists('gzencode')) {
+    if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE) {
+      $encoding = 'gzip';
+    }
+    elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== FALSE) {
+      $encoding = 'x-gzip';
+    }
+    if (!empty($encoding)) {
+      header('Vary: Accept-Encoding');
+      header('Content-Encoding: ' . $encoding);
+      $content = gzencode($content, 9, FORCE_GZIP);
+    }
+  }
+
+  $expires = REQUEST_TIME + (3600 * 24 * 365);
+  header('Expires: ' . gmdate('D, d M Y H:i:s', $expires) . ' GMT');
+  header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+  header('Cache-Control: max-age=' . $expires);
+  header('Content-Length: ' . strlen($content));
+
+  // Suppress Devel module.
+  $GLOBALS['devel_shutdown'] = FALSE;
+  echo $content;
+  exit;
 }
 
 /**

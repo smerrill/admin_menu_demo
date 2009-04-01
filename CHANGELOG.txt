@@ -6,6 +6,9 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#345984 by markus_petrux, sun: Added client-side caching of administration menu.
+  Attention: A new era of Drupal user experience starts here.  This is the very
+  first issue of a series of improvements targeting plain awesomeness.
 #349169 by sun: Fixed Devel switch user links contain multiple path prefixes.
 #345984 by sun: Code clean-up in preparation for client-side caching.
 #415196 by psynaptic: Updated for CSS coding standards.
