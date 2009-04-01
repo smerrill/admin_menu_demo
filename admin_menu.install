@@ -80,7 +80,6 @@ function admin_menu_update_7300() {
     return $ret;
   }
   $schema = drupal_get_schema_unprocessed('system', 'cache');
-  $schema['description'] = 'Cache table for Administration menu to store client-side caching hashes.';
   db_create_table($ret, 'cache_admin_menu', $schema);
   return $ret;
 }
