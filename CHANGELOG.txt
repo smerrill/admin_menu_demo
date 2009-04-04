@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#420840 by sun: Fixed Drupal.behaviors.adminMenu must be only executed once.
 #345984 by markus_petrux, sun: Added client-side caching of administration menu.
   Attention: A new era of Drupal user experience starts here.  This is the very
   first issue of a series of improvements targeting plain awesomeness.

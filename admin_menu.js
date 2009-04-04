@@ -1,7 +1,7 @@
 /* $Id$ */
 (function($) {
 
-Drupal.admin = Drupal.admin || { behaviors: {} };
+Drupal.admin = Drupal.admin || { behaviors: {}, hashes: {} };
 
 /**
  * Core behavior for Administration menu.
@@ -70,7 +70,7 @@ Drupal.behaviors.adminMenuCollapseModules = {
 Drupal.behaviors.adminMenuMarginTop = {
   attach: function (context, settings) {
     if (settings.admin_menu.margin_top) {
-      $('body', context).addClass('admin-menu');
+      $('body:not(.admin-menu)', context).addClass('admin-menu');
     }
   }
 };
@@ -84,13 +84,19 @@ Drupal.behaviors.adminMenuMarginTop = {
  *   A callback function invoked when the cache request was successful.
  */
 Drupal.admin.getCache = function (hash, onSuccess) {
+  if (Drupal.admin.hashes.hash !== undefined) {
+    return Drupal.admin.hashes.hash;
+  }
   $.ajax({
     cache: true,
     type: 'GET',
     dataType: 'text', // Prevent auto-evaluation of response.
     global: false, // Do not trigger global AJAX events.
     url: Drupal.settings.admin_menu.basePath + 'js/admin_menu/cache/' + hash,
-    success: onSuccess
+    success: onSuccess,
+    complete: function (XMLHttpRequest, status) {
+      Drupal.admin.hashes.hash = status;
+    }
   });
 }
 
