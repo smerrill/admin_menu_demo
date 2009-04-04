@@ -28,8 +28,9 @@
 #admin-menu li.admin-menu-icon img {
   vertical-align: bottom;
 }
-#admin-menu li.admin-menu-users img {
-  margin-top: 1px;
+#admin-menu li.admin-menu-users a {
+  background: transparent url(images/icon_users.png) 90% center no-repeat;
+  padding-right: 22px;
 }
 #admin-menu li.admin-menu-action {
   float: right;

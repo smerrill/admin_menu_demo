@@ -20,7 +20,8 @@ Drupal.behaviors.adminMenu = {
       tweak_tabs: false,
       destination: '',
       basePath: settings.basePath,
-      hash: 0
+      hash: 0,
+      replacements: {}
     }, settings.admin_menu || {});
     // Check whether administration menu should be suppressed.
     if (settings.admin_menu.suppress) {
@@ -136,6 +137,15 @@ Drupal.admin.behaviors.pageTabs = function (context, settings, $adminMenu) {
     $('ul.tabs.primary', context).remove();
   }
 };
+
+/**
+ * Perform dynamic replacements in cached menu.
+ */
+Drupal.admin.behaviors.replacements = function (context, settings, $adminMenu) {
+  for (var item in settings.admin_menu.replacements) {
+    $(item, $adminMenu).html(settings.admin_menu.replacements[item]);
+  }
+}
 
 /**
  * Inject destination query strings for current page.

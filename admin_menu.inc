@@ -340,11 +340,12 @@ function admin_menu_adjust_items(&$menu_links, &$sort) {
   // Add link to show current authenticated/anonymous users - we will add the
   // data dynamically in the _alter hook.
   $links[] = array(
-    'title' => 'icon_users',
+    'title' => admin_menu_get_user_count(),
+    'description' => t('Current anonymous / authenticated users'),
     'path' => 'user',
     'weight' => -90,
     'parent_path' => '<root>',
-    'options' => array('extra class' => 'admin-menu-action admin-menu-icon admin-menu-users', 'html' => TRUE),
+    'options' => array('extra class' => 'admin-menu-action admin-menu-users'),
   );
   $links[] = array(
     'title' => '@username',
