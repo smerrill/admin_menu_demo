@@ -16,7 +16,7 @@
  */
 function _admin_menu_rebuild_links() {
   // Get the newly rebuilt menu.
-  $menu = menu_router_build();
+  list($menu) = menu_router_build();
   // Add normal and suggested items as links.
   $menu_links = array();
   foreach ($menu as $path => $item) {
