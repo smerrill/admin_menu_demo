@@ -106,6 +106,9 @@ function admin_menu_init() {
 
   $path = drupal_get_path('module', 'admin_menu');
   drupal_add_css($path . '/admin_menu.css', array('preprocess' => FALSE));
+  if ($user->uid == 1) {
+    drupal_add_css($path . '/admin_menu.color.css', array('preprocess' => FALSE));
+  }
   // Performance: Defer execution.
   drupal_add_js($path . '/admin_menu.js', array('defer' => TRUE));
 
