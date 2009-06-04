@@ -182,7 +182,8 @@ function admin_menu_admin_menu(&$deleted) {
   }
   // Make sure longer paths are after shorter ones
   ksort($deleted);
-  foreach (node_get_types('types', NULL, TRUE) as $type) {
+  node_type_clear();
+  foreach (node_type_get_types() as $type) {
     $type_url_str = str_replace('_', '-', $type->type);
     $type_path = 'admin/build/node-type/' . $type_url_str;
     $links[$type_path] = array(

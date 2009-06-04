@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#482314 by Dave Reid: Updated for node_type_get_types().
 #471504 by wulff: Updated Danish translation.
 by sun: Fixed admin_menu_suppress() does not suppress margin-top.
 #451270 by sun: Added visual indication when working as uid 1.
