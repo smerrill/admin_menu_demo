@@ -121,9 +121,12 @@ function admin_menu_init() {
     $settings['hash'] = $hash;
     // The base path to use for cache requests depends on whether clean URLs
     // are enabled, whether Drupal runs in a sub-directory, and on the language
-    // system configuration. url() already provides us the proper path, but we
-    // additionally need to ensure that it ends with a slash.
-    $settings['basePath'] = rtrim(url(''), '/') . '/';
+    // system configuration. url() already provides us the proper path and also
+    // invokes potentially existing custom_url_rewrite() functions, which may
+    // add further required components to the URL to provide context. Due to
+    // those components, and since url('') returns only base_path() when clean
+    // URLs are disabled, we need to use a replacement token as path.  Yuck.
+    $settings['basePath'] = url('admin_menu');
   }
 
   $replacements = module_invoke_all('admin_menu_replacements');

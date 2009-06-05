@@ -93,7 +93,7 @@ Drupal.admin.getCache = function (hash, onSuccess) {
     type: 'GET',
     dataType: 'text', // Prevent auto-evaluation of response.
     global: false, // Do not trigger global AJAX events.
-    url: Drupal.settings.admin_menu.basePath + 'js/admin_menu/cache/' + hash,
+    url: Drupal.settings.admin_menu.basePath.replace(/admin_menu/, 'js/admin_menu/cache/' + hash),
     success: onSuccess,
     complete: function (XMLHttpRequest, status) {
       Drupal.admin.hashes.hash = status;
