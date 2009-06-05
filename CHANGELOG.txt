@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#479922 by danep: Fixed fieldsets not collapsed on admin/build/modules/list.
 #469716 by sun: Fixed wrong AJAX callback URL under various conditions.
 #482314 by Dave Reid: Updated for node_type_get_types().
 #471504 by wulff: Updated Danish translation.
