@@ -418,9 +418,31 @@ function admin_menu_theme_settings() {
  * Wipe the menu so it can be rebuilt from scratch.
  */
 function admin_menu_flush_caches() {
+  // Flush cached menu tree.
   db_delete('menu_links')->condition('menu_name', 'admin_menu')->execute();
   menu_cache_clear('admin_menu');
   variable_set('admin_menu_rebuild_links', TRUE);
+  // Flush cached output of admin_menu.
+  cache_clear_all('admin_menu:', 'cache_menu', TRUE);
+  // Flush client-side cache hashes.
+  cache_clear_all('*', 'cache_admin_menu', TRUE);
+}
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
+  $form['#submit'][] = 'admin_menu_system_clean_url_settings_form_submit';
+}
+
+/**
+ * Form submit handler to flush client-side cache hashes when clean URLs are toggled.
+ */
+function admin_menu_system_clean_url_settings_form_submit(&$form, &$form_state) {
+  // Flush cached output of admin_menu.
+  cache_clear_all('admin_menu:', 'cache_menu', TRUE);
+  // Flush client-side cache hashes.
+  cache_clear_all('*', 'cache_admin_menu', TRUE);
 }
 
 /**
