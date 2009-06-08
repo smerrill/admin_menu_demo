@@ -1,7 +1,9 @@
 /* $Id$ */
 (function($) {
 
-Drupal.admin = Drupal.admin || { behaviors: {}, hashes: {} };
+Drupal.admin = Drupal.admin || {};
+Drupal.admin.behaviors = Drupal.admin.behaviors || {};
+Drupal.admin.hashes = Drupal.admin.hashes || {};
 
 /**
  * Core behavior for Administration menu.
