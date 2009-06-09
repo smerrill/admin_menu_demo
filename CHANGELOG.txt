@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#236657 by sun: Updated for corrected arguments of system_clear_cache_submit().
 #483870 by sun: Fixed compatibility with new Admin module.
 #483152 by sun: Fixed admin_menu caches not flushed when clean URLs are toggled.
 #479922 by danep: Fixed fieldsets not collapsed on admin/build/modules/list.
