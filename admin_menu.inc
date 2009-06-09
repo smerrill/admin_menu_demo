@@ -570,8 +570,8 @@ function admin_menu_flush_cache($name = NULL) {
     default:
       // Flush all caches; no need to re-implement this.
       if (drupal_function_exists('system_clear_cache_submit')) {
-        $form_state = array();
-        system_clear_cache_submit(NULL, $form_state);
+        $form = $form_state = array();
+        system_clear_cache_submit($form, $form_state);
       }
       break;
   }
