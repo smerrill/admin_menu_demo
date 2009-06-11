@@ -185,6 +185,8 @@ function admin_menu_footer($main = 0) {
   }
   global $user, $language;
 
+  $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
+
   // Determine whether we need to rebuild.
   $rebuild = variable_get('admin_menu_rebuild_links', FALSE);
   $cid = 'admin_menu:' . $user->uid . ':' . $language->language;
@@ -208,7 +210,7 @@ function admin_menu_footer($main = 0) {
     variable_del('admin_menu_rebuild_links');
   }
   // Try to load and output administration menu from server-side cache.
-  else {
+  elseif ($cache_server_enabled) {
     $cache = cache_get($cid, 'cache_menu');
     if ($cache && isset($cache->data)) {
       $content = $cache->data;
@@ -222,7 +224,9 @@ function admin_menu_footer($main = 0) {
     $content .= '</div>';
 
     // Cache the menu for this user.
-    cache_set($cid, $content, 'cache_menu');
+    if ($cache_server_enabled) {
+      cache_set($cid, $content, 'cache_menu');
+    }
   }
 
   // Store the new hash for this user.
@@ -248,6 +252,9 @@ function admin_menu_footer($main = 0) {
 function admin_menu_cache_get($cid) {
   static $cache = array();
 
+  if (!variable_get('admin_menu_cache_client', TRUE)) {
+    return FALSE;
+  }
   if (!array_key_exists($cid, $cache)) {
     $cache[$cid] = cache_get($cid, 'cache_admin_menu');
     if ($cache[$cid] && isset($cache[$cid]->data)) {
@@ -268,7 +275,9 @@ function admin_menu_cache_get($cid) {
  *   The cache ID of the data to retrieve.
  */
 function admin_menu_cache_set($cid, $data) {
-  cache_set($cid, $data, 'cache_admin_menu');
+  if (variable_get('admin_menu_cache_client', TRUE)) {
+    cache_set($cid, $data, 'cache_admin_menu');
+  }
 }
 
 /**
