@@ -101,15 +101,26 @@ function admin_menu_menu_alter(&$items) {
         $items[$path]['menu_name'] = 'admin_menu';
       }
       else {
-        if ($item['type'] & MENU_IS_LOCAL_TASK) {
-          // Work around a core bug, which defines local tasks below menu
-          // callbacks (e.g. for admin/build/node-type/article/edit).
-          $parent = explode('/', $path);
-          array_pop($parent);
-          $parent = implode('/', $parent);
-          if (isset($items[$parent]['type']) && $items[$parent]['type'] & MENU_CALLBACK) {
-            continue;
+        // For any reason, content-type menu items are registered individually
+        // in Drupal core, but also by CCK. We a) have to copy and re-assign
+        // them the proper router path and b) turn their parent items from
+        // MENU_CALLBACK into something visible; otherwise, the menu system
+        // does not find the parents and relocates child items to the top-level.
+        if (strpos($path, 'admin/build/node-type/') === 0) {
+          // Fix router path.
+          $newpath = strtr($path, array('/node-type/' => '/types/'));
+          $items[$newpath] = $items[$path];
+          // Alter item type and visibility.
+          $items[$newpath]['type'] &= ~MENU_CALLBACK;
+          if ($items[$newpath]['type'] === 0) {
+            $items[$newpath]['type'] |= MENU_NORMAL_ITEM;
           }
+          // Use new item from here, but leave old intact to play nice with
+          // others.
+          $path = $newpath;
+          $item = $items[$newpath];
+        }
+        if ($item['type'] & MENU_IS_LOCAL_TASK) {
           // Trick this item into the visible menu tree.
           $items[$path]['_visible'] = TRUE;
         }
@@ -126,6 +137,9 @@ function admin_menu_menu_alter(&$items) {
   // Remove local tasks on 'admin'.
   $items['admin/by-task']['_visible'] = FALSE;
   $items['admin/by-module']['_visible'] = FALSE;
+
+  // Flush client-side caches.
+  module_invoke('admin_menu', 'flush_caches');
 }
 
 /**
