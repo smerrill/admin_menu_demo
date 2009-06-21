@@ -60,7 +60,7 @@ class AdminMenuPermissionsTestCase extends DrupalWebTestCase {
 class AdminMenuModulesTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
-      'name' => t('Module menu links'),
+      'name' => t('Module links'),
       'description' => t('Verify that menu contains links according to enabled modules.'),
       'group' => t('Administration menu'),
     );
@@ -136,8 +136,8 @@ class AdminMenuLinksTestCase extends DrupalWebTestCase {
     // We are explicitly NOT using t() here, since the purpose is to test our
     // custom link titles and 't' option.
     $links = array(
-      '/admin/build/node-type/page' => strtr('Edit !content-type', array('!content-type' => t('Page'))),
-      '/admin/build/node-type/special' => strtr('Edit !content-type', array('!content-type' => t('Cool & Special'))),
+      '/admin/build/types/page' => t('Page'),
+      '/admin/build/types/special' => t('Cool & Special'),
     );
     foreach ($links as $url => $title) {
       $this->assertFieldByXPath('//div[@id="admin-menu"]//a[@href="' . $url . '"]', $title, t('!link-title content-type link found.', array('!link-title' => $title)));
@@ -151,3 +151,4 @@ class AdminMenuLinksTestCase extends DrupalWebTestCase {
     }
   }
 }
+

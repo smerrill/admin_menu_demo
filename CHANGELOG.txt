@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+by sun: Fixed tests for new content-type locations.
 #276751 by sun: Major rewrite. Fixed menu items cannot be moved, altered, or
   added as well as various performance issues.
 by sun: Added variable to allow to disable caching (rewrite).
