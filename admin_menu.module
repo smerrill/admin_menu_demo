@@ -98,7 +98,7 @@ function admin_menu_menu_alter(&$items) {
   foreach ($items as $path => $item) {
     if (strpos($path, 'admin') === 0) {
       if (!isset($item['type'])) {
-        $items[$path]['menu_name'] = 'admin_menu';
+        $items[$path]['menu_name'] = 'management';
       }
       else {
         // For any reason, content-type menu items are registered individually
@@ -126,19 +126,23 @@ function admin_menu_menu_alter(&$items) {
         }
         // Skip invisible MENU_CALLBACKs, but make sure that it is not a
         // MENU_NORMAL_ITEM, which shares the MENU_VISIBLE_IN_BREADCRUMB bit.
-        if ($item['type'] & MENU_CALLBACK && !($item['type'] & MENU_NORMAL_ITEM)) {
+        if ($item['type'] == MENU_CALLBACK) {
           continue;
         }
-        $items[$path]['menu_name'] = 'admin_menu';
+        $items[$path]['menu_name'] = 'management';
       }
     }
   }
 
   // Remove 'admin', so children appear on the top-level.
+  // @todo If 'admin' gets visible, all children are not re-parented at all. If
+  //   it gets invisible, the menu system still displays it.
   $items['admin']['_visible'] = FALSE;
   // Remove local tasks on 'admin'.
   $items['admin/by-task']['_visible'] = FALSE;
   $items['admin/by-module']['_visible'] = FALSE;
+  // Make 'Add new content' the first item.
+  $items['node/add']['weight'] = -15;
 
   // Flush client-side caches.
   module_invoke('admin_menu', 'flush_caches');
@@ -388,7 +392,7 @@ function admin_menu_output() {
     // Add administration menu.
     // @todo How can we use #theme here?
     $content['menu'] = array(
-      '#markup' => admin_menu_tree_output(menu_tree_all_data('admin_menu')),
+      '#markup' => admin_menu_tree_output(menu_tree_all_data('management')),
     );
 
     // Allow modules to alter the output.
@@ -482,15 +486,13 @@ function admin_menu_tree_output($tree) {
     if (isset($data['link']['type']) && $data['link']['type'] == MENU_CALLBACK) {
       continue;
     }
-    // @todo Obsolete.
-    $extra_class = isset($data['link']['localized_options']['extra class']) ? $data['link']['localized_options']['extra class'] : NULL;
     $link = admin_menu_item_link($data['link']);
 
     if ($data['below']) {
-      $output .= theme_admin_menu_item($link, $data['link']['has_children'], admin_menu_tree_output($data['below']), $data['link']['in_active_trail'], $extra_class);
+      $output .= theme_admin_menu_item($link, $data['link']['has_children'], admin_menu_tree_output($data['below']), $data['link']['in_active_trail']);
     }
     else {
-      $output .= theme_admin_menu_item($link, $data['link']['has_children'], '', $data['link']['in_active_trail'], $extra_class);
+      $output .= theme_admin_menu_item($link, $data['link']['has_children'], '', $data['link']['in_active_trail']);
     }
   }
   return $output ? "\n<ul>" . $output . '</ul>' : '';
@@ -546,16 +548,11 @@ function admin_menu_item_link($link) {
  *   A string containing any rendered children of this item.
  * @param $in_active_trail
  *   Whether this item is in the active menu trail.
- * @param $extra_class
- *   An additional CSS class to set for this item.
  *
  * @see theme_menu_item()
  */
-function theme_admin_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
+function theme_admin_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE) {
   $class = ($menu || $has_children ? 'expandable' : '');
-  if (!empty($extra_class)) {
-    $class .= ' ' . $extra_class;
-  }
   if ($in_active_trail) {
     $class .= ' active-trail';
   }
