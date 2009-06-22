@@ -93,6 +93,10 @@ body.admin-menu {
   opacity: 0.88;
   width: 160px; /* Required for Opera */
 }
+#admin-menu li li li {
+  filter: Alpha(opacity=100);
+  opacity: 1;
+}
 
 /* Second-level lists */
 /* Note: We must hide sub-lists or scrollbars might appear (display: none is not read by screen readers). */
