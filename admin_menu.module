@@ -221,7 +221,7 @@ function admin_menu_init() {
  * pages where the menu would be distracting or break the layout.
  *
  * @param $set
- *   Defaults to TRUE. If called before hook_footer, the menu will not be
+ *   Defaults to TRUE. If called before hook_footer(), the menu will not be
  *   displayed. If FALSE is passed, the suppression state is returned.
  */
 function admin_menu_suppress($set = TRUE) {
@@ -294,15 +294,24 @@ function admin_menu_js_cache($hash = NULL) {
   // @todo According to http://www.mnot.net/blog/2006/05/11/browser_caching,
   //   IE will only cache the content when it is compressed.
   // Determine if the client accepts gzipped data.
-  if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && function_exists('gzencode')) {
-    if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE) {
-      $encoding = 'gzip';
-    }
-    elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== FALSE) {
+  if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+    if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== FALSE) {
       $encoding = 'x-gzip';
     }
-    if (!empty($encoding)) {
+    elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE) {
+      $encoding = 'gzip';
+    }
+    // Perform gzip compression when:
+    // 1) the user agent supports gzip compression.
+    // 2) Drupal page compression is enabled. Sites may wish to perform the
+    //    compression at the web server level (e.g. using mod_deflate).
+    // 3) PHP's zlib extension is loaded, but zlib compression is disabled.
+    if (isset($encoding) && variable_get('page_compression', TRUE) && extension_loaded('zlib') && zlib_get_coding_type() === FALSE) {
+      // Use Vary header to tell caches to keep separate versions of the menu
+      // based on user agent capabilities.
       header('Vary: Accept-Encoding');
+      // Since we manually perform compression, we are also responsible to
+      // send a proper encoding header.
       header('Content-Encoding: ' . $encoding);
       $content = gzencode($content, 9, FORCE_GZIP);
     }
