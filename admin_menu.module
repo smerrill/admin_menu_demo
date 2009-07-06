@@ -28,9 +28,9 @@ function admin_menu_help($path, $arg) {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implementation of hook_permission().
  */
-function admin_menu_perm() {
+function admin_menu_permission() {
   return array(
     'access administration menu' => array(
       'title' => t('Access administration menu'),
@@ -605,4 +605,3 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
     $item['title'] .= ' ' . $extra[0] . ': ' . $item[$extra];
   }
 }
-
