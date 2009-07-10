@@ -329,6 +329,7 @@ function _admin_menu_developer_modules() {
     'form_controller',
     'imagecache_ui',
     'journal',
+    'rules_admin',
     'trace',
     'upgrade_status',
     'user_display_ui',
