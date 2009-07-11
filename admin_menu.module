@@ -149,7 +149,7 @@ function admin_menu_menu_alter(&$items) {
   // those are moved back into the administration menu, then the menu system
   // will not calculate/assign the proper menu link parents when the parent item
   // (here: 'admin') is marked as customized.
-  db_query("UPDATE {menu_links} SET menu_name = 'admin_menu', customized = 0 WHERE router_path = 'admin'");
+  db_query("UPDATE {menu_links} SET menu_name = 'management', customized = 0 WHERE router_path = 'admin'");
 
   // Make 'Add new content' the first item.
   $items['node/add']['weight'] = -15;
@@ -494,7 +494,7 @@ function theme_admin_menu_links(&$elements) {
  *   A data structure representing the tree as returned from
  *   menu_tree_all_data().
  *
- * @return string
+ * @return
  *   The complete, rendered administration menu.
  */
 function admin_menu_tree_output($tree) {
@@ -615,3 +615,28 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
     $item['title'] .= ' ' . $extra[0] . ': ' . $item[$extra];
   }
 }
+
+/**
+ * Implementation of hook_flush_caches().
+ *
+ * Flush client-side caches.
+ */
+function admin_menu_flush_caches() {
+  // Flush cached output of admin_menu.
+  cache_clear_all('admin_menu:', 'cache_menu', TRUE);
+  // Flush client-side cache hashes.
+  // db_table_exists() required for SimpleTest.
+  if (db_table_exists('cache_admin_menu')) {
+    cache_clear_all('*', 'cache_admin_menu', TRUE);
+  }
+}
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ *
+ * Form submit handler to flush client-side cache hashes when clean URLs are toggled.
+ */
+function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
+  $form['#submit'][] = 'admin_menu_flush_caches';
+}
+

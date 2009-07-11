@@ -13,6 +13,8 @@
  *   An array of links to be rendered around the menu tree.
  */
 function admin_menu_adjust_items() {
+  $destination = drupal_get_destination();
+
   // Add icon containing special links.
   $links['icon'] = array(
     '#title' => theme('admin_menu_icon'),
@@ -69,7 +71,7 @@ function admin_menu_adjust_items() {
     '#access' => user_access('administer site configuration'),
     '#href' => 'admin_menu/flush-cache',
     '#options' => array(
-      'query' => drupal_get_destination(),
+      'query' => $destination,
     ),
   );
   $caches = array(
@@ -85,7 +87,7 @@ function admin_menu_adjust_items() {
       '#title' => $title,
       '#href' => 'admin_menu/flush-cache/' . $arg,
       '#options' => array(
-        'query' => drupal_get_destination(),
+        'query' => $destination,
       ),
     );
   }
@@ -97,7 +99,7 @@ function admin_menu_adjust_items() {
     '#access' => user_access('administer site configuration'),
     '#href' => 'admin_menu/toggle-modules',
     '#options' => array(
-      'query' => drupal_get_destination(),
+      'query' => $destination,
     ),
   );
 
@@ -206,30 +208,6 @@ function admin_menu_theme_settings() {
   );
 
   return system_settings_form($form);
-}
-
-/**
- * Implementation of hook_flush_caches().
- *
- * Flush client-side caches.
- */
-function admin_menu_flush_caches() {
-  // Flush cached output of admin_menu.
-  cache_clear_all('admin_menu:', 'cache_menu', TRUE);
-  // Flush client-side cache hashes.
-  // db_table_exists() required for SimpleTest.
-  if (db_table_exists('cache_admin_menu')) {
-    cache_clear_all('*', 'cache_admin_menu', TRUE);
-  }
-}
-
-/**
- * Implementation of hook_form_FORM_ID_alter().
- *
- * Form submit handler to flush client-side cache hashes when clean URLs are toggled.
- */
-function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
-  $form['#submit'][] = 'admin_menu_flush_caches';
 }
 
 /**
