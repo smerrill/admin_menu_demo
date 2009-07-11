@@ -24,6 +24,8 @@ class AdminMenuPermissionsTestCase extends DrupalWebTestCase {
 
   function setUp() {
     parent::setUp('admin_menu');
+    // Disable client-side caching.
+    variable_set('admin_menu_cache_client', FALSE);
   }
 
   /**
@@ -68,6 +70,8 @@ class AdminMenuModulesTestCase extends DrupalWebTestCase {
 
   function setUp() {
     parent::setUp('admin_menu', 'contact');
+    // Disable client-side caching.
+    variable_set('admin_menu_cache_client', FALSE);
   }
 
   /**
@@ -107,6 +111,8 @@ class AdminMenuLinksTestCase extends DrupalWebTestCase {
 
   function setUp() {
     parent::setUp('admin_menu');
+    // Disable client-side caching.
+    variable_set('admin_menu_cache_client', FALSE);
 
     // Create and log in a full-blown administrative user.
     $permissions = module_invoke_all('perm');

@@ -126,7 +126,7 @@ function admin_menu_menu_alter(&$items) {
         }
         // Skip invisible MENU_CALLBACKs, but make sure that it is not a
         // MENU_NORMAL_ITEM, which shares the MENU_VISIBLE_IN_BREADCRUMB bit.
-        if ($item['type'] == MENU_CALLBACK) {
+        if ($item['type'] === MENU_CALLBACK) {
           continue;
         }
         $items[$path]['menu_name'] = 'management';
@@ -135,16 +135,26 @@ function admin_menu_menu_alter(&$items) {
   }
 
   // Remove 'admin', so children appear on the top-level.
-  // @todo If 'admin' gets visible, all children are not re-parented at all. If
-  //   it gets invisible, the menu system still displays it.
-  $items['admin']['_visible'] = FALSE;
+  $items['admin']['type'] = MENU_CALLBACK;
   // Remove local tasks on 'admin'.
   $items['admin/by-task']['_visible'] = FALSE;
   $items['admin/by-module']['_visible'] = FALSE;
+
+  // menu_link_save() looks up the parent's menu_name directly in the database
+  // instead of taking data in hook_menu() into account. When installing
+  // admin_menu, {menu_links} contains the default value of 'navigation', which
+  // is thereby applied to all items, even if this function altered them. There
+  // is no other way to override this behavior.
+  // Additionally, if links below admin/ were moved or customized in any way and
+  // those are moved back into the administration menu, then the menu system
+  // will not calculate/assign the proper menu link parents when the parent item
+  // (here: 'admin') is marked as customized.
+  db_query("UPDATE {menu_links} SET menu_name = 'admin_menu', customized = 0 WHERE router_path = 'admin'");
+
   // Make 'Add new content' the first item.
   $items['node/add']['weight'] = -15;
 
-  // Flush client-side caches.
+  // Flush client-side caches whenever the menu is rebuilt.
   module_invoke('admin_menu', 'flush_caches');
 }
 

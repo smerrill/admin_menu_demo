@@ -14,8 +14,6 @@ function admin_menu_schema() {
  * Implementation of hook_install().
  */
 function admin_menu_install() {
-  // Create menu.
-  _admin_menu_install_menu();
   // Create cache table.
   drupal_install_schema('admin_menu');
 }
@@ -26,25 +24,12 @@ function admin_menu_install() {
 function admin_menu_uninstall() {
   // Remove cache table.
   drupal_uninstall_schema('admin_menu');
-  // Delete menu links.
-  db_delete('menu_links')->condition('menu_name', 'admin_menu')->execute();
-  menu_rebuild();
   // Delete variables.
   variable_del('admin_menu_devel_modules_enabled');
   variable_del('admin_menu_margin_top');
   variable_del('admin_menu_position_fixed');
   variable_del('admin_menu_tweak_modules');
   variable_del('admin_menu_tweak_tabs');
-}
-
-/**
- * Helper function to ensure 'admin_menu' menu.
- */
-function _admin_menu_install_menu() {
-  if (db_select('menu_custom')->fields('menu_custom', array('menu_name'))->condition('menu_name', 'admin_menu')->execute()->fetchField()) {
-    return array();
-  }
-  return update_sql("INSERT INTO {menu_custom} (menu_name, title, description) VALUES ('admin_menu', 'Administration menu', '')");
 }
 
 /**
@@ -83,17 +68,6 @@ function admin_menu_update_7300() {
   }
   $schema = drupal_get_schema_unprocessed('system', 'cache');
   db_create_table($ret, 'cache_admin_menu', $schema);
-  return $ret;
-}
-
-/**
- * Add "admin_menu" menu.
- */
-function admin_menu_update_7301() {
-  $ret = array();
-  variable_del('admin_menu_rebuild_links');
-  // Create menu.
-  $ret[] = _admin_menu_install_menu();
   return $ret;
 }
 

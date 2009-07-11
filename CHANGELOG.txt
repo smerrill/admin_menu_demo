@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#490670 by sun: Fixed missing menu after installation/upgrade.
 #515718 by joelstein, sun: Added rules_admin module to developer modules list.
 #352065 by sun: Added setting to select developer modules to keep enabled.
 by Dave Reid: Updated for hook_permission().

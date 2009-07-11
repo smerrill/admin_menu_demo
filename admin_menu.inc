@@ -217,7 +217,10 @@ function admin_menu_flush_caches() {
   // Flush cached output of admin_menu.
   cache_clear_all('admin_menu:', 'cache_menu', TRUE);
   // Flush client-side cache hashes.
-  cache_clear_all('*', 'cache_admin_menu', TRUE);
+  // db_table_exists() required for SimpleTest.
+  if (db_table_exists('cache_admin_menu')) {
+    cache_clear_all('*', 'cache_admin_menu', TRUE);
+  }
 }
 
 /**
@@ -308,7 +311,7 @@ function admin_menu_toggle_modules() {
     // Finally, flush admin_menu's cache.
     admin_menu_flush_caches();
   }
-  drupal_goto();
+  drupal_goto(referer_uri());
 }
 
 /**
