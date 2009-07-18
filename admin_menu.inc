@@ -114,7 +114,7 @@ function admin_menu_adjust_items() {
   $links['account'] = array(
     '#title' => $GLOBALS['user']->name,
     '#weight' => -99,
-    '#attributes' => array('class' => array('admin-menu-action')),
+    '#attributes' => array('class' => array('admin-menu-action', 'admin-menu-account')),
     '#href' => 'user/' . $GLOBALS['user']->uid,
   );
   $links['logout'] = array(
