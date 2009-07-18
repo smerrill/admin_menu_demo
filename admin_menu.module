@@ -397,8 +397,12 @@ function admin_menu_output() {
 
   // Rebuild the output.
   if (!isset($content)) {
+    // Add site name as CSS class for development/staging theming purposes. We
+    // leverage the cookie domain instead of HTTP_HOST to account for many (but
+    // not all) multi-domain setups (e.g. language-based sub-domains).
+    $class_site = 'admin-menu-site' . drupal_strtolower(preg_replace('/[^a-zA-Z0-9-]/', '-', $GLOBALS['cookie_domain']));
     // @todo Always output container to harden JS-less support.
-    $content['#prefix'] = '<div id="admin-menu">';
+    $content['#prefix'] = '<div id="admin-menu" class="' . $class_site . '">';
     $content['#suffix'] = '</div>';
 
     // Add menu additions.
