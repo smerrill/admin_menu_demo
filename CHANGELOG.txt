@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#500866 by sun: Updated for removed t() from getInfo() in tests.
 #402058 by sun: Added Administration menu toolbar module.
 by markus_petrux, sun: Added API documentation.
 #461264 by sun: Added site/domain as CSS class.

@@ -16,9 +16,9 @@
 class AdminMenuPermissionsTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
-      'name' => t('Menu link permissions'),
-      'description' => t('Verify that menu is displayed according to user permissions.'),
-      'group' => t('Administration menu'),
+      'name' => 'Menu link permissions',
+      'description' => 'Verify that menu is displayed according to user permissions.',
+      'group' => 'Administration menu',
     );
   }
 
@@ -62,9 +62,9 @@ class AdminMenuPermissionsTestCase extends DrupalWebTestCase {
 class AdminMenuModulesTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
-      'name' => t('Module links'),
-      'description' => t('Verify that menu contains links according to enabled modules.'),
-      'group' => t('Administration menu'),
+      'name' => 'Module links',
+      'description' => 'Verify that menu contains links according to enabled modules.',
+      'group' => 'Administration menu',
     );
   }
 
@@ -103,9 +103,9 @@ class AdminMenuModulesTestCase extends DrupalWebTestCase {
 class AdminMenuLinksTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
-      'name' => t('Menu links'),
-      'description' => t('Verify that menu contains proper links.'),
-      'group' => t('Administration menu'),
+      'name' => 'Menu links',
+      'description' => 'Verify that menu contains proper links.',
+      'group' => 'Administration menu',
     );
   }
 
