@@ -7,15 +7,16 @@
  */
 
 /**
- * Add default features to increase user experience.
+ * Build icon menu links; mostly containing maintenance helpers.
  *
- * @return
- *   An array of links to be rendered around the menu tree.
+ * @see theme_admin_menu_links()
  */
-function admin_menu_adjust_items() {
+function admin_menu_links_icon() {
   $destination = drupal_get_destination();
 
-  // Add icon containing special links.
+  $links = array(
+    '#weight' => -10,
+  );
   $links['icon'] = array(
     '#title' => theme('admin_menu_icon'),
     '#attributes' => array('class' => array('admin-menu-icon')),
@@ -103,6 +104,26 @@ function admin_menu_adjust_items() {
     ),
   );
 
+  // Add Devel module links.
+  if (module_exists('devel')) {
+    // Add variable editor.
+    $links['icon']['devel-variables'] = array(
+      '#title' => t('Variable editor'),
+      '#weight' => 20,
+      '#access' => user_access('access devel information'),
+      '#href' => 'devel/variable',
+    );
+  }
+
+  return $links;
+}
+
+/**
+ * Build user/action links; mostly account information and links.
+ *
+ * @see theme_admin_menu_links()
+ */
+function admin_menu_links_user() {
   // Add link to show current authenticated/anonymous users.
   $links['user-counter'] = array(
     '#title' => admin_menu_get_user_count(),
@@ -126,13 +147,6 @@ function admin_menu_adjust_items() {
 
   // Add Devel module links.
   if (module_exists('devel')) {
-    // Add variable editor.
-    $links['icon']['devel-variables'] = array(
-      '#title' => t('Variable editor'),
-      '#weight' => 20,
-      '#access' => user_access('access devel information'),
-      '#href' => 'devel/variable',
-    );
     // Add switch user links.
     foreach (module_invoke('devel', 'switch_user_list') as $link) {
       $links['account'][$link['title']] = array(

@@ -52,8 +52,8 @@ function admin_menu_toolbar_admin_menu_output_alter(&$content) {
   $content['shortcuts']['shortcuts'] = array(
     '#title' => t('Show shortcuts'),
     // @todo How do we want to trigger/store state?
-    // '#attributes' => array('class' => array('admin-menu-shortcuts', 'admin-menu-shortcuts-active')),
     '#attributes' => array('class' => array('admin-menu-shortcuts')),
+    //'#attributes' => array('class' => array('admin-menu-shortcuts', 'admin-menu-shortcuts-active')),
     '#options' => array(
       'attributes' => array('class' => 'toggle'),
     ),

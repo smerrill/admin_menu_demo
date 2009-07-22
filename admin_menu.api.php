@@ -22,7 +22,8 @@
  * menu, such as the icon menu or the logout link. You can add more items here
  * or play with the #weight attribute to customize them.
  * @see theme_admin_menu_links()
- * @see admin_menu_adjust_items()
+ * @see admin_menu_links_icon()
+ * @see admin_menu_links_user()
  */
 function hook_admin_menu_output_alter(&$content) {
   // Add new top-level item.

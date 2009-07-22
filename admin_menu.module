@@ -402,15 +402,15 @@ function admin_menu_output() {
     // not all) multi-domain setups (e.g. language-based sub-domains).
     $class_site = 'admin-menu-site' . drupal_strtolower(preg_replace('/[^a-zA-Z0-9-]/', '-', $GLOBALS['cookie_domain']));
     // @todo Always output container to harden JS-less support.
-    $content['#prefix'] = '<div id="admin-menu" class="' . $class_site . '">';
-    $content['#suffix'] = '</div>';
+    $content['#prefix'] = '<div id="admin-menu" class="' . $class_site . '"><div id="admin-menu-wrapper"><ul>';
+    $content['#suffix'] = '</ul></div></div>';
 
     // Add menu additions.
     module_load_include('inc', 'admin_menu');
-    $content['links'] = array(
-      '#theme' => 'admin_menu_links',
-    );
-    $content['links'] += admin_menu_adjust_items();
+    $content['icon'] = admin_menu_links_icon();
+    $content['icon']['#theme'] = 'admin_menu_links';
+    $content['user'] = admin_menu_links_user();
+    $content['user']['#theme'] = 'admin_menu_links';
 
     // Add administration menu.
     // @todo How can we use #theme here?
@@ -451,8 +451,10 @@ function admin_menu_output() {
  *   - '#options': Optional alternative text for the link, passed to l().
  *
  *   The array key of each child element itself is passed as path for l().
+ * @param $depth
+ *   Current recursion level; internal use only.
  */
-function theme_admin_menu_links(&$elements) {
+function theme_admin_menu_links(&$elements, $depth = 0) {
   $output = '';
   foreach (element_children($elements, TRUE) as $path) {
     // Early-return nothing if user does not have access.
@@ -464,9 +466,11 @@ function theme_admin_menu_links(&$elements) {
       '#options' => array(),
     );
     // Render children to determine whether this link is expandable.
-    $children = theme('admin_menu_links', $elements[$path]);
+    $children = theme('admin_menu_links', $elements[$path], $depth + 1);
     if (!empty($children)) {
       $elements[$path]['#attributes']['class'][] = 'expandable';
+      // If there are children, we add the parent key as class by default.
+      // $elements[$path]['#attributes']['class'][] = $path;
     }
     if (isset($elements[$path]['#attributes']['class'])) {
       $elements[$path]['#attributes']['class'] = implode(' ', $elements[$path]['#attributes']['class']);
@@ -477,18 +481,32 @@ function theme_admin_menu_links(&$elements) {
     if (isset($elements[$path]['#href'])) {
       $output .= l($elements[$path]['#title'], $elements[$path]['#href'], $elements[$path]['#options']);
     }
-    elseif (!empty($element[$path]['#options']['html'])) {
-      $output .= $elements[$path]['#title'];
-    }
-    else {
-      $output .= check_plain($elements[$path]['#title']);
+    elseif (isset($elements[$path]['#title'])) {
+      if (!empty($elements[$path]['#options']['html'])) {
+        $title = $elements[$path]['#title'];
+      }
+      else {
+        $title = check_plain($elements[$path]['#title']);
+      }
+      if (!empty($elements[$path]['#options']['attributes'])) {
+        $output .= '<span' . drupal_attributes($elements[$path]['#options']['attributes']) . '>' . $title . '</span>';
+      }
+      else {
+        $output .= $title;
+      }
     }
 
     $output .= $children;
     $output .= '</li>';
   }
   // @todo #attributes probably required for UL, but already used for LI.
-  return $output ? '<ul>' . $output . '</ul>' : '';
+  // @todo Use $element['#theme'] + $element['#children'] here instead.
+  if ($output) {
+    if ($depth > 0) {
+      $output = "\n<ul>" . $output . '</ul>';
+    }
+  }
+  return $output;
 }
 
 /**
@@ -497,11 +515,13 @@ function theme_admin_menu_links(&$elements) {
  * @param $tree
  *   A data structure representing the tree as returned from
  *   menu_tree_all_data().
+ * @param $depth
+ *   Current recursion level; internal use only.
  *
  * @return
  *   The complete, rendered administration menu.
  */
-function admin_menu_tree_output($tree) {
+function admin_menu_tree_output($tree, $depth = 0) {
   $output = '';
 
   foreach ($tree as $data) {
@@ -512,13 +532,19 @@ function admin_menu_tree_output($tree) {
     $link = admin_menu_item_link($data['link']);
 
     if ($data['below']) {
-      $output .= theme_admin_menu_item($link, $data['link']['has_children'], admin_menu_tree_output($data['below']), $data['link']['in_active_trail']);
+      $output .= theme_admin_menu_item($link, $data['link']['has_children'], admin_menu_tree_output($data['below'], $depth + 1), $data['link']['in_active_trail']);
     }
     else {
       $output .= theme_admin_menu_item($link, $data['link']['has_children'], '', $data['link']['in_active_trail']);
     }
   }
-  return $output ? "\n<ul>" . $output . '</ul>' : '';
+  // @todo Use $element['#theme'] + $element['#children'] here instead.
+  if ($output) {
+    if ($depth > 0) {
+      $output = "\n<ul>" . $output . '</ul>';
+    }
+  }
+  return $output;
 }
 
 /**
