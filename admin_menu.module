@@ -455,6 +455,12 @@ function admin_menu_output() {
  *   Current recursion level; internal use only.
  */
 function theme_admin_menu_links(&$elements, $depth = 0) {
+  static $destination;
+
+  if (!isset($destination)) {
+    $destination = drupal_get_destination();
+  }
+
   $output = '';
   foreach (element_children($elements, TRUE) as $path) {
     // Early-return nothing if user does not have access.
@@ -479,6 +485,29 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
     $output .= '<li' . drupal_attributes($elements[$path]['#attributes']) . '>';
 
     if (isset($elements[$path]['#href'])) {
+      // Strip destination query string from href attribute and apply a CSS class
+      // for our JavaScript behavior instead.
+      $class = FALSE;
+      if (!empty($elements[$path]['#options']['query'])) {
+        if (is_array($elements[$path]['#options']['query']) && isset($elements[$path]['#options']['query']['destination']) && $elements[$path]['#options']['query']['destination'] == $destination) {
+          unset($elements[$path]['#options']['query']['destination']);
+          $class = TRUE;
+        }
+        else {
+          $query = preg_replace('/&?' . preg_quote($destination, '/') . '/', '', $elements[$path]['#options']['query']);
+          if ($query != $elements[$path]['#options']['query']) {
+            $elements[$path]['#options']['query'] = $query;
+            $class = TRUE;
+          }
+        }
+      }
+      if ($class) {
+        if (!isset($elements[$path]['#options']['attributes']['class'])) {
+          $elements[$path]['#options']['attributes']['class'] = '';
+        }
+        $elements[$path]['#options']['attributes']['class'] .= ' admin-menu-destination';
+      }
+
       $output .= l($elements[$path]['#title'], $elements[$path]['#href'], $elements[$path]['#options']);
     }
     elseif (isset($elements[$path]['#title'])) {
@@ -557,33 +586,10 @@ function admin_menu_tree_output($tree, $depth = 0) {
  *   A menu item link.
  */
 function admin_menu_item_link($link) {
-  static $destination;
-
-  if (!isset($destination)) {
-    $destination = drupal_get_destination();
-  }
-
-  // Strip destination query string from href attribute and apply a CSS class
-  // for our JavaScript behavior instead.
-  $class = '';
-  if (!empty($link['localized_options']['query'])) {
-    if (is_array($link['localized_options']['query']) && isset($link['localized_options']['query']['destination']) && $link['localized_options']['query']['destination'] == $destination) {
-      unset($link['localized_options']['query']['destination']);
-      $class = ' class="admin-menu-destination"';
-    }
-    else {
-      $query = preg_replace('/&?' . preg_quote($destination, '/') . '/', '', $link['localized_options']['query']);
-      if ($query != $link['localized_options']['query']) {
-        $link['localized_options']['query'] = $query;
-        $class = ' class="admin-menu-destination"';
-      }
-    }
-  }
-
   // Omit alias lookups.
   $link['localized_options']['alias'] = TRUE;
 
-  return '<a href="' . check_url(url($link['href'], $link['localized_options'])) . '"' . $class . '>' . (!empty($link['localized_options']['html']) ? $link['title'] : check_plain($link['title'])) . '</a>';
+  return '<a href="' . check_url(url($link['href'], $link['localized_options'])) . '">' . (!empty($link['localized_options']['html']) ? $link['title'] : check_plain($link['title'])) . '</a>';
 }
 
 /**
