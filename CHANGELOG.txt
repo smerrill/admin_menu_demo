@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#527908 by markus_petrux, sun: Changed admin menu into a renderable array.
 #420812 by sun, smk-ka: Added support for hook_js().
 #525638 by Razorraser: Updated for admin/build renamed to admin/structure.
 by sun: Fixed destination query string of current page not applied to links.

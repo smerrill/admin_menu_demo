@@ -36,22 +36,27 @@ body.admin-menu {
 #admin-menu li.admin-menu-action a {
   border-left: 0;
 }
-#admin-menu ul a {
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
+#admin-menu ul > li > a {
   border-right: 0;
   margin-bottom: 3px;
   padding: 3px 8px;
 }
-#admin-menu ul a.active-trail {
+#admin-menu ul li.admin-menu-toolbar-category > a {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+#admin-menu ul li.admin-menu-toolbar-category > a.active-trail {
   text-shadow: #333 0 1px 0;
   background: url(/modules/toolbar/toolbar.png) 0 0 repeat-x;
 }
-#admin-menu ul a:hover {
+#admin-menu ul li.admin-menu-toolbar-category > a:hover {
   background-color: #444;
 }
 #admin-menu ul li.admin-menu-tab a {
   border-right: 0;
+}
+#admin-menu li li.expandable ul {
+  margin: -23px 0 0 160px;
 }
 
 /* Shortcuts toggle */

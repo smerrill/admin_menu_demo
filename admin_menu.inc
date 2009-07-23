@@ -3,8 +3,44 @@
 
 /**
  * @file
- * Menu build functions for Administration menu.
+ * Menu builder functions for Administration menu.
  */
+
+/**
+ * Build the administration menu as renderable menu links.
+ *
+ * @param $tree
+ *   A data structure representing the administration menu tree as returned from
+ *   menu_tree_all_data().
+ *
+ * @return
+ *   The complete administration menu, suitable for theme_admin_menu_links().
+ *
+ * @see theme_admin_menu_links()
+ * @see admin_menu_menu_alter()
+ */
+function admin_menu_links_menu($tree) {
+  $links = array();
+  foreach ($tree as $data) {
+    // Skip menu callbacks (mostly dynamic items).
+    if (isset($data['link']['type']) && $data['link']['type'] == MENU_CALLBACK) {
+      continue;
+    }
+    // Omit alias lookups.
+    $data['link']['localized_options']['alias'] = TRUE;
+
+    $links[$data['link']['mlid']] = array(
+      '#title' => $data['link']['title'],
+      '#href' => $data['link']['href'],
+      '#options' => $data['link']['localized_options'],
+      '#weight' => $data['link']['weight'],
+    );
+    if ($data['below']) {
+      $links[$data['link']['mlid']] += admin_menu_links_menu($data['below']);
+    }
+  }
+  return $links;
+}
 
 /**
  * Build icon menu links; mostly containing maintenance helpers.
@@ -15,7 +51,8 @@ function admin_menu_links_icon() {
   $destination = drupal_get_destination();
 
   $links = array(
-    '#weight' => -10,
+    '#theme' => 'admin_menu_links',
+    '#weight' => -100,
   );
   $links['icon'] = array(
     '#title' => theme('admin_menu_icon'),
@@ -124,6 +161,10 @@ function admin_menu_links_icon() {
  * @see theme_admin_menu_links()
  */
 function admin_menu_links_user() {
+  $links = array(
+    '#theme' => 'admin_menu_links',
+    '#weight' => 100,
+  );
   // Add link to show current authenticated/anonymous users.
   $links['user-counter'] = array(
     '#title' => admin_menu_get_user_count(),

@@ -418,18 +418,20 @@ function admin_menu_output() {
     $content['#prefix'] = '<div id="admin-menu" class="' . $class_site . '"><div id="admin-menu-wrapper"><ul>';
     $content['#suffix'] = '</ul></div></div>';
 
-    // Add menu additions.
+    // Load menu builder functions.
     module_load_include('inc', 'admin_menu');
-    $content['icon'] = admin_menu_links_icon();
-    $content['icon']['#theme'] = 'admin_menu_links';
-    $content['user'] = admin_menu_links_user();
-    $content['user']['#theme'] = 'admin_menu_links';
 
     // Add administration menu.
-    // @todo How can we use #theme here?
-    $content['menu'] = array(
-      '#markup' => admin_menu_tree_output(menu_tree_all_data('management')),
-    );
+    $content['menu'] = admin_menu_links_menu(menu_tree_all_data('management'));
+    $content['menu']['#theme'] = 'admin_menu_links';
+    // Ensure the menu tree is rendered between the icon and user links.
+    $content['menu']['#weight'] = 0;
+    // Do not sort the menu tree, since it already is sorted.
+    $content['menu']['#sorted'] = TRUE;
+
+    // Add menu additions.
+    $content['icon'] = admin_menu_links_icon();
+    $content['user'] = admin_menu_links_user();
 
     // Allow modules to alter the output.
     drupal_alter('admin_menu_output', $content);
@@ -549,82 +551,6 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
     }
   }
   return $output;
-}
-
-/**
- * Return a rendered menu tree.
- *
- * @param $tree
- *   A data structure representing the tree as returned from
- *   menu_tree_all_data().
- * @param $depth
- *   Current recursion level; internal use only.
- *
- * @return
- *   The complete, rendered administration menu.
- */
-function admin_menu_tree_output($tree, $depth = 0) {
-  $output = '';
-
-  foreach ($tree as $data) {
-    // Skip menu callbacks (mostly dynamic items).
-    if (isset($data['link']['type']) && $data['link']['type'] == MENU_CALLBACK) {
-      continue;
-    }
-    $link = admin_menu_item_link($data['link']);
-
-    if ($data['below']) {
-      $output .= theme_admin_menu_item($link, $data['link']['has_children'], admin_menu_tree_output($data['below'], $depth + 1), $data['link']['in_active_trail']);
-    }
-    else {
-      $output .= theme_admin_menu_item($link, $data['link']['has_children'], '', $data['link']['in_active_trail']);
-    }
-  }
-  // @todo Use $element['#theme'] + $element['#children'] here instead.
-  if ($output) {
-    if ($depth > 0) {
-      $output = "\n<ul>" . $output . '</ul>';
-    }
-  }
-  return $output;
-}
-
-/**
- * High-performance implementation of theme_menu_item_link().
- *
- * This saves us a theme() call and does only the absolute minimum to get
- * the admin menu links rendered.
- *
- * @param $link
- *   A menu item link.
- */
-function admin_menu_item_link($link) {
-  // Omit alias lookups.
-  $link['localized_options']['alias'] = TRUE;
-
-  return '<a href="' . check_url(url($link['href'], $link['localized_options'])) . '">' . (!empty($link['localized_options']['html']) ? $link['title'] : check_plain($link['title'])) . '</a>';
-}
-
-/**
- * Generate the HTML output for a single menu item and submenu.
- *
- * @param $link
- *   A rendered menu item link.
- * @param $has_children
- *   Whether this item has children.
- * @param $menu
- *   A string containing any rendered children of this item.
- * @param $in_active_trail
- *   Whether this item is in the active menu trail.
- *
- * @see theme_menu_item()
- */
-function theme_admin_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE) {
-  $class = ($menu || $has_children ? 'expandable' : '');
-  if ($in_active_trail) {
-    $class .= ' active-trail';
-  }
-  return '<li' . (!empty($class) ? ' class="' . $class . '"' : '') . '>' . $link . $menu . '</li>';
 }
 
 /**
