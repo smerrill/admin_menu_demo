@@ -245,10 +245,12 @@ function admin_menu_suppress($set = TRUE) {
 }
 
 /**
- * Implementation of hook_footer().
+ * Implementation of hook_page_alter().
  */
-function admin_menu_footer($main = 0) {
-  return admin_menu_output();
+function admin_menu_page_alter(&$page) {
+  $page['page_bottom']['admin_menu'] = array(
+    '#markup' => admin_menu_output(),
+  );
 }
 
 /**
