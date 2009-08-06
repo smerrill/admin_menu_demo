@@ -366,6 +366,7 @@ function _admin_menu_developer_modules() {
     'imagecache_ui',
     'journal',
     'rules_admin',
+    'stringoverrides',
     'trace',
     'upgrade_status',
     'user_display_ui',
