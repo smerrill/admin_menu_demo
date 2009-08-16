@@ -28,6 +28,8 @@ function admin_menu_links_menu($tree) {
     }
     // Omit alias lookups.
     $data['link']['localized_options']['alias'] = TRUE;
+    // Remove description to prevent mouseover tooltip clashes.
+    unset($data['link']['localized_options']['attributes']['title']);
 
     $links[$data['link']['mlid']] = array(
       '#title' => $data['link']['title'],
