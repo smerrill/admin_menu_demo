@@ -132,6 +132,15 @@ function admin_menu_menu_alter(&$items) {
         $items[$path]['menu_name'] = 'management';
       }
     }
+    // Copy 'Add new content' into management menu.
+    elseif (strpos($path, 'node/add') === 0) {
+      $newpath = 'admin/' . $path;
+      $items[$newpath] = admin_menu_copy_item($item, $path, $newpath);
+      $items[$newpath]['menu_name'] = 'management';
+      if ($newpath == 'admin/node/add') {
+        $items[$newpath]['weight'] = -15;
+      }
+    }
   }
 
   // Remove 'admin', so children appear on the top-level.
@@ -151,11 +160,39 @@ function admin_menu_menu_alter(&$items) {
   // (here: 'admin') is marked as customized.
   db_query("UPDATE {menu_links} SET menu_name = 'management', customized = 0 WHERE router_path = 'admin'");
 
-  // Make 'Add new content' the first item.
-  $items['node/add']['weight'] = -15;
-
   // Flush client-side caches whenever the menu is rebuilt.
   module_invoke('admin_menu', 'flush_caches');
+}
+
+/**
+ * Copy a menu router item to another location.
+ *
+ * Adjusts numeric path argument references for various menu router item
+ * properties.
+ *
+ * @param $item
+ *   The existing menu router item.
+ * @param $old_path
+ *   The existing path of $item, f.e. 'node/add'.
+ * @param $new_path
+ *   The path to copy the menu router item to, f.e. 'admin/node/add'.
+ * @return
+ *   The menu router item with adjusted path argument references.
+ */
+function admin_menu_copy_item($item, $old_path, $new_path) {
+  $offset = count(explode('/', $new_path)) - count(explode('/', $old_path));
+  if ($offset != 0) {
+    foreach (array('page arguments', 'access arguments', 'load arguments', 'title arguments') as $args) {
+      if (!empty($item[$args])) {
+        foreach ($item[$args] as $key => $value) {
+          if (is_numeric($value)) {
+            $item[$args][$key] = $value + $offset;
+          }
+        }
+      }
+    }
+  }
+  return $item;
 }
 
 /**
