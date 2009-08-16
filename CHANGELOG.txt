@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#538714 by sun: Fixed wrong re-parenting in Drupal's menu system.
 #550132 by sun: Fixed (temporarily) admin_views menu items.
 by sun: Added Administration views sub-module, converting all administrative
   listing pages in Drupal core into real, ajaxified, and alterable views.
