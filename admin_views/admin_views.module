@@ -1,0 +1,33 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Replaces all system object management pages in Drupal core with real views.
+ */
+
+/**
+ * Implementation of hook_views_api().
+ */
+function admin_views_views_api() {
+  return array(
+    'api' => 2,
+  );
+}
+
+/**
+ * Implementation of hook_views_default_views().
+ *
+ * @thanks Chapter Three
+ */
+function admin_views_views_default_views() {
+  $files = file_scan_directory(drupal_get_path('module', 'admin_views') . '/views_default', '.inc');
+  foreach ($files as $filepath => $file) {
+    include $filepath;
+    if (isset($view)) {
+      $views[$view->name] = $view;
+    }
+  }
+  return $views;
+}
+
