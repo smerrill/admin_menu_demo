@@ -298,8 +298,8 @@ $handler = $view->new_display('page', 'Page', 'page_1');
 $handler->override_option('path', 'admin/content/node');
 $handler->override_option('menu', array(
   'type' => 'existing',
-  'title' => '',
-  'description' => '',
+  'title' => 'Content',
+  'description' => 'View, edit, and delete your site\'s content.',
   'weight' => '0',
   'name' => 'navigation',
 ));

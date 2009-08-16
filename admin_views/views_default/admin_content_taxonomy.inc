@@ -212,8 +212,8 @@ $handler = $view->new_display('page', 'Page', 'page_1');
 $handler->override_option('path', 'admin/content/taxonomy/%');
 $handler->override_option('menu', array(
   'type' => 'existing',
-  'title' => '',
-  'description' => '',
+  'title' => 'Taxonomy',
+  'description' => 'Manage tagging, categorization, and classification of your content.',
   'weight' => 0,
   'name' => 'navigation',
 ));

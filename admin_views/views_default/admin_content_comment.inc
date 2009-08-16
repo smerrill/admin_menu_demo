@@ -226,8 +226,8 @@ $handler = $view->new_display('page', 'Page', 'page_1');
 $handler->override_option('path', 'admin/content/comment');
 $handler->override_option('menu', array(
   'type' => 'existing',
-  'title' => '',
-  'description' => '',
+  'title' => 'Comments',
+  'description' => 'List and edit site comments and the comment moderation queue.',
   'weight' => 0,
   'name' => 'navigation',
 ));

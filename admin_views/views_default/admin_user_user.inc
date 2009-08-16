@@ -319,8 +319,8 @@ $handler = $view->new_display('page', 'Page', 'page_1');
 $handler->override_option('path', 'admin/user/user');
 $handler->override_option('menu', array(
   'type' => 'existing',
-  'title' => '',
-  'description' => '',
+  'title' => 'Users',
+  'description' => 'List, add, and edit users.',
   'weight' => 0,
   'name' => 'navigation',
 ));

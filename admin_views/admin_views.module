@@ -21,6 +21,12 @@ function admin_views_views_api() {
  * @thanks Chapter Three
  */
 function admin_views_views_default_views() {
+  static $views;
+
+  if (isset($views)) {
+    return $views;
+  }
+
   $files = file_scan_directory(drupal_get_path('module', 'admin_views') . '/views_default', '.inc');
   foreach ($files as $filepath => $file) {
     include $filepath;
@@ -29,5 +35,22 @@ function admin_views_views_default_views() {
     }
   }
   return $views;
+}
+
+/**
+ * Implementation of hook_menu_alter().
+ *
+ * @todo Temporary fix until #550132 has been committed to Views.
+ */
+function admin_views_menu_alter(&$items) {
+  $views = admin_views_views_default_views();
+  foreach ($views as $name => $view) {
+    if (isset($view->display['page_1']->display_options['path'])) {
+      $path = $view->display['page_1']->display_options['path'];
+      if (isset($items[$path])) {
+        $items[$path]['type'] = MENU_NORMAL_ITEM;
+      }
+    }
+  }
 }
 
