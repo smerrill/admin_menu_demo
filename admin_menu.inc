@@ -182,7 +182,7 @@ function admin_menu_links_user() {
     '#href' => 'user/' . $GLOBALS['user']->uid,
   );
   $links['logout'] = array(
-    '#title' => 'Log out',
+    '#title' => t('Log out'),
     '#weight' => -100,
     '#attributes' => array('class' => array('admin-menu-action')),
     '#href' => 'user/logout',
