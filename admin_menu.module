@@ -497,7 +497,6 @@ function admin_menu_output() {
  *   A structured drupal_render()-array of links using the following keys:
  *   - '#attributes': Optional array of attributes for the list item, processed
  *     via drupal_attributes().
- *     Note that we use an array for 'class'.
  *   - '#title': Title of the link, passed to l().
  *   - '#href': Optional path of the link, passed to l(). When omitted, the
  *     element's '#title' is rendered without link.
@@ -541,7 +540,7 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
         $elements[$path]['#attributes']['class'][] = 'expandable';
       }
       if (isset($elements[$path]['#attributes']['class'])) {
-        $elements[$path]['#attributes']['class'] = implode(' ', $elements[$path]['#attributes']['class']);
+        $elements[$path]['#attributes']['class'] = $elements[$path]['#attributes']['class'];
       }
     }
 
@@ -564,10 +563,7 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
         }
       }
       if ($class) {
-        if (!isset($elements[$path]['#options']['attributes']['class'])) {
-          $elements[$path]['#options']['attributes']['class'] = '';
-        }
-        $elements[$path]['#options']['attributes']['class'] .= ' admin-menu-destination';
+        $elements[$path]['#options']['attributes']['class'][] = 'admin-menu-destination';
       }
 
       $link .= l($elements[$path]['#title'], $elements[$path]['#href'], $elements[$path]['#options']);
