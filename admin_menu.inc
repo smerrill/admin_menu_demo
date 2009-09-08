@@ -26,6 +26,14 @@ function admin_menu_links_menu($tree) {
     if (isset($data['link']['type']) && $data['link']['type'] == MENU_CALLBACK) {
       continue;
     }
+    // Hide 'Administer' and make child links appear on this level.
+    // @todo Make this configurable.
+    if ($data['link']['router_path'] == 'admin') {
+      if ($data['below']) {
+        $links = array_merge($links, admin_menu_links_menu($data['below']));
+      }
+      continue;
+    }
     // Omit alias lookups.
     $data['link']['localized_options']['alias'] = TRUE;
     // Remove description to prevent mouseover tooltip clashes.
