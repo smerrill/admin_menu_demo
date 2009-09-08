@@ -119,7 +119,6 @@ function admin_menu_links_icon() {
     'cache' => t('Cache tables'),
     'menu' => t('Menu'),
     'requisites' => t('Page requisites'),
-    'registry' => t('Registry'),
     'theme' => t('Theme registry'),
   );
   foreach ($caches as $arg => $title) {
@@ -387,12 +386,8 @@ function _admin_menu_developer_modules() {
 function admin_menu_flush_cache($name = NULL) {
   switch ($name) {
     case 'admin_menu':
-      // Flush cached menu tree.
-      db_delete('menu_links')
-        ->condition('menu_name', 'admin_menu')
-        ->condition('customized', 0)
-        ->execute();
-      // Fall-through.
+      admin_menu_flush_caches();
+      break;
 
     case 'menu':
       menu_rebuild();
@@ -406,10 +401,6 @@ function admin_menu_flush_cache($name = NULL) {
       foreach ($cache_tables as $table) {
         cache_clear_all('*', $table, TRUE);
       }
-      break;
-
-    case 'registry':
-      registry_rebuild();
       break;
 
     case 'requisites':
