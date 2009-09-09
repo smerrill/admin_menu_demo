@@ -4,10 +4,6 @@
 /**
  * @file
  * Render an administrative menu as a dropdown menu at the top of the window.
- *
- * Note: Most theme-functions in Administration Menu are not invoked via theme(),
- * because we try to keep this module as fast as possible and chances are very
- * small that someone wants to override those functions.
  */
 
 /**
