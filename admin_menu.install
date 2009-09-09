@@ -35,6 +35,7 @@ function admin_menu_uninstall() {
   // Delete variables.
   variable_del('admin_menu_devel_modules');
   variable_del('admin_menu_devel_modules_enabled');
+  variable_del('admin_menu_devel_modules_skip');
   variable_del('admin_menu_margin_top');
   variable_del('admin_menu_position_fixed');
   variable_del('admin_menu_tweak_modules');
