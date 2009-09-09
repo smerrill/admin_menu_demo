@@ -33,11 +33,16 @@ function admin_menu_uninstall() {
   // Remove cache table.
   drupal_uninstall_schema('admin_menu');
   // Delete variables.
+  variable_del('admin_menu_devel_modules');
   variable_del('admin_menu_devel_modules_enabled');
   variable_del('admin_menu_margin_top');
   variable_del('admin_menu_position_fixed');
   variable_del('admin_menu_tweak_modules');
   variable_del('admin_menu_tweak_tabs');
+  variable_del('admin_menu_show_all');
+  variable_del('admin_menu_display');
+  variable_del('admin_menu_cache_server');
+  variable_del('admin_menu_cache_client');
 }
 
 /**

@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+by smk-ka: Added missing variables to hook_uninstall().
 #571038 by smk-ka: Removed call to admin_menu_wipe() and cleaned install file.
 #511744 by smk-ka, sun: Fixed /admin page links are broken.
 by smk-ka: Removed remnants of the registry. Fixed flush admin menu cache
