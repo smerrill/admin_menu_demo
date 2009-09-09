@@ -45,8 +45,6 @@ function admin_menu_uninstall() {
  */
 function admin_menu_update_6000() {
   $ret = array();
-  // Delete menu links.
-  db_delete('menu_links')->condition('module', 'admin_menu')->execute();
   // Drop the {admin_menu} table in admin_menu_update_6000() on sites that used
   // one of the later patches in #132524.
   if (db_table_exists('admin_menu')) {
@@ -60,9 +58,9 @@ function admin_menu_update_6000() {
  */
 function admin_menu_update_6001() {
   $ret = array();
-  module_load_include('inc', 'admin_menu');
-  admin_menu_wipe();
+  db_delete('menu_links')->condition('module', 'admin_menu')->execute();
   $ret[] = array('success' => TRUE, 'query' => 'Administration menu links deleted for clean rebuild.');
+  menu_cache_clear('admin_menu');
   return $ret;
 }
 
@@ -71,11 +69,10 @@ function admin_menu_update_6001() {
  */
 function admin_menu_update_7300() {
   $ret = array();
-  if (db_table_exists('cache_admin_menu')) {
-    return $ret;
+  if (!db_table_exists('cache_admin_menu')) {
+    $schema = drupal_get_schema_unprocessed('system', 'cache');
+    db_create_table($ret, 'cache_admin_menu', $schema);
   }
-  $schema = drupal_get_schema_unprocessed('system', 'cache');
-  db_create_table($ret, 'cache_admin_menu', $schema);
   return $ret;
 }
 
