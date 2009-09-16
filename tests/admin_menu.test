@@ -4,9 +4,6 @@
 /**
  * @file
  * Administration menu functionality tests.
- *
- * Note: When using $this->assertPattern(), be sure to use the 's' modifier for
- * the PCRE pattern, since admin menu's output spans over multiple lines.
  */
 
 /**
