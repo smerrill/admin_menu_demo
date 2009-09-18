@@ -255,7 +255,7 @@ function admin_menu_theme_settings() {
   // modules are currently disabled.
   $all_modules = array();
   $result = db_query("SELECT name, filename FROM {system} WHERE type = 'module' ORDER BY name ASC");
-  while ($module = db_fetch_object($result)) {
+  foreach ($result as $module) {
     if (file_exists($module->filename)) {
       $all_modules[$module->name] = $module->name;
     }
