@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+by Dave Reid: Updated for PHP 5 date constants.
 by sun: Updated for new database API.
 by smk-ka: Added missing variables to hook_uninstall().
 #571038 by smk-ka: Removed call to admin_menu_wipe() and cleaned install file.

@@ -354,8 +354,8 @@ function admin_menu_js_cache($hash = NULL) {
   }
 
   $expires = REQUEST_TIME + (3600 * 24 * 365);
-  header('Expires: ' . gmdate('D, d M Y H:i:s', $expires) . ' GMT');
-  header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+  header('Expires: ' . gmdate(DATE_RFC1123, $expires));
+  header('Last-Modified: ' . gmdate(DATE_RFC1123, REQUEST_TIME));
   header('Cache-Control: max-age=' . $expires);
   header('Content-Length: ' . strlen($content));
 
@@ -630,4 +630,3 @@ function admin_menu_flush_caches() {
 function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
   $form['#submit'][] = 'admin_menu_flush_caches';
 }
-
