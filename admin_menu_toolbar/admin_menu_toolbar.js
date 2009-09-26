@@ -1,6 +1,7 @@
 /* $Id$ */
 (function($) {
 
+Drupal.admin = Drupal.admin || {};
 Drupal.admin.behaviors = Drupal.admin.behaviors || {};
 
 /**

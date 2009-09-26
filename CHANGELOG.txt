@@ -6,6 +6,8 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#557062 by Dave Reid: Fixed undefined Drupal.admin error when including
+  admin_menu_toolbar.js before admin_menu.js.
 by Dave Reid: Updated for PHP 5 date constants.
 by sun: Updated for new database API.
 by smk-ka: Added missing variables to hook_uninstall().
