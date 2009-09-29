@@ -107,7 +107,7 @@ function admin_menu_links_icon() {
       '#weight' => ($info['project'] == 'drupal' ? -10 : 0),
       '#href' => 'http://drupal.org/project/issues/' . $info['project'],
       '#options' => array(
-        'query' => 'version=' . (isset($info['core']) ? $info['core'] : 'All'),
+        'query' => array('version' => (isset($info['core']) ? $info['core'] : 'All')),
       ),
     );
   }

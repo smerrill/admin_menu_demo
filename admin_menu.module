@@ -523,18 +523,9 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
       // Strip destination query string from href attribute and apply a CSS class
       // for our JavaScript behavior instead.
       $class = FALSE;
-      if (!empty($elements[$path]['#options']['query'])) {
-        if (is_array($elements[$path]['#options']['query']) && isset($elements[$path]['#options']['query']['destination']) && $elements[$path]['#options']['query']['destination'] == $destination) {
-          unset($elements[$path]['#options']['query']['destination']);
-          $class = TRUE;
-        }
-        else {
-          $query = preg_replace('/&?' . preg_quote($destination, '/') . '/', '', $elements[$path]['#options']['query']);
-          if ($query != $elements[$path]['#options']['query']) {
-            $elements[$path]['#options']['query'] = $query;
-            $class = TRUE;
-          }
-        }
+      if (isset($elements[$path]['#options']['query']['destination']) && $elements[$path]['#options']['query']['destination'] == $destination) {
+        unset($elements[$path]['#options']['query']['destination']);
+        $class = TRUE;
       }
       if ($class) {
         $elements[$path]['#options']['attributes']['class'][] = 'admin-menu-destination';
