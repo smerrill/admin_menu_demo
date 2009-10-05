@@ -196,7 +196,7 @@ function admin_menu_init() {
   drupal_add_js($path . '/admin_menu.js', array('defer' => TRUE));
 
   // Destination query strings are applied via JS.
-  $settings['destination'] = drupal_get_destination();
+  $settings = drupal_get_destination();
 
   // Hash for client-side HTTP/AJAX caching.
   $cid = 'admin_menu:' . $user->uid . ':' . $language->language;
@@ -486,6 +486,7 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
 
   if (!isset($destination)) {
     $destination = drupal_get_destination();
+    $destination = $destination['destination'];
   }
 
   $output = '';
@@ -522,12 +523,8 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
     if (isset($elements[$path]['#href'])) {
       // Strip destination query string from href attribute and apply a CSS class
       // for our JavaScript behavior instead.
-      $class = FALSE;
       if (isset($elements[$path]['#options']['query']['destination']) && $elements[$path]['#options']['query']['destination'] == $destination) {
         unset($elements[$path]['#options']['query']['destination']);
-        $class = TRUE;
-      }
-      if ($class) {
         $elements[$path]['#options']['attributes']['class'][] = 'admin-menu-destination';
       }
 
