@@ -126,6 +126,7 @@ function admin_menu_links_icon() {
     'admin_menu' => t('Administration menu'),
     'cache' => t('Cache tables'),
     'menu' => t('Menu'),
+    'registry' => t('Class registry'),
     'requisites' => t('Page requisites'),
     'theme' => t('Theme registry'),
   );
@@ -400,6 +401,11 @@ function admin_menu_flush_cache($name = NULL) {
     case 'menu':
       menu_rebuild();
       break;
+
+    case 'registry':
+      registry_rebuild();
+      // Fall-through to clear cache tables, since registry information is
+      // usually the base for other data that is cached (e.g. SimpleTests).
 
     case 'cache':
       // Don't clear cache_form - in-progress form submissions may break.
