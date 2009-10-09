@@ -49,6 +49,7 @@ function admin_menu_theme() {
     ),
     'admin_menu_icon' => array(
       'arguments' => array(),
+      'file' => 'admin_menu.inc',
     ),
   );
 }
@@ -467,22 +468,23 @@ function admin_menu_output() {
 /**
  * Render a themed list of links.
  *
- * @param $elements
- *   A structured drupal_render()-array of links using the following keys:
- *   - '#attributes': Optional array of attributes for the list item, processed
- *     via drupal_attributes().
- *   - '#title': Title of the link, passed to l().
- *   - '#href': Optional path of the link, passed to l(). When omitted, the
- *     element's '#title' is rendered without link.
- *   - '#description': Optional alternative text for the link, passed to l().
- *   - '#options': Optional alternative text for the link, passed to l().
- *
- *   The array key of each child element itself is passed as path for l().
- * @param $depth
- *   Current recursion level; internal use only.
+ * @param $variables
+ *   - elements: A structured drupal_render()-array of links using the following
+ *     keys:
+ *     - #attributes: Optional array of attributes for the list item, processed
+ *       via drupal_attributes().
+ *     - #title: Title of the link, passed to l().
+ *     - #href: Optional path of the link, passed to l(). When omitted, the
+ *       element's '#title' is rendered without link.
+ *     - #description: Optional alternative text for the link, passed to l().
+ *     - #options: Optional alternative text for the link, passed to l().
+ *     The array key of each child element itself is passed as path for l().
+ *   - depth: Current recursion level; internal use only.
  */
-function theme_admin_menu_links(&$elements, $depth = 0) {
+function theme_admin_menu_links($variables) {
   static $destination;
+  $elements = $variables['elements'];
+  $depth = (isset($variables['depth']) ? $variables['depth'] : 0);
 
   if (!isset($destination)) {
     $destination = drupal_get_destination();
@@ -510,7 +512,7 @@ function theme_admin_menu_links(&$elements, $depth = 0) {
       if (isset($elements['#sorted'])) {
         $elements[$path]['#sorted'] = TRUE;
       }
-      $elements[$path]['#children'] = theme('admin_menu_links', $elements[$path], $depth_child);
+      $elements[$path]['#children'] = theme('admin_menu_links', array('elements' => $elements[$path], 'depth' => $depth_child));
       if (!empty($elements[$path]['#children'])) {
         $elements[$path]['#attributes']['class'][] = 'expandable';
       }
