@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+by sun: Updated for new {system}.info module data.
 #614730 by azriprajwala, sun: Updated for hook_theme() key changes.
 by sun: Updated for all theme functions should take a single argument.
 by sun: Reverted removal of registry cache flushing option.

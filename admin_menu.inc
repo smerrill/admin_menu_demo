@@ -255,14 +255,15 @@ function admin_menu_theme_settings() {
   // currently enabled modules, which makes this setting pointless if developer
   // modules are currently disabled.
   $all_modules = array();
-  $result = db_query("SELECT name, filename FROM {system} WHERE type = 'module' ORDER BY name ASC");
+  $result = db_query("SELECT name, filename, info FROM {system} WHERE type = 'module' ORDER BY name ASC");
   foreach ($result as $module) {
     if (file_exists($module->filename)) {
-      $all_modules[$module->name] = $module->name;
+      $info = unserialize($module->info);
+      $all_modules[$module->name] = $info['name'];
     }
   }
   $devel_modules = variable_get('admin_menu_devel_modules', _admin_menu_developer_modules());
-  $devel_modules = array_intersect($all_modules, $devel_modules);
+  $devel_modules = array_intersect_key($all_modules, array_flip($devel_modules));
   $form['tweaks']['admin_menu_devel_modules_skip'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Developer modules to keep enabled'),
