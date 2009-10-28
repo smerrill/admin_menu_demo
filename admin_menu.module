@@ -45,10 +45,10 @@ function admin_menu_permission() {
 function admin_menu_theme() {
   return array(
     'admin_menu_links' => array(
-      'arguments' => array('elements' => array()),
+      'render element' => 'elements',
     ),
     'admin_menu_icon' => array(
-      'arguments' => array(),
+      'variables' => array(),
       'file' => 'admin_menu.inc',
     ),
   );
