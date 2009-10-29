@@ -281,7 +281,7 @@ function admin_menu_theme_settings() {
  *
  * Extends Devel module with Administration menu developer settings.
  */
-function admin_menu_form_devel_admin_settings_alter(&$form, $form_state) {
+function _admin_menu_form_devel_admin_settings_alter(&$form, $form_state) {
   // Shift system_settings_form buttons.
   $weight = isset($form['buttons']['#weight']) ? $form['buttons']['#weight'] : 0;
   $form['buttons']['#weight'] = $weight + 1;

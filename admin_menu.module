@@ -620,3 +620,13 @@ function admin_menu_flush_caches() {
 function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
   $form['#submit'][] = 'admin_menu_flush_caches';
 }
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ *
+ * Extends Devel module with Administration menu developer settings.
+ */
+function admin_menu_form_devel_admin_settings_alter(&$form, &$form_state) {
+  module_load_include('inc', 'admin_menu');
+  _admin_menu_form_devel_admin_settings_alter($form, $form_state);
+}
