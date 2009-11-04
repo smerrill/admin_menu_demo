@@ -32,6 +32,10 @@ function admin_menu_permission() {
       'title' => t('Access administration menu'),
       'description' => t('Display the administration menu at the top of each page.'),
     ),
+    'flush caches' => array(
+      'title' => t('Flush caches'),
+      'description' => t('Access links to flush caches in the administration menu.'),
+    ),
     'display drupal links' => array(
       'title' => t('Display Drupal links'),
       'description' => t('Provide Drupal.org links in the administration menu.'),
@@ -91,7 +95,7 @@ function admin_menu_menu() {
   );
   $items['admin_menu/flush-cache'] = array(
     'page callback' => 'admin_menu_flush_cache',
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array('flush caches'),
     'type' => MENU_CALLBACK,
     'file' => 'admin_menu.inc',
   );

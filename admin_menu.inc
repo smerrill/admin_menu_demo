@@ -116,7 +116,7 @@ function admin_menu_links_icon() {
     '#title' => t('Flush all caches'),
     '#weight' => 20,
     // @todo Add permission to flush cashes.
-    '#access' => user_access('administer site configuration'),
+    '#access' => user_access('flush caches'),
     '#href' => 'admin_menu/flush-cache',
     '#options' => array(
       'query' => $destination,
