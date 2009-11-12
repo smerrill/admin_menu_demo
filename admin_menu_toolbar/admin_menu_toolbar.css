@@ -28,7 +28,7 @@ body div#toolbar {
 #admin-menu li.admin-menu-icon > a {
   padding: 3px 8px 2px;
 }
-body.admin-menu {
+html body.admin-menu {
   margin-top: 30px !important;
 }
 
