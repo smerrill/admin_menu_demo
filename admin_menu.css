@@ -59,6 +59,7 @@ body.admin-menu {
   position: static;
 }
 #admin-menu ul a {
+  background: transparent none;
   border-bottom: none;
   border-right: 1px solid #323232;
   color: #EEE;
