@@ -388,10 +388,37 @@ function admin_menu_admin_menu_replacements() {
  */
 function admin_menu_get_user_count() {
   $interval   = REQUEST_TIME - variable_get('user_block_seconds_online', 900);
-  $count_anon = drupal_session_count($interval, TRUE);
-  $count_auth = drupal_session_count($interval, FALSE);
+  $count_anon = admin_menu_session_count($interval, TRUE);
+  $count_auth = admin_menu_session_count($interval, FALSE);
 
   return t('@count-anon / @count-auth', array('@count-anon' => $count_anon, '@count-auth' => $count_auth));
+}
+
+/**
+ * Counts how many users are active on the site.
+ *
+ * Counts how many users have sessions which have been active since the
+ * specified time. Can count either anonymous sessions or authenticated
+ * sessions.
+ *
+ * @param $timestamp
+ *   A Unix timestamp. Users who have been active since this time will be
+ *   counted. The default is 0, which counts all existing sessions.
+ * @param $anonymous
+ *   TRUE counts only anonymous users. FALSE counts only authenticated users.
+ *
+ * @return
+ *   The number of users with sessions.
+ *
+ * @todo There are mostly no anonymous sessions anymore. Split this into a
+ *   separate module providing proper user statistics.
+ */
+function admin_menu_session_count($timestamp = 0, $anonymous = TRUE) {
+  $query = db_select('sessions');
+  $query->addExpression('COUNT(sid)', 'count');
+  $query->condition('timestamp', $timestamp, '>=');
+  $query->condition('uid', 0, $anonymous ? '=' : '>');
+  return $query->execute()->fetchField();
 }
 
 /**

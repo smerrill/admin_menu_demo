@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#658344 by dereine, sun: Fixed drupal_session_count() was removed.
 #599462 by sun, koyama: Added background-color to avoid unintentional override.
 #601918 by BWPanda: Fixed admin_menu.css overrides admin_menu_toolbar.css.
 by sun: Added separate permission to flush cashes.
