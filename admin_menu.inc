@@ -34,6 +34,10 @@ function admin_menu_links_menu($tree) {
       }
       continue;
     }
+    // Remove local tasks on 'admin'.
+    if (in_array($data['link']['router_path'], array('admin/by-task', 'admin/by-module'))) {
+      continue;
+    }
     // Omit alias lookups.
     $data['link']['localized_options']['alias'] = TRUE;
     // Remove description to prevent mouseover tooltip clashes.
@@ -196,10 +200,13 @@ function admin_menu_links_user() {
     '#href' => 'user/logout',
   );
 
-  // Add Devel module links.
-  if (module_exists('devel')) {
-    // Add switch user links.
-    foreach (module_invoke('devel', 'switch_user_list') as $link) {
+  // Add Devel module switch user links.
+  $switch_links = module_invoke('devel', 'switch_user_list');
+  if (!empty($switch_links)) {
+    foreach ($switch_links as $uid => $link) {
+      if ($uid == $GLOBALS['user']->uid) {
+        continue;
+      }
       $links['account'][$link['title']] = array(
         '#title' => $link['title'],
         '#description' => $link['attributes']['title'],
@@ -411,7 +418,8 @@ function admin_menu_flush_cache($name = NULL) {
     case 'cache':
       // Don't clear cache_form - in-progress form submissions may break.
       // Ordered so clearing the page cache will always be the last action.
-      $core = array('cache', 'cache_block', 'cache_filter', 'cache_page');
+      // @see drupal_flush_all_caches()
+      $core = array('cache', 'cache_bootstrap', 'cache_filter', 'cache_page');
       $cache_tables = array_merge(module_invoke_all('flush_caches'), $core);
       foreach ($cache_tables as $table) {
         cache_clear_all('*', $table, TRUE);
