@@ -202,11 +202,8 @@ function admin_menu_links_user() {
 
   // Add Devel module switch user links.
   $switch_links = module_invoke('devel', 'switch_user_list');
-  if (!empty($switch_links)) {
+  if (!empty($switch_links) && count($switch_links) > 1) {
     foreach ($switch_links as $uid => $link) {
-      if ($uid == $GLOBALS['user']->uid) {
-        continue;
-      }
       $links['account'][$link['title']] = array(
         '#title' => $link['title'],
         '#description' => $link['attributes']['title'],
