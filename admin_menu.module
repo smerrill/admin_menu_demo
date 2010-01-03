@@ -111,37 +111,6 @@ function admin_menu_menu_alter(&$items) {
 }
 
 /**
- * Copy a menu router item to another location.
- *
- * Adjusts numeric path argument references for various menu router item
- * properties.
- *
- * @param $item
- *   The existing menu router item.
- * @param $old_path
- *   The existing path of $item, f.e. 'node/add'.
- * @param $new_path
- *   The path to copy the menu router item to, f.e. 'admin/node/add'.
- * @return
- *   The menu router item with adjusted path argument references.
- */
-function admin_menu_copy_item($item, $old_path, $new_path) {
-  $offset = count(explode('/', $new_path)) - count(explode('/', $old_path));
-  if ($offset != 0) {
-    foreach (array('page arguments', 'access arguments', 'load arguments', 'title arguments') as $args) {
-      if (!empty($item[$args])) {
-        foreach ($item[$args] as $key => $value) {
-          if (is_numeric($value)) {
-            $item[$args][$key] = $value + $offset;
-          }
-        }
-      }
-    }
-  }
-  return $item;
-}
-
-/**
  * Implementation of hook_init().
  *
  * We can't move this into admin_menu_footer(), because PHP-only based themes
