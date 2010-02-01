@@ -185,7 +185,7 @@ function admin_menu_links_user() {
     '#description' => t('Current anonymous / authenticated users'),
     '#weight' => -90,
     '#attributes' => array('class' => array('admin-menu-action', 'admin-menu-users')),
-    '#href' => (user_access('administer users') ? 'admin/user/user' : 'user'),
+    '#href' => (user_access('administer users') ? 'admin/people/people' : 'user'),
   );
   $links['account'] = array(
     '#title' => $GLOBALS['user']->name,
@@ -454,4 +454,3 @@ function admin_menu_flush_cache($name = NULL) {
 function theme_admin_menu_icon() {
   return '<img class="admin-menu-icon" src="' . (theme_get_setting('toggle_favicon') ? theme_get_setting('favicon') : base_path() . 'misc/favicon.ico') . '" width="16" height="16" alt="' . t('Home') . '" />';
 }
-
