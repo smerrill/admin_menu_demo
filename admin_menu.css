@@ -151,7 +151,7 @@ body.admin-menu {
 
 /* Second-and-more-level hovering */
 #admin-menu li li.expandable {
-  background: #45454A url(images/arrow.png) no-repeat 145px 7px;
+  background: #45454A url(images/arrow.png) no-repeat 145px 6px;
 }
 #admin-menu li li:hover,
 #admin-menu li li.iehover {
@@ -164,7 +164,7 @@ body.admin-menu {
 }
 #admin-menu li li.expandable:hover a,
 #admin-menu li li.expandable:hover li.expandable:hover a {
-  border-color: #666666;
+  border-color: #444;
   color: #EEE;
 }
 #admin-menu li li.expandable:hover li a,

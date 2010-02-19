@@ -436,8 +436,7 @@ function admin_menu_output() {
  * Render a themed list of links.
  *
  * @param $variables
- *   - elements: A structured drupal_render()-array of links using the following
- *     keys:
+ *   - elements: A renderable array of links using the following keys:
  *     - #attributes: Optional array of attributes for the list item, processed
  *       via drupal_attributes().
  *     - #title: Title of the link, passed to l().
@@ -449,7 +448,7 @@ function admin_menu_output() {
  *   - depth: Current recursion level; internal use only.
  */
 function theme_admin_menu_links($variables) {
-  static $destination;
+  $destination = &drupal_static('drupal_get_destination');
   $elements = $variables['elements'];
   $depth = (isset($variables['depth']) ? $variables['depth'] : 0);
 

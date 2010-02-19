@@ -33,6 +33,9 @@ function admin_menu_toolbar_init() {
   if ($args[0] == 'admin' && !empty($args[1])) {
     $settings['activeTrail'] = url($args[0] . '/' . $args[1]);
   }
+  elseif (drupal_is_front_page()) {
+    $settings['activeTrail'] = url('<front>');
+  }
   drupal_add_js(array('admin_menu' => array('toolbar' => $settings)), 'setting');
 }
 
@@ -44,6 +47,11 @@ function admin_menu_toolbar_admin_menu_output_alter(&$content) {
   foreach (element_children($content['menu']) as $link) {
     $content['menu'][$link]['#attributes']['class'][] = 'admin-menu-toolbar-category';
   }
+
+  // Alter icon.
+  unset($content['icon']['icon']['#theme']);
+  $content['icon']['icon']['#title'] = '<span>' . t('Home') . '</span>';
+  $content['icon']['icon']['#attributes']['class'][] = 'admin-menu-toolbar-category';
 
   // Alter user account link.
   $content['user']['account']['#title'] = t('Hello <strong>@username</strong>', array('@username' => $content['user']['account']['#title']));

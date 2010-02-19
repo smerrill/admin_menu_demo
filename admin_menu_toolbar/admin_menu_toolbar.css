@@ -4,50 +4,66 @@
  * @file
  * Toolbar style for Administration menu.
  *
+ * Important: We cannot re-use toolbar.png from Toolbar module, since we cannot
+ * reliably determine the path to it.
+ *
  * @todo Separate shortcut functionality into own module/widget.
  */
 
+/* Adjust margin/height */
+html body.admin-menu {
+  margin-top: 30px !important;
+}
 body div#toolbar {
   top: 30px;
 }
 
 #admin-menu {
-  font: normal 11px/20px "Lucida Grande", Verdana, sans-serif;
+  font: normal 0.9em "Lucida Grande", Verdana, sans-serif;
+  margin: 0 -20px;
+  padding: 0 20px;
+  box-shadow: 0 3px 20px #000;
+  -moz-box-shadow: 0 3px 20px #000;
+  -webkit-box-shadow: 0 3px 20px #000;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color=#000000, direction='180', strength='10');
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(color=#000000, direction='180', strength='10')";
 }
 #admin-menu-wrapper {
   padding: 5px 10px 0;
 }
-#admin-menu-shadow {
-  background: transparent url(/modules/toolbar/toolbar.png) 0 -85px repeat-x;
-  bottom: -15px;
-  height: 15px;
-  left: 0;
-  right: 0;
-  position: absolute;
-}
-#admin-menu li.admin-menu-icon > a {
-  padding: 3px 8px 2px;
-}
-html body.admin-menu {
-  margin-top: 30px !important;
+
+#admin-menu ul a {
+  color: #fafafa;
 }
 
 /* Remove border from all lists and actions */
 #admin-menu li.admin-menu-action a {
   border-left: 0;
 }
-#admin-menu ul > li > a {
-  border-right: 0;
-  margin-bottom: 3px;
-  padding: 3px 8px;
+#admin-menu li.admin-menu-icon > a {
+  padding: 2px 10px 3px;
 }
-#admin-menu ul li.admin-menu-toolbar-category > a {
+#admin-menu li.admin-menu-icon > a span {
+  background: url(toolbar.png) no-repeat 0 -45px;
+  display: block;
+  height: 14px;
+  text-indent: -9999px;
+  width: 11px;
+}
+#admin-menu > div > ul > li > a {
+  border-right: 0;
+  margin-bottom: 4px;
+  padding: 2px 8px 3px;
+}
+#admin-menu ul li.admin-menu-toolbar-category > a,
+#admin-menu ul li.admin-menu-action > a {
+  border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
 }
 #admin-menu ul li.admin-menu-toolbar-category > a.active-trail {
   text-shadow: #333 0 1px 0;
-  background: url(/modules/toolbar/toolbar.png) 0 0 repeat-x;
+  background: url(toolbar.png) 0 0 repeat-x;
 }
 #admin-menu ul li.admin-menu-toolbar-category > a:hover {
   background-color: #444;
@@ -56,15 +72,17 @@ html body.admin-menu {
   border-right: 0;
 }
 #admin-menu li li.expandable ul {
-  margin: -23px 0 0 160px;
+  margin: -22px 0 0 160px;
 }
 
-/* Shortcuts toggle */
+/**
+ * Shortcuts toggle.
+ */
 #admin-menu li.admin-menu-shortcuts {
   float: right;
 }
 #admin-menu li.admin-menu-shortcuts span.toggle {
-  background: url(/modules/toolbar/toolbar.png) 0 -60px no-repeat;
+  background: url(toolbar.png) 0 -20px no-repeat;
   cursor: pointer;
   display: block;
   height: 25px;
@@ -76,7 +94,9 @@ html body.admin-menu {
   background-position: -25px -60px;
 }
 
-/* Shortcuts widget */
+/**
+ * Shortcuts widget.
+ */
 #admin-menu li.admin-menu-shortcuts-active ul {
   display: block !important;
   left: 0 !important;
@@ -92,6 +112,7 @@ html body.admin-menu {
   width: auto;
 }
 #admin-menu li.admin-menu-shortcuts ul li a {
+  border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-top: 0;
@@ -103,5 +124,5 @@ html body.admin-menu {
 }
 #admin-menu li.admin-menu-shortcuts ul li a.active:hover,
 #admin-menu li.admin-menu-shortcuts ul li a.active {
-  background: url(/modules/toolbar/toolbar.png) 0 -20px repeat-x;
+  background: url(toolbar.png) 0 -20px repeat-x;
 }
