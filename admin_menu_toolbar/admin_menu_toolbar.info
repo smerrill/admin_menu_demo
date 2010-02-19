@@ -5,3 +5,4 @@ package = Administration
 core = 7.x
 dependencies[] = admin_menu
 files[] = admin_menu_toolbar.module
+files[] = admin_menu_toolbar.install
