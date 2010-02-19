@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_help().
+ * Implements hook_help().
  */
 function admin_menu_help($path, $arg) {
   switch ($path) {
@@ -24,7 +24,7 @@ function admin_menu_help($path, $arg) {
 }
 
 /**
- * Implementation of hook_permission().
+ * Implements hook_permission().
  */
 function admin_menu_permission() {
   return array(
@@ -44,7 +44,7 @@ function admin_menu_permission() {
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function admin_menu_theme() {
   return array(
@@ -59,7 +59,7 @@ function admin_menu_theme() {
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function admin_menu_menu() {
   // AJAX callback.
@@ -103,7 +103,7 @@ function admin_menu_menu() {
 }
 
 /**
- * Implementation of hook_menu_alter().
+ * Implements hook_menu_alter().
  */
 function admin_menu_menu_alter(&$items) {
   // Flush client-side caches whenever the menu is rebuilt.
@@ -111,7 +111,7 @@ function admin_menu_menu_alter(&$items) {
 }
 
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  *
  * We can't move this into admin_menu_footer(), because PHP-only based themes
  * like chameleon load and output scripts and stylesheets in front of
@@ -197,7 +197,7 @@ function admin_menu_suppress($set = TRUE) {
 }
 
 /**
- * Implementation of hook_page_alter().
+ * Implements hook_page_alter().
  */
 function admin_menu_page_alter(&$page) {
   $page['page_bottom']['admin_menu'] = array(
@@ -206,7 +206,7 @@ function admin_menu_page_alter(&$page) {
 }
 
 /**
- * Implementation of hook_js().
+ * Implements hook_js().
  */
 function admin_menu_js() {
   return array(
@@ -307,7 +307,7 @@ function admin_menu_js_cache($hash = NULL) {
 }
 
 /**
- * Implementation of hook_admin_menu_replacements().
+ * Implements hook_admin_menu_replacements().
  */
 function admin_menu_admin_menu_replacements() {
   $items = array();
@@ -527,7 +527,7 @@ function theme_admin_menu_links($variables) {
 }
 
 /**
- * Implementation of hook_translated_menu_link_alter().
+ * Implements hook_translated_menu_link_alter().
  *
  * Here is where we make changes to links that need dynamic information such
  * as the current page path or the number of users.
@@ -565,7 +565,7 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
 }
 
 /**
- * Implementation of hook_flush_caches().
+ * Implements hook_flush_caches().
  *
  * Flush client-side caches.
  */
@@ -580,7 +580,7 @@ function admin_menu_flush_caches() {
 }
 
 /**
- * Implementation of hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Form submit handler to flush client-side cache hashes when clean URLs are toggled.
  */
@@ -589,7 +589,7 @@ function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
 }
 
 /**
- * Implementation of hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Extends Devel module with Administration menu developer settings.
  */

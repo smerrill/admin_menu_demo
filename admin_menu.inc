@@ -119,7 +119,6 @@ function admin_menu_links_icon() {
   $links['icon']['flush-cache'] = array(
     '#title' => t('Flush all caches'),
     '#weight' => 20,
-    // @todo Add permission to flush cashes.
     '#access' => user_access('flush caches'),
     '#href' => 'admin_menu/flush-cache',
     '#options' => array(
@@ -454,3 +453,4 @@ function admin_menu_flush_cache($name = NULL) {
 function theme_admin_menu_icon() {
   return '<img class="admin-menu-icon" src="' . (theme_get_setting('toggle_favicon') ? theme_get_setting('favicon') : base_path() . 'misc/favicon.ico') . '" width="16" height="16" alt="' . t('Home') . '" />';
 }
+
