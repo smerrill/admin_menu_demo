@@ -167,7 +167,7 @@ function admin_menu_init() {
   if ($setting = variable_get('admin_menu_tweak_tabs', 0)) {
     $settings['tweak_tabs'] = $setting;
   }
-  if ($_GET['q'] == 'admin/config/modules' || strpos($_GET['q'], 'admin/config/modules/list') === 0) {
+  if ($_GET['q'] == 'admin/modules' || strpos($_GET['q'], 'admin/modules/list') === 0) {
     $settings['tweak_modules'] = variable_get('admin_menu_tweak_modules', 0);
   }
 

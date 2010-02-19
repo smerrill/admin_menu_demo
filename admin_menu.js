@@ -52,13 +52,11 @@ Drupal.behaviors.adminMenu = {
 
 /**
  * Collapse fieldsets on Modules page.
- *
- * For why multiple selectors see #111719.
  */
 Drupal.behaviors.adminMenuCollapseModules = {
   attach: function (context, settings) {
     if (settings.admin_menu.tweak_modules) {
-      $('#system-modules fieldset:not(.collapsed), #system-modules-1 fieldset:not(.collapsed)', context).addClass('collapsed');
+      $('#system-modules fieldset:not(.collapsed)', context).addClass('collapsed');
     }
   }
 };

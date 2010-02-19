@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+by sun: Updated for new admin/modules path.
 #701424 by hutch: Fixed admin/user/user path changed to admin/people/people.
 by sun: Removed orphan menu rewrite function.
 #667858 by sun: Don't remove the current user from the switch user list.
