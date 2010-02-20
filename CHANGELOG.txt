@@ -48,6 +48,7 @@ by sun: Fixed sess_count() changed to drupal_session_count().
 
 Admin Menu 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#645526 by TravisCarden: Fixed stale local tasks markup after moving them.
 #366442 by sun: Added tweak to collapse modules on permissions page.
 #655926 by donquixote, sun: Improved performance of delayed mouseout.
 #557062 by sun: Fixed admin_menu_toolbar JS/CSS loaded before admin_menu's.
