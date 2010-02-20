@@ -247,6 +247,12 @@ function admin_menu_theme_settings() {
   if (module_exists('util')) {
     $form['tweaks']['admin_menu_tweak_modules']['#description'] .= '<br /><strong>' . t('If the Utility module was installed for this purpose, it can be safely disabled and uninstalled.') . '</strong>';
   }
+  $form['tweaks']['admin_menu_tweak_permissions'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collapse modules on permissions page'),
+    '#default_value' => 0,
+    '#description' => t('Collapses permissions by module on the <a href="@permissions-url">permissions</a> page.', array('@permissions-url' => url('admin/people/permissions'))),
+  );
   $form['tweaks']['admin_menu_tweak_tabs'] = array(
     '#type' => 'checkbox',
     '#title' => t('Move local tasks into menu'),

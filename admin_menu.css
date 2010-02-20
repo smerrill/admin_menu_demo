@@ -197,3 +197,14 @@ html.js fieldset.collapsible div.fieldset-wrapper {
     margin-top: 0 !important;
   }
 }
+
+/**
+ * Tweaks permissions, if enabled.
+ */
+tr.admin-menu-tweak-permissions-processed {
+  cursor: pointer;
+  cursor: hand;
+}
+tr.admin-menu-tweak-permissions-processed td.module {
+  border-top: 0;
+}
