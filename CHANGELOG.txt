@@ -47,6 +47,7 @@ by sun: Fixed sess_count() changed to drupal_session_count().
 
 Admin Menu 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#655926 by donquixote, sun: Improved performance of delayed mouseout.
 #557062 by sun: Fixed admin_menu_toolbar JS/CSS loaded before admin_menu's.
 #599462 by sun, koyama: Added background-color to avoid unintentional override.
 #601918 by BWPanda: Fixed admin_menu.css overrides admin_menu_toolbar.css.

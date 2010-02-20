@@ -167,28 +167,35 @@ Drupal.admin.behaviors.destination = function (context, settings, $adminMenu) {
 Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
   // Hover emulation for IE 6.
   if ($.browser.msie && parseInt(jQuery.browser.version) == 6) {
-    $('li', $adminMenu).hover(function() {
-      $(this).addClass('iehover');
-    }, function() {
-      $(this).removeClass('iehover');
-    });
+    $('li', $adminMenu).hover(
+      function () {
+        $(this).addClass('iehover');
+      },
+      function () {
+        $(this).removeClass('iehover');
+      }
+    );
   }
 
   // Delayed mouseout.
-  $('li', $adminMenu).hover(function() {
-    // Stop the timer.
-    clearTimeout(this.sfTimer);
-    // Display child lists.
-    $('> ul', this).css({left: 'auto', display: 'block'})
-      // Immediately hide nephew lists.
-      .parent().siblings('li').children('ul').css({left: '-999em', display: 'none'});
-  }, function() {
-    // Start the timer.
-    var uls = $('> ul', this);
-    this.sfTimer = setTimeout(function() {
-      uls.css({left: '-999em', display: 'none'});
-    }, 400);
-  });
+  $('li.expandable', $adminMenu).hover(
+    function () {
+      // Stop the timer.
+      clearTimeout(this.sfTimer);
+      // Display child lists.
+      $('> ul', this)
+        .css({left: 'auto', display: 'block'})
+        // Immediately hide nephew lists.
+        .parent().siblings('li').children('ul').css({left: '-999em', display: 'none'});
+    },
+    function () {
+      // Start the timer.
+      var uls = $('> ul', this);
+      this.sfTimer = setTimeout(function () {
+        uls.css({left: '-999em', display: 'none'});
+      }, 400);
+    }
+  );
 };
 
 /**
