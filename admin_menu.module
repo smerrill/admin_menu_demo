@@ -451,7 +451,7 @@ function admin_menu_output() {
  *   - depth: Current recursion level; internal use only.
  */
 function theme_admin_menu_links($variables) {
-  $destination = &drupal_static('drupal_get_destination');
+  $destination = &drupal_static('admin_menu_destination');
   $elements = $variables['elements'];
   $depth = (isset($variables['depth']) ? $variables['depth'] : 0);
 

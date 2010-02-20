@@ -150,6 +150,7 @@ Drupal.admin.attachBehaviors = function (context, settings, $adminMenu) {
  */
 Drupal.admin.behaviors.positionFixed = function (context, settings, $adminMenu) {
   if (settings.admin_menu.position_fixed) {
+    $adminMenu.addClass('admin-menu-position-fixed');
     $adminMenu.css('position', 'fixed');
   }
 };
