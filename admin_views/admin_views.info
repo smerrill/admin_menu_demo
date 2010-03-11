@@ -6,3 +6,4 @@ core = 7.x
 dependencies[] = views
 dependencies[] = views_bulk_operations
 files[] = admin_views.module
+files[] = plugins/views_plugin_display_system.inc
