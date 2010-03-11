@@ -16,7 +16,7 @@ function admin_views_views_default_views() {
     return $views;
   }
 
-  $files = file_scan_directory(drupal_get_path('module', 'admin_views') . '/views_default', '.inc$');
+  $files = file_scan_directory(drupal_get_path('module', 'admin_views') . '/views_default', '/\.inc$/');
   foreach ($files as $filepath => $file) {
     include $filepath;
     if (isset($view)) {

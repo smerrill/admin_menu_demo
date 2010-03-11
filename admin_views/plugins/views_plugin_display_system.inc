@@ -56,7 +56,7 @@ class views_plugin_display_system extends views_plugin_display {
 
     $path = implode('/', $bits);
 
-    $access_plugin = $this->get_access_plugin();
+    $access_plugin = $this->get_plugin('access');
     if (!isset($access_plugin)) {
       $access_plugin = views_get_plugin('access', 'none');
     }
@@ -117,7 +117,7 @@ class views_plugin_display_system extends views_plugin_display {
     // @todo Needed?
     $this->view->get_breadcrumb(TRUE);
 
-    drupal_set_title(filter_xss_admin($this->view->get_title()));
+    drupal_set_title(filter_xss_admin($this->view->get_title()), PASS_THROUGH);
 
     // @todo This is super-likely the totally wrong place to add our CSS; better
     //   suggestions and patches welcome.
