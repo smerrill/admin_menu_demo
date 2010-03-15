@@ -3,3 +3,4 @@ name = Administration Development tools
 description = Administration and debugging functionality for developers and site builders.
 package = Administration
 core = 7.x
+files[] = admin_devel.module
