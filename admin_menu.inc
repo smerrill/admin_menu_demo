@@ -7,6 +7,363 @@
  */
 
 /**
+ * Build the full administration menu tree from static and expanded dynamic items.
+ *
+ * @param $menu_name
+ *   The menu name to use as base for the tree.
+ */
+function admin_menu_tree($menu_name) {
+  // Get placeholder expansion arguments from hook_admin_menu_map()
+  // implementations.
+  module_load_include('inc', 'admin_menu', 'admin_menu.map');
+  $expand_map = module_invoke_all('admin_menu_map');
+  // Allow modules to alter the expansion map.
+  drupal_alter('admin_menu_map', $expand_map);
+
+  $new_map = array();
+  $hidden = array();
+  foreach ($expand_map as $path => $data) {
+    // Convert named placeholders to anonymous placeholders, since the menu
+    // system stores paths using anonymous placeholders.
+    // @todo Why specify named placeholders in the first place then?
+    $replacements = array_fill_keys(array_keys($data['arguments'][0]), '%');
+    $data['parent'] = strtr($data['parent'], $replacements);
+    $new_map[strtr($path, $replacements)] = $data;
+
+    // Collect paths to hide.
+    if (isset($data['hide'])) {
+      $hidden[strtr($data['hide'], $replacements)] = 1;
+    }
+  }
+  $expand_map = $new_map;
+  unset($new_map);
+
+  // Retrieve dynamic menu link tree for the expansion mappings.
+  $tree_dynamic = admin_menu_tree_dynamic($expand_map);
+
+  // Merge local tasks with static menu tree.
+  $tree = menu_tree_all_data($menu_name);
+  admin_menu_merge_tree($tree, $tree_dynamic, array(), $hidden);
+
+  return $tree;
+}
+
+/**
+ * Load menu link trees for router paths containing dynamic arguments.
+ *
+ * @param $expand_map
+ *   An array containing menu router path placeholder expansion argument
+ *   mappings.
+ *
+ * @return
+ *   An associative array whose keys are the parent paths of the menu router
+ *   paths given in $expand_map as well as the parent paths of any child link
+ *   deeper down the tree. The parent paths are used in admin_menu_merge_tree()
+ *   to check whether anything needs to be merged.
+ *
+ * @see hook_admin_menu_map()
+ */
+function admin_menu_tree_dynamic(array $expand_map) {
+  $p_columns = array();
+  for ($i = 1; $i <= MENU_MAX_DEPTH; $i++) {
+    $p_columns[] = 'p' . $i;
+  }
+
+  // Fetch p* columns for all router paths to expand.
+  $router_paths = array_keys($expand_map);
+  $plids = db_select('menu_links', 'ml')
+    ->fields('ml', $p_columns)
+    ->condition('router_path', $router_paths)
+    ->execute()
+    ->fetchAll(PDO::FETCH_ASSOC);
+
+  // Unlikely, but possible.
+  if (empty($plids)) {
+    return array();
+  }
+
+  // Use queried plid columns to query sub-trees for the router paths.
+  $query = db_select('menu_links', 'ml');
+  $query->join('menu_router', 'm', 'ml.router_path = m.path');
+  $query
+    ->fields('ml')
+    ->fields('m', array_diff(drupal_schema_fields_sql('menu_router'), drupal_schema_fields_sql('menu_links')));
+
+  // The retrieved menu link trees have to be ordered by depth, so parents
+  // always come before their children for the storage logic below.
+  // @todo Order by 'fit' or 'depth' instead for parent path handling below?
+  foreach ($p_columns as $column) {
+    $query->orderBy($column, 'ASC');
+  }
+
+  $db_or = db_or();
+  foreach ($plids as $path_plids) {
+    $db_and = db_and();
+    // plids with value 0 may be ignored.
+    foreach (array_filter($path_plids) as $column => $plid) {
+      $db_and->condition($column, $plid);
+    }
+    $db_or->condition($db_and);
+  }
+  $query->condition($db_or);
+  $result = $query
+    ->execute()
+    ->fetchAllAssoc('mlid', PDO::FETCH_ASSOC);
+
+  // Store dynamic links grouped by parent path for later merging and assign
+  // placeholder expansion arguments.
+  $tree_dynamic = array();
+  foreach ($result as $mlid => $link) {
+    // If contained in $expand_map, then this is a (first) parent, and we need
+    // to store by the defined 'parent' path for later merging, as well as
+    // provide the expansion map arguments to apply to the dynamic tree.
+    if (isset($expand_map[$link['path']])) {
+      $parent_path = $expand_map[$link['path']]['parent'];
+      $link['expand_map'] = $expand_map[$link['path']]['arguments'];
+    }
+    // Otherwise, just store this link keyed by its parent path; the expand_map
+    // is automatically derived from parent paths.
+    else {
+      $parent_path = $result[$link['plid']]['path'];
+    }
+
+    $tree_dynamic[$parent_path][] = $link;
+  }
+
+  return $tree_dynamic;
+}
+
+/**
+ * Walk through the entire menu tree and merge in expanded dynamic menu links.
+ *
+ * @param &$tree
+ *   A menu tree structure as returned by menu_tree_all_data().
+ * @param $tree_dynamic
+ *   A dynamic menu tree structure as returned by admin_menu_tree_dynamic().
+ * @param $expand_map
+ *   @todo Rename this argument, it's not the same $expand_map like elsewhere.
+ *   Placeholder expansion arguments.
+ * @param $hidden
+ *   An array containing links to hide, keyed by path.
+ *
+ * @see hook_admin_menu_map()
+ * @see menu_tree_all_data()
+ * @see admin_menu_tree_dynamic()
+ */
+function admin_menu_merge_tree(array &$tree, array $tree_dynamic, array $expand_map, array $hidden) {
+  foreach ($tree as $key => $data) {
+    $path = $data['link']['router_path'];
+
+    // Recurse into regular menu tree.
+    if ($tree[$key]['below']) {
+      admin_menu_merge_tree($tree[$key]['below'], $tree_dynamic, $expand_map, $hidden);
+    }
+    // Hide link if requested, but only if there is no dynamic tree data for it.
+    elseif (isset($hidden[$path]) && !isset($tree_dynamic[$path])) {
+      $tree[$key]['link']['access'] = FALSE;
+      continue;
+    }
+    // Nothing to merge, if this parent path is not in our dynamic tree.
+    if (!isset($tree_dynamic[$path])) {
+      continue;
+    }
+
+    // Add expanded dynamic items.
+    foreach ($tree_dynamic[$path] as $link) {
+      // If the dynamic item has custom placeholder expansion parameters set,
+      // use them, otherwise keep current.
+      if (isset($link['expand_map'])) {
+        // If there are currently no expansion parameters, we may use the new
+        // set immediately.
+        if (empty($expand_map)) {
+          $current_expand_map = $link['expand_map'];
+        }
+        else {
+          // Otherwise we need to filter out elements that differ from the
+          // current set, i.e. that are not in the same path.
+          $current_expand_map = array();
+          foreach ($expand_map as $arguments) {
+            foreach ($arguments as $placeholder => $value) {
+              foreach ($link['expand_map'] as $new_arguments) {
+                // Skip the new argument if it doesn't contain the current
+                // replacement placeholders or if their values differ.
+                if (!isset($new_arguments[$placeholder]) || $new_arguments[$placeholder] != $value) {
+                  continue;
+                }
+                $current_expand_map[] = $new_arguments;
+              }
+            }
+          }
+        }
+      }
+      else {
+        $current_expand_map = $expand_map;
+      }
+
+      // Set up path arguments map; depends on whether the item is dynamic
+      // (contains placeholders) or not.
+      if (strpos($link['path'], '%') === FALSE) {
+        // Build static item and subtree.
+        $map = explode('/', $link['path']);
+        $item = admin_menu_translate($link, $map);
+        admin_menu_merge_tree($item, $tree_dynamic, $current_expand_map, $hidden);
+        $tree[$key]['below'] += $item;
+      }
+      else {
+        // Drop dynamic items without required expansion parameters.
+        if (empty($current_expand_map)) {
+          continue;
+        }
+
+        // Expand anonymous to named placeholders.
+        // @see _menu_load_objects()
+        $path_args = explode('/', $link['path']);
+        $load_functions = unserialize($link['load_functions']);
+        foreach ($load_functions as $index => $function) {
+          if ($function) {
+            if (is_array($function)) {
+              list($function,) = each($function);
+            }
+            // Add the loader function name minus "_load".
+            $placeholder = '%' . substr($function, 0, -5);
+            $path_args[$index] = $placeholder;
+          }
+        }
+        $path_dynamic = implode('/', $path_args);
+
+        // Create new menu items using expansion arguments.
+        foreach ($current_expand_map as $arguments) {
+          // Create the cartesian product for all arguments and create new
+          // menu items for each generated combination thereof.
+          $expanded_args = admin_menu_expand_args($arguments);
+          foreach ($expanded_args as $replacements) {
+            $newpath = strtr($path_dynamic, $replacements);
+            // If any placeholder couldn't be replaced, skip this item.
+            if (strpos($newpath, '%') !== FALSE) {
+              continue;
+            }
+            $map = explode('/', $newpath);
+            $item = admin_menu_translate($link, $map);
+            // No access.
+            if (empty($item)) {
+              continue;
+            }
+            // Build subtree using current replacement arguments.
+            // @todo Avoid rebuilding this for each item.
+            $new_expand_map = array();
+            foreach ($replacements as $placeholder => $value) {
+              $new_expand_map[$placeholder] = array($value);
+            }
+            admin_menu_merge_tree($item, $tree_dynamic, array($new_expand_map), $hidden);
+            $tree[$key]['below'] += $item;
+          }
+        }
+      }
+    }
+    // Sort new subtree items.
+    ksort($tree[$key]['below']);
+  }
+}
+
+/**
+ * Create a menu item suitable for rendering.
+ *
+ * @param $router_item
+ *   A menu router item.
+ * @param $map
+ *   A path map with placeholders replaced.
+ *
+ * @todo We have links. Consider forking menu_link_translate() instead.
+ */
+function admin_menu_translate($router_item, $map) {
+  _menu_translate($router_item, $map, TRUE);
+
+  // Run through hook_translated_menu_link_alter() to add devel information,
+  // if configured.
+  $router_item['menu_name'] = 'management';
+  admin_menu_translated_menu_link_alter($router_item, NULL);
+
+  if ($router_item['access']) {
+    // Override mlid to make this item unique; since these items are expanded
+    // from dynamic items, the mlid is always the same, so each item would
+    // replace any other.
+    $router_item['mlid'] = $router_item['href'];
+    // Turn local task menu callbacks into regular menu items, otherwise they
+    // won't be visible.
+    if ($router_item['type'] == MENU_CALLBACK) {
+      $router_item['type'] = MENU_NORMAL_ITEM;
+    }
+    // @todo Strip potential HTML from titles?
+    $router_item['title'] = strip_tags($router_item['title']);
+
+    $key = (50000 + $router_item['weight']) . ' ' . $router_item['title'] . ' ' . $router_item['mlid'];
+    return array($key => array(
+      'link' => $router_item,
+      'below' => array(),
+    ));
+  }
+
+  return array();
+}
+
+/**
+ * Create the cartesian product of multiple varying sized argument arrays.
+ *
+ * @param $arguments
+ *   A two dimensional array of arguments.
+ *
+ * @see hook_admin_menu_map()
+ */
+function admin_menu_expand_args($arguments) {
+  $replacements = array();
+
+  // Initialize line cursors, move out array keys (placeholders) and assign
+  // numeric keys instead.
+  $i = 0;
+  $placeholders = array();
+  $new_arguments = array();
+  foreach ($arguments as $placeholder => $values) {
+    // Skip empty arguments.
+    if (empty($values)) {
+      continue;
+    }
+    $cursor[$i] = 0;
+    $placeholders[$i] = $placeholder;
+    $new_arguments[$i] = $values;
+    $i++;
+  }
+  $arguments = $new_arguments;
+  unset($new_arguments);
+
+  if ($rows = count($arguments)) {
+    do {
+      // Collect current argument from each row.
+      $row = array();
+      for ($i = 0; $i < $rows; ++$i) {
+        $row[$placeholders[$i]] = $arguments[$i][$cursor[$i]];
+      }
+      $replacements[] = $row;
+
+      // Increment cursor position.
+      $j = $rows - 1;
+      $cursor[$j]++;
+      while (!array_key_exists($cursor[$j], $arguments[$j])) {
+        // No more arguments left: reset cursor, go to next line and increment
+        // that cursor instead. Repeat until argument found or out of rows.
+        $cursor[$j] = 0;
+        if (--$j < 0) {
+          // We're done.
+          break 2;
+        }
+        $cursor[$j]++;
+      }
+    } while (1);
+  }
+
+  return $replacements;
+}
+
+/**
  * Build the administration menu as renderable menu links.
  *
  * @param $tree
@@ -22,8 +379,8 @@
 function admin_menu_links_menu($tree) {
   $links = array();
   foreach ($tree as $data) {
-    // Skip menu callbacks (mostly dynamic items).
-    if (isset($data['link']['type']) && $data['link']['type'] == MENU_CALLBACK) {
+    // Skip invisible items.
+    if (!$data['link']['access'] || $data['link']['type'] == MENU_CALLBACK) {
       continue;
     }
     // Hide 'Administer' and make child links appear on this level.

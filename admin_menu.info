@@ -10,5 +10,6 @@ project = admin_menu
 
 files[] = admin_menu.module
 files[] = admin_menu.inc
+files[] = admin_menu.map.inc
 files[] = admin_menu.install
 files[] = tests/admin_menu.test

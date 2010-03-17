@@ -7,6 +7,42 @@
  */
 
 /**
+ * Provide expansion arguments for dynamic menu items, i.e. menu paths
+ * containing one or more %placeholders.
+ *
+ * The map items must be keyed by the dynamic path to expand. Each map item may
+ * have the following properties:
+ *
+ * - parent: The parent menu path to link the expanded items to.
+ * - arguments: An array of argument sets that will be used in the
+ *   expansion. Each set consists of an array of one or more placeholders with
+ *   an array of possible expansions as value. Upon expansion, each argument
+ *   is combined with every other argument from the set (ie., the cartesian
+ *   product of all arguments is created). The expansion values may be empty,
+ *   that is, you don't need to insert logic to skip map items for which no
+ *   values exist, since admin menu will take care of that.
+ * - hide: (optional) Used to hide another menu item, usually a superfluous
+ *   "List" item.
+ *
+ * @see admin_menu.map.inc
+ */
+function hook_admin_menu_map() {
+  // Expand content types in Structure >> Content types.
+  // The key denotes the dynamic path to expand to multiple menu items.
+  $map['admin/structure/types/manage/%node_type'] = array(
+    // Link generated items directly to the "Content types" item, and hide the
+    // "List" item.
+    'parent' => 'admin/structure/types',
+    'hide' => 'admin/structure/types/list',
+    // Create expansion arguments for the %node_type placeholder.
+    'arguments' => array(
+      array('%node_type' => array_keys(node_type_get_types())),
+    ),
+  );
+  return $map;
+}
+
+/**
  * Alter content in Administration menu bar before it is rendered.
  *
  * @param $content

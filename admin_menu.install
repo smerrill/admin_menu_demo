@@ -88,3 +88,16 @@ function admin_menu_update_7302() {
     ->execute();
 }
 
+/**
+ * Remove local tasks from {menu_links} table.
+ */
+function admin_menu_update_7303() {
+  $paths = db_query('SELECT path FROM {menu_router} WHERE path LIKE :prefix AND type & :type', array(
+    ':prefix' => 'admin/%',
+    ':type' => MENU_IS_LOCAL_TASK,
+  ))->fetchCol();
+  db_delete('menu_links')
+    ->condition('router_path', $paths, 'IN')
+    ->execute();
+}
+
