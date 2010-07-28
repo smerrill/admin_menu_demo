@@ -6,6 +6,7 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#588936 by fenstrat: Fixed Toolbar shortcuts not visible.
 #857688 by sun: Updated for reverted system_settings_form().
 #860390 by Kevin Rogers: Fixed .info file parsing error on uncertain platform.
 #420816 by smk-ka, sun: Added merging of menu trees containing dynamic paths.
