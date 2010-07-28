@@ -582,13 +582,13 @@ function admin_menu_theme_settings() {
   $form['admin_menu_margin_top'] = array(
     '#type' => 'checkbox',
     '#title' => t('Adjust top margin'),
-    '#default_value' => 1,
+    '#default_value' => variable_get('admin_menu_margin_top', 1),
     '#description' => t('If enabled, the site output is shifted down approximately 20 pixels from the top of the viewport to display the administration menu. If disabled, some absolute- or fixed-positioned page elements may be covered by the administration menu.'),
   );
   $form['admin_menu_position_fixed'] = array(
     '#type' => 'checkbox',
     '#title' => t('Keep menu at top of page'),
-    '#default_value' => 0,
+    '#default_value' => variable_get('admin_menu_position_fixed', 0),
     '#description' => t('If enabled, the administration menu is always displayed at the top of the browser viewport (even after the page is scrolled). <strong>Note: In some browsers, this setting results in a malformed page, an invisible cursor, non-selectable elements in forms, or other issues. Disable this option if these issues occur.</strong>'),
   );
   $form['tweaks'] = array(
@@ -598,7 +598,7 @@ function admin_menu_theme_settings() {
   $form['tweaks']['admin_menu_tweak_modules'] = array(
     '#type' => 'checkbox',
     '#title' => t('Collapse fieldsets on modules page'),
-    '#default_value' => 0,
+    '#default_value' => variable_get('admin_menu_tweak_modules', 0),
     '#description' => t('If enabled, fieldsets on the <a href="!modules-url">modules</a> page are automatically collapsed when loading the page.', array('!modules-url' => url('admin/modules'))),
   );
   if (module_exists('util')) {
@@ -607,13 +607,13 @@ function admin_menu_theme_settings() {
   $form['tweaks']['admin_menu_tweak_permissions'] = array(
     '#type' => 'checkbox',
     '#title' => t('Collapse modules on permissions page'),
-    '#default_value' => 0,
+    '#default_value' => variable_get('admin_menu_tweak_permissions', 0),
     '#description' => t('Collapses permissions by module on the <a href="@permissions-url">permissions</a> page.', array('@permissions-url' => url('admin/people/permissions'))),
   );
   $form['tweaks']['admin_menu_tweak_tabs'] = array(
     '#type' => 'checkbox',
     '#title' => t('Move local tasks into menu'),
-    '#default_value' => 0,
+    '#default_value' => variable_get('admin_menu_tweak_tabs', 0),
     '#description' => t('If enabled, the tabs on the current page are moved into the administration menu. This feature is only available in themes that use the CSS classes <code>tabs primary</code> and <code>tabs secondary</code> for tabs.'),
   );
 
@@ -633,7 +633,7 @@ function admin_menu_theme_settings() {
   $form['tweaks']['admin_menu_devel_modules_skip'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Developer modules to keep enabled'),
-    '#default_value' => array(),
+    '#default_value' => variable_get('admin_menu_devel_modules', array()),
     '#options' => $devel_modules,
     '#access' => !empty($devel_modules),
     '#description' => t('Enabled developer modules in this list will not be disabled when the link <em>Disable developer modules</em> in the menu below the icon is invoked.'),
