@@ -112,11 +112,11 @@ function field_ui_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Taxonomy module.
  */
 function taxonomy_admin_menu_map() {
-  $map['admin/structure/taxonomy/%taxonomy_vocabulary'] = array(
+  $map['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name'] = array(
     'parent' => 'admin/structure/taxonomy',
     'hide' => 'admin/structure/taxonomy/list',
     'arguments' => array(
-      array('%taxonomy_vocabulary' => array_keys(taxonomy_get_vocabularies())),
+      array('%taxonomy_vocabulary_machine_name' => array_keys(taxonomy_vocabulary_get_names())),
     ),
   );
   return $map;
