@@ -794,7 +794,7 @@ function admin_menu_flush_cache($name = NULL) {
       break;
 
     case 'theme':
-      module_invoke('system', 'theme_data');
+      system_rebuild_theme_data();
       drupal_theme_rebuild();
       break;
 
