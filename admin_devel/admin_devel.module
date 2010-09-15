@@ -7,13 +7,6 @@
  */
 
 /**
- * Implements hook_init().
- */
-function admin_devel_init() {
-  drupal_add_js(drupal_get_path('module', 'admin_devel') . '/admin_devel.js');
-}
-
-/**
  * Implements hook_form_FORMID_alter().
  */
 function admin_devel_form_admin_menu_theme_settings_alter(&$form, &$form_state) {

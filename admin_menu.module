@@ -129,9 +129,9 @@ function admin_menu_init() {
   global $user, $language;
 
   $path = drupal_get_path('module', 'admin_menu');
-  drupal_add_css($path . '/admin_menu.css', array('preprocess' => FALSE));
+  drupal_add_css($path . '/admin_menu.css');
   if ($user->uid == 1) {
-    drupal_add_css($path . '/admin_menu.uid1.css', array('preprocess' => FALSE));
+    drupal_add_css($path . '/admin_menu.uid1.css');
   }
   // Performance: Defer execution.
   drupal_add_js($path . '/admin_menu.js', array('defer' => TRUE));
