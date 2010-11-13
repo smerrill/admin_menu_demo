@@ -84,9 +84,8 @@ function field_ui_admin_menu_map() {
               $fields[] = $field['field_name'];
             }
             // Map machine_name to vid.
-            $vid = $vocabularies[$bundle_name]->vid;
             $arguments = array(
-              '%taxonomy_vocabulary' => array($vid),
+              '%taxonomy_vocabulary_machine_name' => array($bundle_name),
               '%field_ui_menu' => $fields,
             );
             break;
