@@ -721,7 +721,7 @@ function admin_menu_toggle_modules() {
     // Finally, flush admin_menu's cache.
     admin_menu_flush_caches();
   }
-  drupal_goto(referer_uri());
+  drupal_goto();
 }
 
 /**
