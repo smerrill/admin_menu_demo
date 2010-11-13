@@ -55,12 +55,6 @@ function node_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Field UI module.
  */
 function field_ui_admin_menu_map() {
-  // @todo D7: Taxonomy still uses vid instead of machine name in administrative
-  //   paths.
-  if (module_exists('taxonomy')) {
-    $vocabularies = taxonomy_vocabulary_get_names();
-  }
-
   $map = array();
   foreach (entity_get_info() as $obj_type => $info) {
     foreach ($info['bundles'] as $bundle_name => $bundle_info) {
