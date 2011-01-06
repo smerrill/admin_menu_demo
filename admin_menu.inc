@@ -569,38 +569,45 @@ function admin_menu_theme_settings() {
     '#type' => 'checkbox',
     '#title' => t('Adjust top margin'),
     '#default_value' => variable_get('admin_menu_margin_top', 1),
-    '#description' => t('If enabled, the site output is shifted down approximately 20 pixels from the top of the viewport to display the administration menu. If disabled, some absolute- or fixed-positioned page elements may be covered by the administration menu.'),
+    '#description' => t('Shifts the site output down by approximately 20 pixels from the top of the viewport. If disabled, absolute- or fixed-positioned page elements may be covered by the administration menu.'),
   );
   $form['admin_menu_position_fixed'] = array(
     '#type' => 'checkbox',
     '#title' => t('Keep menu at top of page'),
     '#default_value' => variable_get('admin_menu_position_fixed', 0),
-    '#description' => t('If enabled, the administration menu is always displayed at the top of the browser viewport (even after the page is scrolled). <strong>Note: In some browsers, this setting results in a malformed page, an invisible cursor, non-selectable elements in forms, or other issues. Disable this option if these issues occur.</strong>'),
+    '#description' => t('Displays the administration menu always at the top of the browser viewport (even when scrolling the page).'),
   );
+  // @todo Re-confirm this with latest browser versions.
+  $form['admin_menu_position_fixed']['#description'] .= '<br /><strong>' . t('In some browsers, this setting may result in a malformed page, an invisible cursor, non-selectable elements in forms, or other issues.') . '</strong>';
+
   $form['tweaks'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
   );
   $form['tweaks']['admin_menu_tweak_modules'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Collapse fieldsets on modules page'),
+    '#title' => t('Collapse module groups on the <a href="!modules-url">%modules</a> page', array(
+      '%modules' => t('Modules'),
+      '!modules-url' => url('admin/modules'),
+    )),
     '#default_value' => variable_get('admin_menu_tweak_modules', 0),
-    '#description' => t('If enabled, fieldsets on the <a href="!modules-url">modules</a> page are automatically collapsed when loading the page.', array('!modules-url' => url('admin/modules'))),
   );
   if (module_exists('util')) {
     $form['tweaks']['admin_menu_tweak_modules']['#description'] .= '<br /><strong>' . t('If the Utility module was installed for this purpose, it can be safely disabled and uninstalled.') . '</strong>';
   }
   $form['tweaks']['admin_menu_tweak_permissions'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Collapse modules on permissions page'),
+    '#title' => t('Collapse module groups on the <a href="@permissions-url">%permissions</a> page', array(
+      '%permissions' => t('Permissions'),
+      '@permissions-url' => url('admin/people/permissions'),
+    )),
     '#default_value' => variable_get('admin_menu_tweak_permissions', 0),
-    '#description' => t('Collapses permissions by module on the <a href="@permissions-url">permissions</a> page.', array('@permissions-url' => url('admin/people/permissions'))),
   );
   $form['tweaks']['admin_menu_tweak_tabs'] = array(
     '#type' => 'checkbox',
     '#title' => t('Move local tasks into menu'),
     '#default_value' => variable_get('admin_menu_tweak_tabs', 0),
-    '#description' => t('If enabled, the tabs on the current page are moved into the administration menu. This feature is only available in themes that use the CSS classes <code>tabs primary</code> and <code>tabs secondary</code> for tabs.'),
+    '#description' => t('Moves the tabs on all pages into the administration menu. Only possible for themes using the CSS classes <code>tabs primary</code> and <code>tabs secondary</code>.'),
   );
 
   // Fetch all available modules manually, since module_list() only returns
@@ -622,7 +629,9 @@ function admin_menu_theme_settings() {
     '#default_value' => variable_get('admin_menu_devel_modules', array()),
     '#options' => $devel_modules,
     '#access' => !empty($devel_modules),
-    '#description' => t('Enabled developer modules in this list will not be disabled when the link <em>Disable developer modules</em> in the menu below the icon is invoked.'),
+    '#description' => t('The selected modules will not be disabled when the link %disable-developer-modules below the icon in the menu is invoked.', array(
+      '%disable-developer-modules' => t('Disable developer modules'),
+    )),
   );
 
   return system_settings_form($form);
