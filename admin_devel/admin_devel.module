@@ -14,6 +14,8 @@ function admin_devel_form_admin_menu_theme_settings_alter(&$form, &$form_state) 
     '#type' => 'submit',
     '#value' => t('Rebuild system links'),
     '#submit' => array('admin_devel_form_admin_menu_theme_settings_alter_rebuild_submit'),
+    // @todo Not necessarily ready for mass-consumption yet.
+    '#access' => FALSE,
   );
 }
 
