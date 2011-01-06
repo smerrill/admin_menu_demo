@@ -13,6 +13,9 @@
  * Implements hook_admin_menu_map() on behalf of Filter module.
  */
 function filter_admin_menu_map() {
+  if (!user_access('administer filters')) {
+    return;
+  }
   $map['admin/config/content/formats/%filter_format'] = array(
     'parent' => 'admin/config/content/formats',
     'hide' => 'admin/config/content/formats/list',
@@ -27,6 +30,9 @@ function filter_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Menu module.
  */
 function menu_admin_menu_map() {
+  if (!user_access('administer menu')) {
+    return;
+  }
   $map['admin/structure/menu/manage/%menu'] = array(
     'parent' => 'admin/structure/menu',
     'hide' => 'admin/structure/menu/list',
@@ -41,6 +47,9 @@ function menu_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Node module.
  */
 function node_admin_menu_map() {
+  if (!user_access('administer content types')) {
+    return;
+  }
   $map['admin/structure/types/manage/%node_type'] = array(
     'parent' => 'admin/structure/types',
     'hide' => 'admin/structure/types/list',
@@ -61,6 +70,23 @@ function field_ui_admin_menu_map() {
       if (isset($bundle_info['admin'])) {
         $arguments = array();
         switch ($obj_type) {
+          case 'comment':
+            $fields = array();
+            foreach (field_info_instances($obj_type, $bundle_name) as $field) {
+              $fields[] = $field['field_name'];
+            }
+            // @todo Make Comment module expose the original node type bundle,
+            //   pretty please.
+            if (drupal_substr($bundle_name, 0, 13) == 'comment_node_') {
+              $bundle_name = drupal_substr($bundle_name, 13);
+            }
+            // @todo Doesn't work yet. Why?
+            $arguments = array(
+              '%comment_node_type' => array($bundle_name),
+              '%field_ui_menu' => $fields,
+            );
+            break;
+
           case 'node':
             $fields = array();
             foreach (field_info_instances($obj_type, $bundle_name) as $field) {
@@ -105,6 +131,9 @@ function field_ui_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Taxonomy module.
  */
 function taxonomy_admin_menu_map() {
+  if (!user_access('administer taxonomy')) {
+    return;
+  }
   $map['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name'] = array(
     'parent' => 'admin/structure/taxonomy',
     'hide' => 'admin/structure/taxonomy/list',
@@ -119,6 +148,9 @@ function taxonomy_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Views UI module.
  */
 function views_ui_admin_menu_map() {
+  if (!user_access('administer views')) {
+    return;
+  }
   // @todo Requires patch to views_ui.
   $map['admin/structure/views/edit/%views_ui_cache'] = array(
     'parent' => 'admin/structure/views',
