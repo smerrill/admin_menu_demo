@@ -4,8 +4,8 @@ Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
 
 
-Admin Menu 7.x-3.0, 2010-01-07
-------------------------------
+Admin Menu 7.x-3.0-RC1, 2010-01-07
+----------------------------------
 #990774 by sun: Updated for $closure renamed to $page_bottom.
 #991906 by johnv, sun: Added configure to .info file.
 #947198 by sun: Added hint about disabling Toolbar.
