@@ -1,10 +1,10 @@
 // $Id$
 
-Admin Menu x.x-x.x, xxxx-xx-xx
+Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
 
 
-Admin Menu 7.x-3.x, xxxx-xx-xx
+Admin Menu 7.x-3.0, 2010-01-07
 ------------------------------
 #990774 by sun: Updated for $closure renamed to $page_bottom.
 #991906 by johnv, sun: Added configure to .info file.
@@ -18,12 +18,8 @@ by sun: Disabled "Rebuild system links" button on settings form.
 #731462 by sun: Updated for system_rebuild_theme_data().
 by sun: Re-added a "Rebuild system links" button to settings form.
 #420816 by tim.plunkett: Updated taxonomy path map for machine names.
-#588936 by fenstrat: Fixed Toolbar shortcuts not visible.
 #857688 by sun: Updated for reverted system_settings_form().
-#860390 by Kevin Rogers: Fixed .info file parsing error on uncertain platform.
 #420816 by smk-ka, sun: Added merging of menu trees containing dynamic paths.
-#551484 by sun: Fixed stale hook_admin_menu_output_alter() docs.
-#730156 by sun: Fixed Administration views.
 by sun: Fixed tests and minor admin_menu_toolbar styling issues.
 by sun: Fixed various styling issues for admin_menu and admin_menu_toolbar.
 by sun: Updated for Schema API, DBTNG, coding standards.
@@ -66,6 +62,15 @@ by sun: Fixed sess_count() changed to drupal_session_count().
 
 Admin Menu 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#588936 by fenstrat: Fixed Toolbar shortcuts not visible.
+#860390 by Kevin Rogers: Fixed .info file parsing error on uncertain platform.
+#551484 by sun: Fixed stale hook_admin_menu_output_alter() docs.
+
+
+Admin Menu 6.x-3.0-ALPHA4, 2010-03-11
+-------------------------------------
+#730156 by sun: Fixed Administration views.
+by sun: Fixed missing .element-hidden style in D6 for permissions tweak.
 #645526 by TravisCarden: Fixed stale local tasks markup after moving them.
 #366442 by sun: Added tweak to collapse modules on permissions page.
 #655926 by donquixote, sun: Improved performance of delayed mouseout.
