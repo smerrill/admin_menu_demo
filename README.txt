@@ -85,7 +85,7 @@ None.
   - Are the "access administration menu" and "access administration pages"
     permissions enabled for the appropriate roles?
 
-  - Does your theme output the $closure variable?
+  - Does html.tpl.php of your theme output the $page_bottom variable?
 
 * If the menu is rendered behind a Flash movie object, add this property to your
   Flash object(s):
