@@ -1,4 +1,3 @@
-; $Id$
 name = Administration menu
 description = "Provides a dropdown menu to most administrative tasks and other common destinations (to users with the proper permissions)."
 package = Administration
