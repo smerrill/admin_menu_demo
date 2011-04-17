@@ -132,8 +132,11 @@ function admin_menu_init() {
   if ($user->uid == 1) {
     drupal_add_css($path . '/admin_menu.uid1.css');
   }
-  // Performance: Defer execution.
-  drupal_add_js($path . '/admin_menu.js', array('defer' => TRUE));
+  // Previous versions used the 'defer' attribute to increase browser rendering
+  // performance. At least starting with Firefox 3.6, deferred .js files are
+  // loaded, but Drupal.behaviors are not contained in the DOM when drupal.js
+  // executes Drupal.attachBehaviors().
+  drupal_add_js($path . '/admin_menu.js');
 
   // Destination query strings are applied via JS.
   $settings['destination'] = drupal_http_build_query(drupal_get_destination());
