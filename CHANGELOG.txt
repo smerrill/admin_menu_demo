@@ -1,6 +1,7 @@
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#1146644 by sun: Fixed PHP 5.3 compability in tests.
 #442560 by sun: Fixed 'defer' script attribute breaks Drupal.behaviors in FF3.6.
 #1022902 by matglas86, sun: Updated for changed core Toolbar styles.
 

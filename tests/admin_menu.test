@@ -9,10 +9,10 @@
  * Base class for all administration menu web test cases.
  */
 class AdminMenuWebTestCase extends DrupalWebTestCase {
-  function setUp() {
+  function setUp($modules = array()) {
     // Enable admin menu module and any other modules.
-    $args = func_get_args();
-    call_user_func_array(array($this, 'parent::setUp'), array_merge(array('admin_menu'), $args));
+    $modules[] = 'admin_menu';
+    parent::setUp($modules);
 
     // Disable client-side caching.
     variable_set('admin_menu_cache_client', FALSE);
@@ -64,8 +64,7 @@ class AdminMenuPermissionsTestCase extends AdminMenuWebTestCase {
   }
 
   function setUp() {
-    // Additionally enable contact module.
-    parent::setUp('contact');
+    parent::setUp(array('contact'));
   }
 
   /**
