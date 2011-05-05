@@ -9,8 +9,10 @@
  * Base class for all administration menu web test cases.
  */
 class AdminMenuWebTestCase extends DrupalWebTestCase {
-  function setUp($modules = array()) {
+  function setUp() {
     // Enable admin menu module and any other modules.
+    $args = func_get_args();
+    $modules = $args[0];
     $modules[] = 'admin_menu';
     parent::setUp($modules);
 
