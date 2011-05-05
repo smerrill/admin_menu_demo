@@ -625,7 +625,7 @@ function admin_menu_theme_settings() {
   $form['tweaks']['admin_menu_devel_modules_skip'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Developer modules to keep enabled'),
-    '#default_value' => variable_get('admin_menu_devel_modules', array()),
+    '#default_value' => variable_get('admin_menu_devel_modules_skip', array()),
     '#options' => $devel_modules,
     '#access' => !empty($devel_modules),
     '#description' => t('The selected modules will not be disabled when the link %disable-developer-modules below the icon in the menu is invoked.', array(
