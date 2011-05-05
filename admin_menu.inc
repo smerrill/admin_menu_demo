@@ -723,6 +723,7 @@ function admin_menu_toggle_modules() {
  */
 function _admin_menu_developer_modules() {
   return array(
+    'admin_devel',
     'cache_disable',
     'coder',
     'content_copy',
@@ -732,6 +733,7 @@ function _admin_menu_developer_modules() {
     'devel',
     'devel_node_access',
     'devel_themer',
+    'field_ui',
     'macro',
     'form_controller',
     'imagecache_ui',

@@ -1,6 +1,7 @@
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#1114132 by joelstein, sun: Added Field UI to list of developer modules.
 #1008380 by bdragon, sun: Updated admin_views for D7.
 #1146644 by sun: Fixed PHP 5.3 compability in tests.
 #442560 by sun: Fixed 'defer' script attribute breaks Drupal.behaviors in FF3.6.
