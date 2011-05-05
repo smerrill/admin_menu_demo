@@ -4,361 +4,240 @@ $view = new view;
 $view->name = 'admin_content_comment';
 $view->description = 'List and edit site comments and the comment moderation queue.';
 $view->tag = 'admin';
-$view->view_php = '';
-$view->base_table = 'comments';
-$view->is_cacheable = FALSE;
-$view->api_version = 2;
+$view->base_table = 'comment';
+$view->human_name = '';
+$view->core = 0;
+$view->api_version = '3.0-alpha1';
 $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Defaults */
 $handler = $view->new_display('default', 'Defaults', 'default');
-$handler->override_option('relationships', array(
-  'nid' => array(
-    'label' => 'Node',
-    'required' => 0,
-    'id' => 'nid',
-    'table' => 'comments',
-    'field' => 'nid',
-    'relationship' => 'none',
-  ),
-));
-$handler->override_option('fields', array(
+$handler->display->display_options['title'] = 'Comments';
+$handler->display->display_options['css_class'] = 'admin-views-view';
+$handler->display->display_options['use_ajax'] = TRUE;
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['access']['perm'] = 'administer comments';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'full';
+$handler->display->display_options['pager']['options']['items_per_page'] = 50;
+$handler->display->display_options['style_plugin'] = 'bulk';
+$handler->display->display_options['style_options']['columns'] = array(
+  'subject' => 'subject',
+  'name' => 'name',
+  'title' => 'title',
+  'timestamp' => 'timestamp',
+  'edit_comment' => 'edit_comment',
+  'delete_comment' => 'delete_comment',
+);
+$handler->display->display_options['style_options']['default'] = 'timestamp';
+$handler->display->display_options['style_options']['info'] = array(
   'subject' => array(
-    'label' => 'Title',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'link_to_comment' => 1,
-    'exclude' => 0,
-    'id' => 'subject',
-    'table' => 'comments',
-    'field' => 'subject',
-    'relationship' => 'none',
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
   ),
   'name' => array(
-    'label' => 'Author',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'link_to_user' => 1,
-    'exclude' => 0,
-    'id' => 'name',
-    'table' => 'comments',
-    'field' => 'name',
-    'relationship' => 'none',
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
   ),
   'title' => array(
-    'label' => 'Posted in',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'target' => '',
-      'help' => '',
-      'trim' => 1,
-      'max_length' => '16',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'empty' => '',
-    'hide_empty' => 0,
-    'empty_zero' => 0,
-    'link_to_node' => 1,
-    'exclude' => 0,
-    'id' => 'title',
-    'table' => 'node',
-    'field' => 'title',
-    'relationship' => 'nid',
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
   ),
   'timestamp' => array(
-    'label' => 'Posted',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'date_format' => 'time ago',
-    'custom_date_format' => '',
-    'exclude' => 0,
-    'id' => 'timestamp',
-    'table' => 'comments',
-    'field' => 'timestamp',
-    'relationship' => 'none',
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
   ),
   'edit_comment' => array(
-    'label' => '',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'target' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'empty' => '',
-    'hide_empty' => 0,
-    'empty_zero' => 0,
-    'text' => '',
-    'exclude' => 0,
-    'id' => 'edit_comment',
-    'table' => 'comments',
-    'field' => 'edit_comment',
-    'relationship' => 'none',
-    'override' => array(
-      'button' => 'Override',
-    ),
+    'align' => '',
+    'separator' => '',
   ),
   'delete_comment' => array(
-    'label' => '',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'target' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'empty' => '',
-    'hide_empty' => 0,
-    'empty_zero' => 0,
-    'text' => '',
-    'exclude' => 0,
-    'id' => 'delete_comment',
-    'table' => 'comments',
-    'field' => 'delete_comment',
-    'override' => array(
-      'button' => 'Override',
-    ),
-    'relationship' => 'none',
+    'align' => '',
+    'separator' => '',
   ),
-));
-$handler->override_option('sorts', array(
-  'timestamp' => array(
-    'order' => 'DESC',
-    'granularity' => 'second',
-    'id' => 'timestamp',
-    'table' => 'comments',
-    'field' => 'timestamp',
-    'relationship' => 'none',
-  ),
-));
-$handler->override_option('filters', array(
-  'subject' => array(
-    'operator' => 'contains',
-    'value' => '',
-    'group' => '0',
-    'exposed' => TRUE,
-    'expose' => array(
-      'use_operator' => 0,
-      'operator' => 'subject_op',
-      'identifier' => 'subject',
-      'label' => 'Title',
-      'optional' => 1,
-      'remember' => 0,
-    ),
-    'case' => 0,
-    'id' => 'subject',
-    'table' => 'comments',
-    'field' => 'subject',
-    'override' => array(
-      'button' => 'Override',
-    ),
-    'relationship' => 'none',
-  ),
-  'name' => array(
-    'operator' => 'contains',
-    'value' => '',
-    'group' => '0',
-    'exposed' => TRUE,
-    'expose' => array(
-      'use_operator' => 0,
-      'operator' => 'name_op',
-      'identifier' => 'name',
-      'label' => 'Author',
-      'optional' => 1,
-      'remember' => 0,
-    ),
-    'case' => 0,
-    'id' => 'name',
-    'table' => 'comments',
-    'field' => 'name',
-    'relationship' => 'none',
-  ),
-  'title' => array(
-    'operator' => 'contains',
-    'value' => '',
-    'group' => '0',
-    'exposed' => TRUE,
-    'expose' => array(
-      'use_operator' => 0,
-      'operator' => 'title_op',
-      'identifier' => 'title',
-      'label' => 'Posted in',
-      'optional' => 1,
-      'remember' => 0,
-    ),
-    'case' => 0,
-    'id' => 'title',
-    'table' => 'node',
-    'field' => 'title',
-    'relationship' => 'nid',
-    'override' => array(
-      'button' => 'Override',
-    ),
-  ),
-  'status' => array(
-    'operator' => '=',
-    'value' => 'All',
-    'group' => '0',
-    'exposed' => TRUE,
-    'expose' => array(
-      'operator' => '',
-      'identifier' => 'status',
-      'label' => 'Published',
-      'optional' => 1,
-      'remember' => 1,
-    ),
-    'id' => 'status',
-    'table' => 'comments',
-    'field' => 'status',
-    'relationship' => 'none',
-    'override' => array(
-      'button' => 'Override',
-    ),
-  ),
-));
-$handler->override_option('access', array(
-  'type' => 'perm',
-  'perm' => 'administer comments',
-));
-$handler->override_option('cache', array(
-  'type' => 'none',
-));
-$handler->override_option('title', 'Comments');
-$handler->override_option('use_ajax', TRUE);
-$handler->override_option('items_per_page', 50);
-$handler->override_option('use_pager', '1');
-$handler->override_option('style_plugin', 'bulk');
-$handler->override_option('style_options', array(
-  'grouping' => '',
-  'override' => 1,
-  'sticky' => 1,
-  'order' => 'desc',
-  'columns' => array(
-    'subject' => 'subject',
-    'name' => 'name',
-    'title' => 'title',
-    'timestamp' => 'timestamp',
-    'edit_comment' => 'edit_comment',
-    'delete_comment' => 'delete_comment',
-  ),
-  'info' => array(
-    'subject' => array(
-      'sortable' => 1,
-      'separator' => '',
-    ),
-    'name' => array(
-      'sortable' => 1,
-      'separator' => '',
-    ),
-    'title' => array(
-      'sortable' => 1,
-      'separator' => '',
-    ),
-    'timestamp' => array(
-      'sortable' => 1,
-      'separator' => '',
-    ),
-    'edit_comment' => array(
-      'separator' => '',
-    ),
-    'delete_comment' => array(
-      'separator' => '',
-    ),
-  ),
-  'default' => 'timestamp',
-  'execution_type' => '2',
-  'display_type' => '0',
-  'hide_select_all' => 0,
-  'skip_confirmation' => 0,
-  'display_result' => 1,
-  'merge_single_action' => 0,
-  'selected_operations' => array(
-    'views_bulk_operations_delete_comment_action' => 'views_bulk_operations_delete_comment_action',
-    'system_send_email_action' => 'system_send_email_action',
-    'comment_unpublish_action' => 'comment_unpublish_action',
-    'comment_unpublish_by_keyword_action' => 'comment_unpublish_by_keyword_action',
-    'system_message_action' => 0,
-    'views_bulk_operations_action' => 0,
-    'views_bulk_operations_script_action' => 0,
-    'views_bulk_operations_argument_selector_action' => 0,
-    'system_goto_action' => 0,
-  ),
-));
+);
+$handler->display->display_options['style_options']['override'] = 1;
+$handler->display->display_options['style_options']['sticky'] = 1;
+$handler->display->display_options['style_options']['order'] = 'desc';
+$handler->display->display_options['style_options']['empty_table'] = 1;
+$handler->display->display_options['style_options']['execution_type'] = '2';
+$handler->display->display_options['style_options']['display_type'] = '0';
+$handler->display->display_options['style_options']['skip_confirmation'] = 0;
+$handler->display->display_options['style_options']['display_result'] = 1;
+$handler->display->display_options['style_options']['merge_single_action'] = 0;
+$handler->display->display_options['style_options']['hide_select_all'] = 0;
+/* Relationship: Comment: Content */
+$handler->display->display_options['relationships']['nid']['id'] = 'nid';
+$handler->display->display_options['relationships']['nid']['table'] = 'comment';
+$handler->display->display_options['relationships']['nid']['field'] = 'nid';
+$handler->display->display_options['relationships']['nid']['label'] = 'Node';
+$handler->display->display_options['relationships']['nid']['required'] = 0;
+/* Field: Comment: Title */
+$handler->display->display_options['fields']['subject']['id'] = 'subject';
+$handler->display->display_options['fields']['subject']['table'] = 'comment';
+$handler->display->display_options['fields']['subject']['field'] = 'subject';
+$handler->display->display_options['fields']['subject']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['subject']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['subject']['alter']['trim'] = 0;
+$handler->display->display_options['fields']['subject']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['subject']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['subject']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['subject']['alter']['html'] = 0;
+$handler->display->display_options['fields']['subject']['link_to_comment'] = 1;
+/* Field: Comment: Author */
+$handler->display->display_options['fields']['name']['id'] = 'name';
+$handler->display->display_options['fields']['name']['table'] = 'comment';
+$handler->display->display_options['fields']['name']['field'] = 'name';
+$handler->display->display_options['fields']['name']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['name']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['name']['alter']['trim'] = 0;
+$handler->display->display_options['fields']['name']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['name']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['name']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['name']['alter']['html'] = 0;
+$handler->display->display_options['fields']['name']['link_to_user'] = 1;
+/* Field: Content: Title */
+$handler->display->display_options['fields']['title']['id'] = 'title';
+$handler->display->display_options['fields']['title']['table'] = 'node';
+$handler->display->display_options['fields']['title']['field'] = 'title';
+$handler->display->display_options['fields']['title']['relationship'] = 'nid';
+$handler->display->display_options['fields']['title']['label'] = 'Posted in';
+$handler->display->display_options['fields']['title']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['title']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['title']['alter']['trim'] = 1;
+$handler->display->display_options['fields']['title']['alter']['max_length'] = '16';
+$handler->display->display_options['fields']['title']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['title']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['title']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['title']['alter']['html'] = 0;
+$handler->display->display_options['fields']['title']['hide_empty'] = 0;
+$handler->display->display_options['fields']['title']['empty_zero'] = 0;
+$handler->display->display_options['fields']['title']['link_to_node'] = 1;
+/* Field: Comment: Updated date */
+$handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['fields']['timestamp']['table'] = 'comment';
+$handler->display->display_options['fields']['timestamp']['field'] = 'changed';
+$handler->display->display_options['fields']['timestamp']['label'] = 'Posted';
+$handler->display->display_options['fields']['timestamp']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['timestamp']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['timestamp']['alter']['trim'] = 0;
+$handler->display->display_options['fields']['timestamp']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['timestamp']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['timestamp']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['timestamp']['alter']['html'] = 0;
+$handler->display->display_options['fields']['timestamp']['date_format'] = 'time ago';
+/* Field: Comment: Edit link */
+$handler->display->display_options['fields']['edit_comment']['id'] = 'edit_comment';
+$handler->display->display_options['fields']['edit_comment']['table'] = 'comment';
+$handler->display->display_options['fields']['edit_comment']['field'] = 'edit_comment';
+$handler->display->display_options['fields']['edit_comment']['label'] = '';
+$handler->display->display_options['fields']['edit_comment']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['edit_comment']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['edit_comment']['alter']['trim'] = 0;
+$handler->display->display_options['fields']['edit_comment']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['edit_comment']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['edit_comment']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['edit_comment']['alter']['html'] = 0;
+$handler->display->display_options['fields']['edit_comment']['hide_empty'] = 0;
+$handler->display->display_options['fields']['edit_comment']['empty_zero'] = 0;
+/* Field: Comment: Delete link */
+$handler->display->display_options['fields']['delete_comment']['id'] = 'delete_comment';
+$handler->display->display_options['fields']['delete_comment']['table'] = 'comment';
+$handler->display->display_options['fields']['delete_comment']['field'] = 'delete_comment';
+$handler->display->display_options['fields']['delete_comment']['label'] = '';
+$handler->display->display_options['fields']['delete_comment']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['delete_comment']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['delete_comment']['alter']['trim'] = 0;
+$handler->display->display_options['fields']['delete_comment']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['delete_comment']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['delete_comment']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['delete_comment']['alter']['html'] = 0;
+$handler->display->display_options['fields']['delete_comment']['hide_empty'] = 0;
+$handler->display->display_options['fields']['delete_comment']['empty_zero'] = 0;
+/* Sort criterion: Comment: Updated date */
+$handler->display->display_options['sorts']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['sorts']['timestamp']['table'] = 'comment';
+$handler->display->display_options['sorts']['timestamp']['field'] = 'changed';
+$handler->display->display_options['sorts']['timestamp']['order'] = 'DESC';
+/* Filter criterion: Comment: Title */
+$handler->display->display_options['filters']['subject']['id'] = 'subject';
+$handler->display->display_options['filters']['subject']['table'] = 'comment';
+$handler->display->display_options['filters']['subject']['field'] = 'subject';
+$handler->display->display_options['filters']['subject']['operator'] = 'contains';
+$handler->display->display_options['filters']['subject']['exposed'] = TRUE;
+$handler->display->display_options['filters']['subject']['expose']['operator_id'] = 'subject_op';
+$handler->display->display_options['filters']['subject']['expose']['label'] = 'Title';
+$handler->display->display_options['filters']['subject']['expose']['use_operator'] = FALSE;
+$handler->display->display_options['filters']['subject']['expose']['operator'] = 'subject_op';
+$handler->display->display_options['filters']['subject']['expose']['identifier'] = 'subject';
+$handler->display->display_options['filters']['subject']['expose']['required'] = FALSE;
+/* Filter criterion: Comment: Author */
+$handler->display->display_options['filters']['name']['id'] = 'name';
+$handler->display->display_options['filters']['name']['table'] = 'comment';
+$handler->display->display_options['filters']['name']['field'] = 'name';
+$handler->display->display_options['filters']['name']['operator'] = 'contains';
+$handler->display->display_options['filters']['name']['exposed'] = TRUE;
+$handler->display->display_options['filters']['name']['expose']['operator_id'] = 'name_op';
+$handler->display->display_options['filters']['name']['expose']['label'] = 'Author';
+$handler->display->display_options['filters']['name']['expose']['use_operator'] = FALSE;
+$handler->display->display_options['filters']['name']['expose']['operator'] = 'name_op';
+$handler->display->display_options['filters']['name']['expose']['identifier'] = 'name';
+$handler->display->display_options['filters']['name']['expose']['required'] = FALSE;
+/* Filter criterion: Content: Title */
+$handler->display->display_options['filters']['title']['id'] = 'title';
+$handler->display->display_options['filters']['title']['table'] = 'node';
+$handler->display->display_options['filters']['title']['field'] = 'title';
+$handler->display->display_options['filters']['title']['relationship'] = 'nid';
+$handler->display->display_options['filters']['title']['operator'] = 'contains';
+$handler->display->display_options['filters']['title']['exposed'] = TRUE;
+$handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
+$handler->display->display_options['filters']['title']['expose']['label'] = 'Posted in';
+$handler->display->display_options['filters']['title']['expose']['use_operator'] = FALSE;
+$handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
+$handler->display->display_options['filters']['title']['expose']['identifier'] = 'title';
+$handler->display->display_options['filters']['title']['expose']['required'] = FALSE;
+/* Filter criterion: Comment: Approved */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'comment';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 'All';
+$handler->display->display_options['filters']['status']['exposed'] = TRUE;
+$handler->display->display_options['filters']['status']['expose']['label'] = 'Published';
+$handler->display->display_options['filters']['status']['expose']['use_operator'] = FALSE;
+$handler->display->display_options['filters']['status']['expose']['identifier'] = 'status';
+$handler->display->display_options['filters']['status']['expose']['required'] = FALSE;
+$handler->display->display_options['filters']['status']['expose']['remember'] = 1;
+
+/* Display: System */
 $handler = $view->new_display('system', 'System', 'system_1');
-$handler->override_option('path', 'admin/content/comment');
+$handler->display->display_options['path'] = 'admin/content/comment';
+$translatables['admin_content_comment'] = array(
+  t('Defaults'),
+  t('Comments'),
+  t('more'),
+  t('Apply'),
+  t('Reset'),
+  t('Sort by'),
+  t('Asc'),
+  t('Desc'),
+  t('Items per page'),
+  t('- All -'),
+  t('Offset'),
+  t('Node'),
+  t('Title'),
+  t('Author'),
+  t('Posted in'),
+  t('Posted'),
+  t('Published'),
+  t('System'),
+);

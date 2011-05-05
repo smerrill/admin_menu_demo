@@ -43,24 +43,58 @@ class views_plugin_display_system extends views_plugin_display {
     // views_arg_load().
     $bits = explode('/', $this->get_option('path'));
     $page_arguments = array($this->view->name, $this->display->id);
+    $this->view->init_handlers();
+    $view_arguments = $this->view->argument;
 
     // Replace % with %views_arg for menu autoloading and add to the
     // page arguments so the argument actually comes through.
     foreach ($bits as $pos => $bit) {
       if ($bit == '%') {
-        $bits[$pos] = '%views_arg';
+        $argument = array_shift($view_arguments);
+        if (!empty($argument->options['specify_validation']) && $argument->options['validate']['type'] != 'none') {
+          $bits[$pos] = '%views_arg';
+        }
         $page_arguments[] = $pos;
       }
     }
 
     $path = implode('/', $bits);
+    if (!$path) {
+      return $items;
+    }
 
     $access_plugin = $this->get_plugin('access');
     if (!isset($access_plugin)) {
       $access_plugin = views_get_plugin('access', 'none');
     }
-    if (!$path) {
-      return $items;
+
+    // Get access callback might return an array of the callback + the dynamic arguments.
+    $access_plugin_callback = $access_plugin->get_access_callback();
+
+    if (is_array($access_plugin_callback)) {
+      $access_arguments = array();
+
+      // Find the plugin arguments.
+      $access_plugin_method = array_shift($access_plugin_callback);
+      $access_plugin_arguments = array_shift($access_plugin_callback);
+      if (!is_array($access_plugin_arguments)) {
+        $access_plugin_arguments = array();
+      }
+
+      $access_arguments[0] = array($access_plugin_method, &$access_plugin_arguments);
+
+      // Move the plugin arguments to the access arguments array.
+      $i = 1;
+      foreach ($access_plugin_arguments as $key => $value) {
+        if (is_int($value)) {
+          $access_arguments[$i] = $value;
+          $access_plugin_arguments[$key] = $i;
+          $i++;
+        }
+      }
+    }
+    else {
+      $access_arguments = array($access_plugin_callback);
     }
 
     $items[$path] = array(
@@ -69,13 +103,13 @@ class views_plugin_display_system extends views_plugin_display {
       'page arguments' => $page_arguments,
       // Default access check (per display)
       'access callback' => 'views_access',
-      'access arguments' => array($access_plugin->get_access_callback()),
+      'access arguments' => $access_arguments,
       // Identify URL embedded arguments and correlate them to a handler
       'load arguments'  => array($this->view->name, $this->display->id, '%index'),
     );
 
     // Grep all callbacks for router items below the target path.
-    $children = preg_grep('@' . preg_quote($path, '@') . '/.+@', array_keys($callbacks));
+    $children = preg_grep('@^' . preg_quote($path, '@') . '/@', array_keys($callbacks));
     foreach ($children as $child_path) {
       // Only inherit properties from parent, if the child is not a default
       // local task.
@@ -105,7 +139,7 @@ class views_plugin_display_system extends views_plugin_display {
    * Also set the page title, because original page callbacks might do this.
    */
   function execute() {
-    views_set_page_view($this);
+    views_set_page_view($this->view);
 
     // Prior to this being called, the $view should already be set to this
     // display, and arguments should be set on the view.
@@ -137,18 +171,15 @@ class views_plugin_display_system extends views_plugin_display {
       'title' => t('System path settings'),
     );
 
-    $path = $this->get_option('path');
+    $path = strip_tags('/' . $this->get_option('path'));
     if (empty($path)) {
       $path = t('None');
-    }
-    else {
-      $path = truncate_utf8($path, 17, FALSE, TRUE);
     }
 
     $options['path'] = array(
       'category' => 'system',
       'title' => t('Path'),
-      'value' => check_plain($path),
+      'value' => views_ui_truncate($path, 24),
     );
   }
 
