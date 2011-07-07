@@ -1,6 +1,5 @@
 name = Administration Development tools
 description = Administration and debugging functionality for developers and site builders.
 package = Administration
-core = 7.x
+core = 8.x
 scripts[] = admin_devel.js
-files[] = admin_devel.module
