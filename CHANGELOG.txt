@@ -1,6 +1,8 @@
 
 Admin Menu 7.x-3.x, xxxx-xx-xx
 ------------------------------
+#1212064 by sun: Updated admin_views default views for VBO 3.x.
+#1196590 by sun: Fixed errors and notices for admin_views with Views 3.
 #1144768 by idlewilder, sun: Fixed devel modules to skip are not displayed.
 #1079374 by WillHall: Fixed JS Error: unrecognized expression: [href=/].
 #1114132 by joelstein, sun: Added Field UI to list of developer modules.
