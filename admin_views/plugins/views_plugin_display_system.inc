@@ -36,7 +36,7 @@ class views_plugin_display_system extends views_plugin_display {
   /**
    * Add this display's path information to Drupal's menu system.
    */
-  function execute_hook_menu($callbacks) {
+  function execute_hook_menu(&$callbacks) {
     $items = array();
 
     // Replace % with the link to our standard views argument loader
@@ -121,28 +121,29 @@ class views_plugin_display_system extends views_plugin_display {
     // Grep all callbacks for router items below the target path.
     $num_parent_parts = count(explode('/', $path));
     $children = preg_grep('@^' . preg_quote($path, '@') . '/@', array_keys($callbacks));
+    // Ensure correct inheritance of properties on the original parent path
+    // (being replaced) to child items.
     foreach ($children as $child_path) {
-      // Add child to our stack of items to replace.
       // Default local tasks can be skipped, since the only properties that
       // matter for them are 'title', 'description', and 'weight'.
       if (!isset($callbacks[$child_path]['type']) || $callbacks[$child_path]['type'] != MENU_DEFAULT_LOCAL_TASK) {
         // If this is a direct child, copy original properties form parent path.
         $num_child_parts = count(explode('/', $child_path));
         if (isset($callbacks[$path]) && ($num_parent_parts + 1 == $num_child_parts)) {
-          // Copy the child element.
-          $items[$child_path] = $callbacks[$child_path];
           // Copy properties from the parent item, which are not set on the
           // child. The menu system would normally inherit these to the child.
-          $items[$child_path] += array_intersect_key($callbacks[$path], $keys);
+          $callbacks[$child_path] += array_intersect_key($callbacks[$path], $keys);
           // Some properties may not be set on the original parent item, but
           // are set on the new views parent item. The menu system would inherit
           // these to children; prevent that by setting NULL values.
-          $items[$child_path] += $keys;
+          $callbacks[$child_path] += $keys;
         }
       }
     }
 
-    // If the path really exists, copy over its remaining properties.
+    // If the original parent path already existed, copy over its remaining
+    // properties.
+    // @todo Above inheritance code can probably be moved into this condition.
     if (isset($callbacks[$path])) {
       $items[$path] += $callbacks[$path];
     }
