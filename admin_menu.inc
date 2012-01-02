@@ -713,7 +713,7 @@ function admin_menu_toggle_modules() {
     // from system_modules() and system_modules_submit().
     drupal_theme_rebuild();
     menu_rebuild();
-    cache_clear_all('schema', 'cache');
+    cache('cache')->delete('schema');
     cache_clear_all();
     drupal_clear_css_cache();
     drupal_clear_js_cache();
@@ -781,10 +781,10 @@ function admin_menu_flush_cache($name = NULL) {
       // Don't clear cache_form - in-progress form submissions may break.
       // Ordered so clearing the page cache will always be the last action.
       // @see drupal_flush_all_caches()
-      $core = array('cache', 'cache_bootstrap', 'cache_filter', 'cache_page');
-      $cache_tables = array_merge(module_invoke_all('flush_caches'), $core);
-      foreach ($cache_tables as $table) {
-        cache_clear_all('*', $table, TRUE);
+      $core = array('cache', 'bootstrap', 'filter', 'page');
+      $cache_bins = array_merge(module_invoke_all('flush_caches'), $core);
+      foreach ($cache_bins as $bin) {
+        cache($bin)->flush();
       }
       break;
 

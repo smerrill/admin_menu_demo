@@ -242,7 +242,7 @@ function admin_menu_cache_get($cid) {
     return FALSE;
   }
   if (!array_key_exists($cid, $cache)) {
-    $cache[$cid] = cache_get($cid, 'cache_admin_menu');
+    $cache[$cid] = cache('admin_menu')->get($cid);
     if ($cache[$cid] && isset($cache[$cid]->data)) {
       $cache[$cid] = $cache[$cid]->data;
     }
@@ -262,7 +262,7 @@ function admin_menu_cache_get($cid) {
  */
 function admin_menu_cache_set($cid, $data) {
   if (variable_get('admin_menu_cache_client', TRUE)) {
-    cache_set($cid, $data, 'cache_admin_menu');
+    cache('admin_menu')->set($cid, $data);
   }
 }
 
@@ -388,7 +388,7 @@ function admin_menu_output() {
 
   // Try to load and output administration menu from server-side cache.
   if ($cache_server_enabled) {
-    $cache = cache_get($cid, 'cache_menu');
+    $cache = cache('menu')->get($cid);
     if ($cache && isset($cache->data)) {
       $content = $cache->data;
     }
@@ -425,7 +425,7 @@ function admin_menu_output() {
 
     // Cache the menu for this user.
     if ($cache_server_enabled) {
-      cache_set($cid, $content, 'cache_menu');
+      cache('menu')->set($cid, $content);
     }
   }
 
@@ -575,11 +575,11 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
  */
 function admin_menu_flush_caches() {
   // Flush cached output of admin_menu.
-  cache_clear_all('admin_menu:', 'cache_menu', TRUE);
+  cache('menu')->deletePrefix('admin_menu:');
   // Flush client-side cache hashes.
   // db_table_exists() required for SimpleTest.
   if (db_table_exists('cache_admin_menu')) {
-    cache_clear_all('*', 'cache_admin_menu', TRUE);
+    cache('admin_menu')->flush();
   }
 }
 
