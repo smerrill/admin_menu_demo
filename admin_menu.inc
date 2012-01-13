@@ -471,7 +471,7 @@ function admin_menu_links_icon() {
     '#access' => user_access('flush caches'),
     '#href' => 'admin_menu/flush-cache',
     '#options' => array(
-      'query' => $destination,
+      'query' => $destination + array('token' => drupal_get_token('admin_menu/flush-cache')),
     ),
   );
   $caches = array(
@@ -487,7 +487,7 @@ function admin_menu_links_icon() {
       '#title' => $title,
       '#href' => 'admin_menu/flush-cache/' . $arg,
       '#options' => array(
-        'query' => $destination,
+        'query' => $destination + array('token' => drupal_get_token('admin_menu/flush-cache/' . $arg)),
       ),
     );
   }
@@ -499,7 +499,7 @@ function admin_menu_links_icon() {
     '#access' => user_access('administer site configuration'),
     '#href' => 'admin_menu/toggle-modules',
     '#options' => array(
-      'query' => $destination,
+      'query' => $destination + array('token' => drupal_get_token('admin_menu/toggle-modules')),
     ),
   );
 
@@ -682,6 +682,10 @@ function _admin_menu_form_devel_admin_settings_alter(&$form, $form_state) {
  * This can save up to 150ms on each uncached page request.
  */
 function admin_menu_toggle_modules() {
+  if (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], current_path())) {
+    return MENU_ACCESS_DENIED;
+  }
+
   $rebuild = FALSE;
   $saved_state = variable_get('admin_menu_devel_modules_enabled', NULL);
   if (isset($saved_state)) {
@@ -763,6 +767,10 @@ function _admin_menu_developer_modules() {
  *   (optional) Name of cache to flush.
  */
 function admin_menu_flush_cache($name = NULL) {
+  if (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], current_path())) {
+    return MENU_ACCESS_DENIED;
+  }
+
   switch ($name) {
     case 'admin_menu':
       admin_menu_flush_caches();
