@@ -3,4 +3,7 @@ description = "Provides a dropdown menu to most administrative tasks and other c
 package = Administration
 core = 7.x
 configure = admin/config/administration/admin_menu
+; Requires menu_build_tree() conditions; available after 7.10.
+; @see http://drupal.org/node/1025582
+dependencies[] = system (>=7.12)
 files[] = tests/admin_menu.test
