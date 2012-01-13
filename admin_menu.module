@@ -142,7 +142,7 @@ function admin_menu_init() {
   $settings['destination'] = drupal_http_build_query(drupal_get_destination());
 
   // Hash for client-side HTTP/AJAX caching.
-  $cid = 'admin_menu:' . $user->uid . ':' . $language->language;
+  $cid = 'admin_menu:' . $user->uid . ':' . $language->langcode;
   if (!empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
     $settings['hash'] = $hash;
     // The base path to use for cache requests depends on whether clean URLs
@@ -372,7 +372,7 @@ function admin_menu_output() {
   global $user, $language;
 
   $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
-  $cid = 'admin_menu:' . $user->uid . ':' . $language->language;
+  $cid = 'admin_menu:' . $user->uid . ':' . $language->langcode;
 
   // Do nothing at all here if the client supports client-side caching, the user
   // has a hash, and is NOT requesting the cache update path. Consult the hash
