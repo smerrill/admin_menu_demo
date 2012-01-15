@@ -1,5 +1,12 @@
 (function($) {
 
+// Extend jQuery with a case-insensitive *:containsi selector.
+$.extend($.expr[':'], {
+  'containsi': function(elem, i, match, array) {
+    return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+  }
+});
+
 Drupal.admin = Drupal.admin || {};
 Drupal.admin.behaviors = Drupal.admin.behaviors || {};
 Drupal.admin.hashes = Drupal.admin.hashes || {};
@@ -192,37 +199,67 @@ Drupal.admin.behaviors.destination = function (context, settings, $adminMenu) {
  *   it will not run last.
  */
 Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
-  // Hover emulation for IE 6.
-  if ($.browser.msie && parseInt(jQuery.browser.version) == 6) {
-    $('li', $adminMenu).hover(
-      function () {
-        $(this).addClass('iehover');
-      },
-      function () {
-        $(this).removeClass('iehover');
-      }
-    );
-  }
+  // Hover emulation for IE 6 and delayed mouseout for all browsers.
+  $('li', $adminMenu).hover(function () {
+    clearTimeout(this.hoverTimer);
+    // Hide all siblings immediately.
+    $(this).addClass('hover').siblings().removeClass('hover');
+  }, function () {
+    var $this = $(this);
+    this.hoverTimer = setTimeout(function () {
+      $this.removeClass('hover');
+    }, 400);
+  });
+};
 
-  // Delayed mouseout.
-  $('li.expandable', $adminMenu).hover(
-    function () {
-      // Stop the timer.
-      clearTimeout(this.sfTimer);
-      // Display child lists.
-      $('> ul', this)
-        .css({left: 'auto', display: 'block'})
-        // Immediately hide nephew lists.
-        .parent().siblings('li').children('ul').css({left: '-999em', display: 'none'});
-    },
-    function () {
-      // Start the timer.
-      var uls = $('> ul', this);
-      this.sfTimer = setTimeout(function () {
-        uls.css({left: '-999em', display: 'none'});
-      }, 400);
-    }
-  );
+/**
+ * Apply the search bar functionality.
+ */
+Drupal.admin.behaviors.search = function(context, settings, $adminMenu) {
+  // Add the container for the search results.
+  $('.admin-menu-search input', $adminMenu).each(function () {
+    // Append the results container.
+    var $results = $('<ul class="admin-menu-search-results"/>').insertAfter($(this));
+    // Initialize the current value property on the input element.
+    $(this).data('current', $(this).val());
+    $(this).keyup(function (e) {
+      // Only proceed if the string in the search box has changed.
+      if ($(this).data('current') != e.target.value) {
+        $(this).data('current', e.target.value);
+        // Nuke all previous results from the results container.
+        $results.empty();
+        $('li', $adminMenu).removeClass('hover');
+        $('li a', $adminMenu).removeClass('highlight');
+        // Only search for matches if we have a search string that is at least
+        // three characters long.
+        if (e.target.value.length >= 3) {
+          // Select all links that match the search term and are not siblings
+          // of the actions menu.
+          $('li:not(.admin-menu-action, .admin-menu-action li) > a:containsi("' + e.target.value + '")', $adminMenu).each(function () {
+            var $match = $(this);
+            var $parent = $match.parent();
+            var $trail = $parent.parentsUntil('#admin-menu-wrapper', 'li');
+            var $text = $match.text();
+            // Check which category this menu item belongs to and add that
+            // information to the result.
+            var $category = $parent.parents('#admin-menu-wrapper > ul > li:not(.admin-menu-icon)').children('a').text();
+            if ($category) {
+              $text = $text + ' (' + $category + ')';
+            }
+            // .toggleClass() might cause problems here since we got the delayed
+            // blur behavior on in the rest of the navigation.
+            $('<li><a href="' + $match.attr('href') + '">' + $text +'</a></li>').appendTo($results).hover(function () {
+              $parent.addClass('highlight');
+              $trail.addClass('hover');
+            }, function () {
+              $parent.removeClass('highlight');
+              $trail.removeClass('hover');
+            });
+          });
+        }
+      }
+    });
+  });
 };
 
 /**

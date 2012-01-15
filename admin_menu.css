@@ -34,7 +34,8 @@
   background: transparent url(images/icon_users.png) 90% center no-repeat;
   padding-right: 22px;
 }
-#admin-menu li.admin-menu-action {
+#admin-menu li.admin-menu-action,
+#admin-menu li.admin-menu-search {
   float: right;
 }
 #admin-menu li.admin-menu-action a {
@@ -106,7 +107,6 @@ body.admin-menu {
 #admin-menu li ul {
   background: none;
   display: none;
-  left: -999em;
   line-height: 1.2em;
   margin: 0;
   position: absolute;
@@ -115,19 +115,18 @@ body.admin-menu {
 
 /* Third-and-above-level lists */
 #admin-menu li li.expandable ul {
-  margin: -20px 0 0 160px;
+  margin: -19px 0 0 160px;
 }
 
 #admin-menu li:hover ul ul,
 #admin-menu li:hover ul ul ul,
 #admin-menu li:hover ul ul ul ul,
 #admin-menu li:hover ul ul ul ul ul,
-#admin-menu li.iehover ul ul,
-#admin-menu li.iehover ul ul ul,
-#admin-menu li.iehover ul ul ul ul,
-#admin-menu li.iehover ul ul ul ul ul {
+#admin-menu li.hover ul ul,
+#admin-menu li.hover ul ul ul,
+#admin-menu li.hover ul ul ul ul,
+#admin-menu li.hover ul ul ul ul ul {
   display: none;
-  left: -999em;
 }
 
 /* Lists nested under hovered list items */
@@ -136,13 +135,12 @@ body.admin-menu {
 #admin-menu li li li:hover ul,
 #admin-menu li li li li:hover ul,
 #admin-menu li li li li li:hover ul,
-#admin-menu li.iehover ul,
-#admin-menu li li.iehover ul,
-#admin-menu li li li.iehover ul,
-#admin-menu li li li li.iehover ul,
-#admin-menu li li li li li.iehover ul {
+#admin-menu li.hover ul,
+#admin-menu li li.hover ul,
+#admin-menu li li li.hover ul,
+#admin-menu li li li li.hover ul,
+#admin-menu li li li li li.hover ul {
   display: block;
-  left: auto;
 }
 #admin-menu li.admin-menu-action:hover ul {
   right: 0;
@@ -153,7 +151,7 @@ body.admin-menu {
   background: #45454A url(images/arrow.png) no-repeat 145px 6px;
 }
 #admin-menu li li:hover,
-#admin-menu li li.iehover {
+#admin-menu li li.hover {
   background-color: #111;
 }
 #admin-menu li li:hover a,
@@ -171,15 +169,46 @@ body.admin-menu {
   border-color: #323232;
 }
 #admin-menu li li:hover li a,
-#admin-menu li li.iehover li a,
-#admin-menu li li.iehover li.iehover li a {
+#admin-menu li li.hover li a,
+#admin-menu li li.hover li.hover li a {
   color: #EEE;
 }
-#admin-menu li li.iehover a,
-#admin-menu li li.iehover li.iehover a,
-#admin-menu li li.iehover li.iehover li.iehover a {
+#admin-menu li li.hover a,
+#admin-menu li li.hover li.hover a,
+#admin-menu li li.hover li.hover li.hover a {
   color: #FFF;
   width: 90%; /* IE */
+}
+
+/* Search form */
+#admin-menu .admin-menu-search .form-item {
+  margin: 0;
+}
+
+#admin-menu .admin-menu-search input {
+  background: #fff url('images/search.png') top right no-repeat;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  outline: none;
+  width: 158px;
+  padding: 2px 22px 2px 4px;
+  margin: 1px;
+  font-size: 10px;
+  border: none;
+}
+
+#admin-menu .admin-menu-search-results {
+  display: block !important;
+}
+
+#admin-menu .admin-menu-search-results,
+#admin-menu .admin-menu-search-results li {
+  width: 186px
+}
+
+#admin-menu li.highlight > a {
+  color: #ff0000 !important;
 }
 
 /* #210615: Mozilla on Mac fix */

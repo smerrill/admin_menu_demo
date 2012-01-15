@@ -417,6 +417,18 @@ function admin_menu_output() {
     $content['icon'] = admin_menu_links_icon();
     $content['user'] = admin_menu_links_user();
 
+    $content['search'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Search'),
+      '#title_display' => 'invisible',
+      '#attributes' => array(
+        'placeholder' => t('Search'),
+      ),
+      '#prefix' => '<li class="admin-menu-search">',
+      '#suffix' => '</li>',
+      '#weight' => 200,
+    );
+
     // Allow modules to alter the output.
     drupal_alter('admin_menu_output', $content);
     $content = drupal_render($content);
