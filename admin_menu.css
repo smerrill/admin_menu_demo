@@ -183,8 +183,8 @@ body.admin-menu {
 /* Search form */
 #admin-menu .admin-menu-search .form-item {
   margin: 0;
+  padding: 0;
 }
-
 #admin-menu .admin-menu-search input {
   background: #fff url('images/search.png') top right no-repeat;
   -webkit-border-radius: 5px;
@@ -201,14 +201,17 @@ body.admin-menu {
 #admin-menu .admin-menu-search-results {
   display: block !important;
 }
-
 #admin-menu .admin-menu-search-results,
 #admin-menu .admin-menu-search-results li {
   width: 186px
 }
 
+#admin-menu li.highlight {
+  background-color: #eee;
+}
 #admin-menu li.highlight > a {
-  color: #ff0000 !important;
+  border-color: #ccc;
+  color: #111 !important;
 }
 
 /* #210615: Mozilla on Mac fix */

@@ -568,6 +568,28 @@ function admin_menu_links_user() {
 }
 
 /**
+ * Build search widget.
+ *
+ * @see theme_admin_menu_links()
+ */
+function admin_menu_links_search() {
+  $links = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#attributes' => array(
+      'placeholder' => t('Search'),
+    ),
+    // Cannot use .admin-menu-action, as it applies a wonky/special right
+    // viewport alignment.
+    '#prefix' => '<li class="admin-menu-search">',
+    '#suffix' => '</li>',
+    '#weight' => 200,
+  );
+  return $links;
+}
+
+/**
  * Form builder function for module settings.
  */
 function admin_menu_theme_settings() {

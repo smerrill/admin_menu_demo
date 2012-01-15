@@ -1,9 +1,11 @@
 (function($) {
 
-// Extend jQuery with a case-insensitive *:containsi selector.
+/**
+ * Extends jQuery with a case-insensitive *:containsi selector.
+ */
 $.extend($.expr[':'], {
-  'containsi': function(elem, i, match, array) {
-    return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+  'containsi': function (elem, i, match, array) {
+    return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || '').toLowerCase()) >= 0;
   }
 });
 
@@ -215,40 +217,40 @@ Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
 /**
  * Apply the search bar functionality.
  */
-Drupal.admin.behaviors.search = function(context, settings, $adminMenu) {
+Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
   // Add the container for the search results.
   $('.admin-menu-search input', $adminMenu).each(function () {
     // Append the results container.
     var $results = $('<ul class="admin-menu-search-results"/>').insertAfter($(this));
     // Initialize the current value property on the input element.
     $(this).data('current', $(this).val());
-    $(this).keyup(function (e) {
+    $(this).keyup(function (event) {
       // Only proceed if the string in the search box has changed.
-      if ($(this).data('current') != e.target.value) {
-        $(this).data('current', e.target.value);
+      if ($(this).data('current') != event.target.value) {
+        $(this).data('current', event.target.value);
         // Nuke all previous results from the results container.
         $results.empty();
         $('li', $adminMenu).removeClass('hover');
         $('li a', $adminMenu).removeClass('highlight');
         // Only search for matches if we have a search string that is at least
         // three characters long.
-        if (e.target.value.length >= 3) {
+        if (event.target.value.length >= 3) {
           // Select all links that match the search term and are not siblings
           // of the actions menu.
-          $('li:not(.admin-menu-action, .admin-menu-action li) > a:containsi("' + e.target.value + '")', $adminMenu).each(function () {
+          $('li:not(.admin-menu-action, .admin-menu-action li) > a:containsi("' + event.target.value + '")', $adminMenu).each(function () {
             var $match = $(this);
             var $parent = $match.parent();
             var $trail = $parent.parentsUntil('#admin-menu-wrapper', 'li');
-            var $text = $match.text();
+            var text = $match.text();
             // Check which category this menu item belongs to and add that
             // information to the result.
-            var $category = $parent.parents('#admin-menu-wrapper > ul > li:not(.admin-menu-icon)').children('a').text();
-            if ($category) {
-              $text = $text + ' (' + $category + ')';
+            var category = $parent.parents('#admin-menu-wrapper > ul > li:not(.admin-menu-icon)').children('a').text();
+            if (category) {
+              text = text + ' (' + category + ')';
             }
             // .toggleClass() might cause problems here since we got the delayed
             // blur behavior on in the rest of the navigation.
-            $('<li><a href="' + $match.attr('href') + '">' + $text +'</a></li>').appendTo($results).hover(function () {
+            $('<li><a href="' + $match.attr('href') + '">' + text +'</a></li>').appendTo($results).hover(function () {
               $parent.addClass('highlight');
               $trail.addClass('hover');
             }, function () {
