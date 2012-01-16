@@ -207,10 +207,10 @@ body.admin-menu {
 }
 
 #admin-menu li.highlight {
-  background-color: #eee;
+  background-color: #eee !important;
 }
 #admin-menu li.highlight > a {
-  border-color: #ccc;
+  border-color: #ccc !important;
   color: #111 !important;
 }
 

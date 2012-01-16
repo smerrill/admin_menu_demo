@@ -218,44 +218,45 @@ Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
  * Apply the search bar functionality.
  */
 Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
-  // Add the container for the search results.
   $('.admin-menu-search input', $adminMenu).each(function () {
+    var self = this, $self = $(this);
+
     // Append the results container.
-    var $results = $('<ul class="admin-menu-search-results"/>').insertAfter($(this));
-    // Initialize the current value property on the input element.
-    $(this).data('current', $(this).val());
-    $(this).keyup(function (event) {
-      // Only proceed if the string in the search box has changed.
-      if ($(this).data('current') != event.target.value) {
-        $(this).data('current', event.target.value);
-        // Nuke all previous results from the results container.
+    var $results = $('<ul class="admin-menu-search-results" />').insertAfter(self);
+
+    // Initialize the current search needle.
+    self.needle = $self.val();
+
+    $self.keyup(function (event) {
+      // Only proceed if the search needle has changed.
+      if (self.needle != event.target.value) {
+        // Update needle and remove previous results.
+        self.needle = event.target.value;
         $results.empty();
-        $('li', $adminMenu).removeClass('hover');
-        $('li a', $adminMenu).removeClass('highlight');
-        // Only search for matches if we have a search string that is at least
-        // three characters long.
+        $('li, li a', $adminMenu).removeClass('hover highlight');
+
+        // Only search if the needle is longer than 3 characters.
         if (event.target.value.length >= 3) {
           // Select all links that match the search term and are not siblings
           // of the actions menu.
-          $('li:not(.admin-menu-action, .admin-menu-action li) > a:containsi("' + event.target.value + '")', $adminMenu).each(function () {
+          // Separate selector and .filter() to leverage Sizzle cache.
+          $('li:not(.admin-menu-action, .admin-menu-action li) > a').filter(':containsi("' + event.target.value + '")', $adminMenu).each(function () {
             var $match = $(this);
             var $parent = $match.parent();
-            var $trail = $parent.parentsUntil('#admin-menu-wrapper', 'li');
-            var text = $match.text();
+            var result = $match.text();
             // Check which category this menu item belongs to and add that
             // information to the result.
-            var category = $parent.parents('#admin-menu-wrapper > ul > li:not(.admin-menu-icon)').children('a').text();
-            if (category) {
-              text = text + ' (' + category + ')';
+            var $category = $('#admin-menu-wrapper > ul > li').has(this);
+            if ($category) {
+              result = $category.children('a').text() + ': ' + result;
             }
-            // .toggleClass() might cause problems here since we got the delayed
-            // blur behavior on in the rest of the navigation.
-            $('<li><a href="' + $match.attr('href') + '">' + text +'</a></li>').appendTo($results).hover(function () {
+
+            $('<li><a href="' + $match.attr('href') + '">' + result +'</a></li>').appendTo($results).hover(function () {
               $parent.addClass('highlight');
-              $trail.addClass('hover');
+              $match.trigger('mouseenter');
             }, function () {
               $parent.removeClass('highlight');
-              $trail.removeClass('hover');
+              $match.trigger('mouseleave');
             });
           });
         }
