@@ -244,10 +244,10 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
             var $match = $(this);
             var $parent = $match.parent();
             var result = $match.text();
-            // Check which category this menu item belongs to and add that
-            // information to the result.
+
+            // Add the top-level category to the result.
             var $category = $('#admin-menu-wrapper > ul > li').has(this);
-            if ($category) {
+            if ($category.length) {
               result = $category.children('a').text() + ': ' + result;
             }
 
