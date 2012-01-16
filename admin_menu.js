@@ -260,24 +260,26 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
           // Select all links that match the search term and are not siblings
           // of the actions menu.
           // Separate selector and .filter() to leverage Sizzle cache.
-          $('li:not(.admin-menu-action, .admin-menu-action li) > a').filter(':containsi("' + event.target.value + '")', $adminMenu).each(function () {
+          $('li:not(.admin-menu-action, .admin-menu-action li) > a', $adminMenu).filter(':containsi("' + event.target.value + '")', $adminMenu).each(function () {
             var $match = $(this);
             var $parent = $match.parent();
             var result = $match.text();
 
             // Add the top-level category to the result.
-            var $category = $('#admin-menu-wrapper > ul > li').has(this);
+            var $category = $('#admin-menu-wrapper > ul > li', $adminMenu).has(this);
             if ($category.length) {
               result = $category.children('a').text() + ': ' + result;
             }
 
-            $('<li><a href="' + $match.attr('href') + '">' + result +'</a></li>').appendTo($results).hover(function () {
-              $parent.addClass('highlight');
-              $match.trigger('mouseenter');
-            }, function () {
-              $parent.removeClass('highlight');
-              $match.trigger('mouseleave');
-            });
+            $('<li><a href="' + $match.attr('href') + '">' + result + '</a></li>')
+              .appendTo($results)
+              .hover(function () {
+                $parent.addClass('highlight');
+                $match.trigger('mouseenter');
+              }, function () {
+                $parent.removeClass('highlight');
+                $match.trigger('mouseleave');
+              });
           });
           // Show the search results.
           // @todo Why do they appear without this?
