@@ -107,6 +107,7 @@ body.admin-menu {
 #admin-menu li ul {
   background: none;
   display: none;
+  left: -999em;
   line-height: 1.2em;
   margin: 0;
   position: absolute;
@@ -115,18 +116,19 @@ body.admin-menu {
 
 /* Third-and-above-level lists */
 #admin-menu li li.expandable ul {
-  margin: -19px 0 0 160px;
+  margin: -20px 0 0 160px;
 }
 
 #admin-menu li:hover ul ul,
 #admin-menu li:hover ul ul ul,
 #admin-menu li:hover ul ul ul ul,
 #admin-menu li:hover ul ul ul ul ul,
-#admin-menu li.hover ul ul,
-#admin-menu li.hover ul ul ul,
-#admin-menu li.hover ul ul ul ul,
-#admin-menu li.hover ul ul ul ul ul {
+#admin-menu li.iehover ul ul,
+#admin-menu li.iehover ul ul ul,
+#admin-menu li.iehover ul ul ul ul,
+#admin-menu li.iehover ul ul ul ul ul {
   display: none;
+  left: -999em;
 }
 
 /* Lists nested under hovered list items */
@@ -135,12 +137,13 @@ body.admin-menu {
 #admin-menu li li li:hover ul,
 #admin-menu li li li li:hover ul,
 #admin-menu li li li li li:hover ul,
-#admin-menu li.hover ul,
-#admin-menu li li.hover ul,
-#admin-menu li li li.hover ul,
-#admin-menu li li li li.hover ul,
-#admin-menu li li li li li.hover ul {
+#admin-menu li.iehover ul,
+#admin-menu li li.iehover ul,
+#admin-menu li li li.iehover ul,
+#admin-menu li li li li.iehover ul,
+#admin-menu li li li li li.iehover ul {
   display: block;
+  left: auto;
 }
 #admin-menu li.admin-menu-action:hover ul {
   right: 0;
@@ -151,7 +154,7 @@ body.admin-menu {
   background: #45454A url(images/arrow.png) no-repeat 145px 6px;
 }
 #admin-menu li li:hover,
-#admin-menu li li.hover {
+#admin-menu li li.iehover {
   background-color: #111;
 }
 #admin-menu li li:hover a,
@@ -169,13 +172,13 @@ body.admin-menu {
   border-color: #323232;
 }
 #admin-menu li li:hover li a,
-#admin-menu li li.hover li a,
-#admin-menu li li.hover li.hover li a {
+#admin-menu li li.iehover li a,
+#admin-menu li li.iehover li.iehover li a {
   color: #EEE;
 }
-#admin-menu li li.hover a,
-#admin-menu li li.hover li.hover a,
-#admin-menu li li.hover li.hover li.hover a {
+#admin-menu li li.iehover a,
+#admin-menu li li.iehover li.iehover a,
+#admin-menu li li.iehover li.iehover li.iehover a {
   color: #FFF;
   width: 90%; /* IE */
 }
@@ -200,10 +203,11 @@ body.admin-menu {
 
 #admin-menu .admin-menu-search-results {
   display: block !important;
+  left: auto;
 }
 #admin-menu .admin-menu-search-results,
 #admin-menu .admin-menu-search-results li {
-  width: 186px
+  width: 186px;
 }
 
 #admin-menu li.highlight {

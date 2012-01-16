@@ -201,17 +201,37 @@ Drupal.admin.behaviors.destination = function (context, settings, $adminMenu) {
  *   it will not run last.
  */
 Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
-  // Hover emulation for IE 6 and delayed mouseout for all browsers.
-  $('li', $adminMenu).hover(function () {
-    clearTimeout(this.hoverTimer);
-    // Hide all siblings immediately.
-    $(this).addClass('hover').siblings().removeClass('hover');
-  }, function () {
-    var $this = $(this);
-    this.hoverTimer = setTimeout(function () {
-      $this.removeClass('hover');
-    }, 400);
-  });
+  // Hover emulation for IE 6.
+  if ($.browser.msie && parseInt(jQuery.browser.version) == 6) {
+    $('li', $adminMenu).hover(
+      function () {
+        $(this).addClass('iehover');
+      },
+      function () {
+        $(this).removeClass('iehover');
+      }
+    );
+  }
+
+  // Delayed mouseout.
+  $('li.expandable', $adminMenu).hover(
+    function () {
+      // Stop the timer.
+      clearTimeout(this.sfTimer);
+      // Display child lists.
+      $('> ul', this)
+        .css({left: 'auto', display: 'block'})
+        // Immediately hide nephew lists.
+        .parent().siblings('li').children('ul').css({left: '-999em', display: 'none'});
+    },
+    function () {
+      // Start the timer.
+      var uls = $('> ul', this);
+      this.sfTimer = setTimeout(function () {
+        uls.css({left: '-999em', display: 'none'});
+      }, 400);
+    }
+  );
 };
 
 /**
@@ -233,7 +253,7 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
         // Update needle and remove previous results.
         self.needle = event.target.value;
         $results.empty();
-        $('li, li a', $adminMenu).removeClass('hover highlight');
+        $('li', $adminMenu).removeClass('highlight');
 
         // Only search if the needle is longer than 3 characters.
         if (event.target.value.length >= 3) {
@@ -259,6 +279,9 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
               $match.trigger('mouseleave');
             });
           });
+          // Show the search results.
+          // @todo Why do they appear without this?
+          //$self.trigger('mouseenter');
         }
       }
     });
