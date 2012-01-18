@@ -417,7 +417,16 @@ function admin_menu_output() {
     $content['icon'] = admin_menu_links_icon();
     $content['user'] = admin_menu_links_user();
 
+    // Allow modules to enhance the menu.
+    // Uses '_output' suffix for consistency with the alter hook (see below).
+    foreach (module_implements('admin_menu_output_build') as $module) {
+      $function = $module . '_admin_menu_output_build';
+      $function($content);
+    }
+
     // Allow modules to alter the output.
+    // The '_output' suffix is required to prevent hook implementation function
+    // name clashes with Admin module.
     drupal_alter('admin_menu_output', $content);
     $content = drupal_render($content);
 
@@ -436,11 +445,9 @@ function admin_menu_output() {
 }
 
 /**
- * Implements hook_admin_menu_output_alter().
- *
- * @todo This is an addition, not an alter. Add a build hook stage.
+ * Implements hook_admin_menu_output_build().
  */
-function admin_menu_admin_menu_output_alter(&$content) {
+function admin_menu_admin_menu_output_build(&$content) {
   // Add "Add content" link tree on the top level.
   $link = db_query("SELECT * FROM {menu_links} WHERE router_path = 'node/add' AND module = 'system'")->fetchAssoc();
   $conditions = array();
