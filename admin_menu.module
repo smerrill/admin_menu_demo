@@ -470,6 +470,19 @@ function admin_menu_admin_menu_output_build(&$content) {
 }
 
 /**
+ * Implements hook_admin_menu_output_alter().
+ */
+function admin_menu_admin_menu_output_alter(&$content) {
+  foreach ($content['menu'] as $key => $link) {
+    // Move local tasks on 'admin' into icon menu.
+    if ($link['#href'] == 'admin/tasks' || $link['#href'] == 'admin/index') {
+      $content['icon']['icon'][$key] = $link;
+      unset($content['menu'][$key]);
+    }
+  }
+}
+
+/**
  * Render a themed list of links.
  *
  * @param $variables
