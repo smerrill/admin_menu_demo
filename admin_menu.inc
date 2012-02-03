@@ -383,10 +383,6 @@ function admin_menu_links_menu($tree) {
       }
       continue;
     }
-    // Remove local tasks on 'admin'.
-    if (in_array($data['link']['router_path'], array('admin/by-task', 'admin/by-module'))) {
-      continue;
-    }
     // Omit alias lookups.
     $data['link']['localized_options']['alias'] = TRUE;
     // Remove description to prevent mouseover tooltip clashes.

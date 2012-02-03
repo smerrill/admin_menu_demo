@@ -418,8 +418,18 @@ function admin_menu_output() {
     $content['user'] = admin_menu_links_user();
     $content['search'] = admin_menu_links_search();
 
+    // Allow modules to enhance the menu.
+    // Uses '_output' suffix for consistency with the alter hook (see below).
+    foreach (module_implements('admin_menu_output_build') as $module) {
+      $function = $module . '_admin_menu_output_build';
+      $function($content);
+    }
+
     // Allow modules to alter the output.
+    // The '_output' suffix is required to prevent hook implementation function
+    // name clashes with Admin module.
     drupal_alter('admin_menu_output', $content);
+
     $content = drupal_render($content);
 
     // Cache the menu for this user.
@@ -437,11 +447,9 @@ function admin_menu_output() {
 }
 
 /**
- * Implements hook_admin_menu_output_alter().
- *
- * @todo This is an addition, not an alter. Add a build hook stage.
+ * Implements hook_admin_menu_output_build().
  */
-function admin_menu_admin_menu_output_alter(&$content) {
+function admin_menu_admin_menu_output_build(&$content) {
   // Add "Add content" link tree on the top level.
   $link = db_query("SELECT * FROM {menu_links} WHERE router_path = 'node/add' AND module = 'system'")->fetchAssoc();
   $conditions = array();
@@ -459,6 +467,19 @@ function admin_menu_admin_menu_output_alter(&$content) {
     $key = key($links);
     $links[$key]['#weight'] = -100;
     $content['menu'] += $links;
+  }
+}
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function admin_menu_admin_menu_output_alter(&$content) {
+  foreach ($content['menu'] as $key => $link) {
+    // Move local tasks on 'admin' into icon menu.
+    if ($link['#href'] == 'admin/tasks' || $link['#href'] == 'admin/index') {
+      $content['icon']['icon'][$key] = $link;
+      unset($content['menu'][$key]);
+    }
   }
 }
 
@@ -487,9 +508,17 @@ function theme_admin_menu_links($variables) {
     $destination = $destination['destination'];
   }
 
+  // The majority of items in the menu are sorted already, but since modules
+  // may add or change arbitrary items anywhere, there is no way around sorting
+  // everything again. element_sort() is not sufficient here, as it
+  // intentionally retains the order of elements having the same #weight,
+  // whereas menu links are supposed to be ordered by #weight and #title.
+  uasort($elements, 'admin_menu_element_sort');
+  $elements['#sorted'] = TRUE;
+
   $output = '';
   $depth_child = $depth + 1;
-  foreach (element_children($elements, TRUE) as $path) {
+  foreach (element_children($elements) as $path) {
     // Early-return nothing if user does not have access.
     if (isset($elements[$path]['#access']) && !$elements[$path]['#access']) {
       continue;
@@ -504,10 +533,6 @@ function theme_admin_menu_links($variables) {
       $elements[$path]['#children'] = drupal_render($elements[$path]);
     }
     else {
-      // Inherit #sorted flag from parent item.
-      if (isset($elements['#sorted'])) {
-        $elements[$path]['#sorted'] = TRUE;
-      }
       $elements[$path]['#children'] = theme('admin_menu_links', array('elements' => $elements[$path], 'depth' => $depth_child));
       if (!empty($elements[$path]['#children'])) {
         $elements[$path]['#attributes']['class'][] = 'expandable';
@@ -553,6 +578,22 @@ function theme_admin_menu_links($variables) {
     $output = "\n<ul>" . $output . '</ul>';
   }
   return $output;
+}
+
+/**
+ * Function used by uasort to sort structured arrays by #weight AND #title.
+ */
+function admin_menu_element_sort($a, $b) {
+  // @see element_sort()
+  $a_weight = (is_array($a) && isset($a['#weight'])) ? $a['#weight'] : 0;
+  $b_weight = (is_array($b) && isset($b['#weight'])) ? $b['#weight'] : 0;
+  if ($a_weight == $b_weight) {
+    // @see element_sort_by_title()
+    $a_title = (is_array($a) && isset($a['#title'])) ? $a['#title'] : '';
+    $b_title = (is_array($b) && isset($b['#title'])) ? $b['#title'] : '';
+    return strnatcasecmp($a_title, $b_title);
+  }
+  return ($a_weight < $b_weight) ? -1 : 1;
 }
 
 /**
