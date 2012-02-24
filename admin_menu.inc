@@ -213,14 +213,16 @@ function admin_menu_merge_tree(array &$tree, array $tree_dynamic, array $expand_
       // @see _menu_load_objects()
       $path_args = explode('/', $link['path']);
       $load_functions = unserialize($link['load_functions']);
-      foreach ($load_functions as $index => $function) {
-        if ($function) {
-          if (is_array($function)) {
-            list($function,) = each($function);
+      if (is_array($load_functions)) {
+        foreach ($load_functions as $index => $function) {
+          if ($function) {
+            if (is_array($function)) {
+              list($function,) = each($function);
+            }
+            // Add the loader function name minus "_load".
+            $placeholder = '%' . substr($function, 0, -5);
+            $path_args[$index] = $placeholder;
           }
-          // Add the loader function name minus "_load".
-          $placeholder = '%' . substr($function, 0, -5);
-          $path_args[$index] = $placeholder;
         }
       }
       $path_dynamic = implode('/', $path_args);
