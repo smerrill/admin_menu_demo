@@ -165,6 +165,11 @@ function admin_menu_init() {
   }
   if ($setting = variable_get('admin_menu_position_fixed', 0)) {
     $settings['position_fixed'] = $setting;
+
+    // In fixed positioning, supply a callback function for tableheader.js to
+    // allow it to determine the top viewport offset.
+    // @see admin_menu.js, toolbar.js
+    drupal_add_js(array('tableHeaderOffset' => 'Drupal.admin.height'), 'setting');
   }
   if ($setting = variable_get('admin_menu_tweak_tabs', 0)) {
     $settings['tweak_tabs'] = $setting;
