@@ -426,7 +426,7 @@ function admin_menu_output() {
 
     // Allow modules to alter the output.
     // The '_output' suffix is required to prevent hook implementation function
-    // name clashes with Admin module.
+    // name clashes with the contributed Admin module.
     drupal_alter('admin_menu_output', $content);
 
     $content = drupal_render($content);
