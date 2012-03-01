@@ -125,7 +125,7 @@ function admin_menu_init() {
   if (strpos($_GET['q'], 'js/') === 0) {
     return;
   }
-  global $user, $language;
+  global $user, $language_interface;
 
   $path = drupal_get_path('module', 'admin_menu');
   drupal_add_css($path . '/admin_menu.css');
@@ -142,7 +142,7 @@ function admin_menu_init() {
   $settings['destination'] = drupal_http_build_query(drupal_get_destination());
 
   // Hash for client-side HTTP/AJAX caching.
-  $cid = 'admin_menu:' . session_id() . ':' . $language->langcode;
+  $cid = 'admin_menu:' . session_id() . ':' . $language_interface->langcode;
   if (!empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
     $settings['hash'] = $hash;
     // The base path to use for cache requests depends on whether clean URLs
@@ -369,10 +369,10 @@ function admin_menu_output() {
   if (!user_access('access administration menu') || admin_menu_suppress(FALSE)) {
     return;
   }
-  global $user, $language;
+  global $user, $language_interface;
 
   $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
-  $cid = 'admin_menu:' . session_id() . ':' . $language->langcode;
+  $cid = 'admin_menu:' . session_id() . ':' . $language_interface->langcode;
 
   // Do nothing at all here if the client supports client-side caching, the user
   // has a hash, and is NOT requesting the cache update path. Consult the hash
