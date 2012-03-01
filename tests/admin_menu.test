@@ -155,6 +155,9 @@ class AdminMenuDynamicLinksTestCase extends AdminMenuWebTestCase {
 
     $permissions = $this->basePermissions + array(
       'administer content types',
+      // @todo D8: node_access() unconditionally checks for the 'access content'
+      //   permission for all $ops.
+      'access content',
       'create article content',
       'create special content',
     );
