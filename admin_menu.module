@@ -449,7 +449,7 @@ function admin_menu_output() {
  * Implements hook_admin_menu_output_build().
  */
 function admin_menu_admin_menu_output_build(&$content) {
-  // Add "Add content" link tree on the top level.
+  // Retrieve the "Add content" link tree.
   $link = db_query("SELECT * FROM {menu_links} WHERE router_path = 'node/add' AND module = 'system'")->fetchAssoc();
   $conditions = array();
   for ($i = 1; $i < MENU_MAX_DEPTH; $i++) {
@@ -463,9 +463,17 @@ function admin_menu_admin_menu_output_build(&$content) {
   ));
   $links = admin_menu_links_menu($tree);
   if (!empty($links)) {
-    $key = key($links);
-    $links[$key]['#weight'] = -100;
-    $content['menu'] += $links;
+    // If the user has access to the top-level "Content" category, insert the
+    // "Add content" link tree there.
+    if (isset($content['menu']['admin/content'])) {
+      $content['menu']['admin/content'] += $links;
+    }
+    // Otherwise make insert "Add content" as top-level category.
+    else {
+      $key = key($links);
+      $links[$key]['#weight'] = -100;
+      $content['menu'] += $links;
+    }
   }
 }
 

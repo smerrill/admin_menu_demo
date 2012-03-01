@@ -372,7 +372,7 @@ function admin_menu_expand_args($arguments) {
  */
 function admin_menu_links_menu($tree) {
   $links = array();
-  foreach ($tree as $key => $data) {
+  foreach ($tree as $data) {
     // Skip invisible items.
     if (!$data['link']['access'] || $data['link']['type'] == MENU_CALLBACK) {
       continue;
@@ -390,14 +390,14 @@ function admin_menu_links_menu($tree) {
     // Remove description to prevent mouseover tooltip clashes.
     unset($data['link']['localized_options']['attributes']['title']);
 
-    $links[$key] = array(
+    $links[$data['link']['href']] = array(
       '#title' => $data['link']['title'],
       '#href' => $data['link']['href'],
       '#options' => $data['link']['localized_options'],
       '#weight' => $data['link']['weight'],
     );
     if ($data['below']) {
-      $links[$key] += admin_menu_links_menu($data['below']);
+      $links[$data['link']['href']] += admin_menu_links_menu($data['below']);
     }
   }
   return $links;
