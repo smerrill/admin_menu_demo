@@ -136,7 +136,7 @@ Drupal.admin.height = function() {
   var height = $('#admin-menu').outerHeight();
   // In IE, Shadow filter adds some extra height, so we need to remove it from
   // the returned height.
-  if ($('#admin-menu').css('filter').match(/DXImageTransform\.Microsoft\.Shadow/)) {
+  if ($('#admin-menu').css('filter') && $('#admin-menu').css('filter').match(/DXImageTransform\.Microsoft\.Shadow/)) {
     height -= $('#admin-menu').get(0).filters.item("DXImageTransform.Microsoft.Shadow").strength;
   }
   return height;
