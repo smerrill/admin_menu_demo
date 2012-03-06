@@ -110,6 +110,30 @@ function admin_menu_menu_alter(&$items) {
 }
 
 /**
+ * Implements hook_menu_link_insert().
+ */
+function admin_menu_menu_link_insert($link) {
+  // Flush all of our caches to pick up the link.
+  admin_menu_flush_caches();
+}
+
+/**
+ * Implements hook_menu_link_update().
+ */
+function admin_menu_menu_link_update($link) {
+  // Flush all of our caches to pick up the link.
+  admin_menu_flush_caches();
+}
+
+/**
+ * Implements hook_menu_link_delete().
+ */
+function admin_menu_menu_link_delete($link) {
+  // Flush all of our caches to pick up the link.
+  admin_menu_flush_caches();
+}
+
+/**
  * Implements hook_init().
  *
  * We can't move this into admin_menu_footer(), because PHP-only based themes
@@ -241,7 +265,7 @@ function admin_menu_js() {
  *   The cache ID of the data to retrieve.
  */
 function admin_menu_cache_get($cid) {
-  static $cache = array();
+  $cache = &drupal_static(__FUNCTION__, array());
 
   if (!variable_get('admin_menu_cache_client', TRUE)) {
     return FALSE;
@@ -664,6 +688,7 @@ function admin_menu_flush_caches() {
   // Flush cached output of admin_menu.
   cache('menu')->deletePrefix('admin_menu:');
   // Flush client-side cache hashes.
+  drupal_static_reset('admin_menu_cache_get');
   // db_table_exists() required for SimpleTest.
   if (db_table_exists('cache_admin_menu')) {
     cache('admin_menu')->flush();
