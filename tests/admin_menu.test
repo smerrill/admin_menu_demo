@@ -334,3 +334,77 @@ class AdminMenuLinkTypesTestCase extends AdminMenuWebTestCase {
   }
 }
 
+/**
+ * Tests customized menu links.
+ */
+class AdminMenuCustomizedTestCase extends AdminMenuWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Customized links',
+      'description' => 'Tests customized menu links.',
+      'group' => 'Administration menu',
+    );
+  }
+
+  function setUp() {
+    parent::setUp(array('menu'));
+
+    $this->admin_user = $this->drupalCreateUser($this->basePermissions + array(
+      'administer menu',
+    ));
+    $this->drupalLogin($this->admin_user);
+  }
+
+  /**
+   * Test disabled custom links.
+   */
+  function testCustomDisabled() {
+    $type = $this->drupalCreateContentType();
+    $node = $this->drupalCreateNode(array('type' => $type->type));
+    $text = $this->randomName();
+    $xpath = $this->buildXPathQuery('//div[@id=:id]//a[contains(text(), :text)]', array(
+      ':id' => 'admin-menu',
+      ':text' => $text,
+    ));
+
+    // Verify that the link does not appear in the menu.
+    $this->drupalGet('node');
+    $elements = $this->xpath($xpath);
+    $this->assertFalse($elements, 'Custom link not found.');
+
+    // Add a custom link to the node to the menu.
+    $edit = array(
+      'link_path' => 'node/' . $node->nid,
+      'link_title' => $text,
+      'parent' => 'management:' . $this->queryMlidByPath('admin'),
+    );
+    $this->drupalPost('admin/structure/menu/manage/management/add', $edit, t('Save'));
+
+    // Verify that the link appears in the menu.
+    $this->drupalGet('node');
+    $elements = $this->xpath($xpath);
+    $this->assertTrue($elements, 'Custom link found.');
+
+    // Disable the link.
+    $edit = array(
+      'enabled' => FALSE,
+    );
+    $this->drupalPost('admin/structure/menu/item/' . $this->queryMlidByPath('node/' . $node->nid) . '/edit', $edit, t('Save'));
+
+    // Verify that the disabled link does not appear in the menu.
+    $this->drupalGet('node');
+    $elements = $this->xpath($xpath);
+    $this->assertFalse($elements, 'Disabled custom link not found.');
+  }
+
+  /**
+   * Returns the menu link ID for a given link path in the management menu.
+   */
+  protected function queryMlidByPath($path) {
+    return db_query('SELECT mlid FROM {menu_links} WHERE menu_name = :menu AND link_path = :path', array(
+      ':menu' => 'management',
+      ':path' => $path,
+    ))->fetchField();
+  }
+}
+

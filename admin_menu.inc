@@ -373,10 +373,10 @@ function admin_menu_expand_args($arguments) {
 function admin_menu_links_menu($tree) {
   $links = array();
   foreach ($tree as $data) {
-    // Skip inaccessible items, items that link to their parent
+    // Skip items that are inaccessible, invisible, or link to their parent.
     // (MENU_DEFAULT_LOCAL_TASK), and MENU_CALLBACK-alike items that should only
     // appear in the breadcrumb.
-    if (!$data['link']['access'] || $data['link']['type'] & MENU_LINKS_TO_PARENT || $data['link']['type'] == MENU_VISIBLE_IN_BREADCRUMB) {
+    if (!$data['link']['access'] || $data['link']['type'] & MENU_LINKS_TO_PARENT || $data['link']['type'] == MENU_VISIBLE_IN_BREADCRUMB || $data['link']['hidden'] == 1) {
       continue;
     }
     // Hide 'Administer' and make child links appear on this level.
