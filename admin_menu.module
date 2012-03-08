@@ -332,7 +332,7 @@ function admin_menu_js_cache($hash = NULL) {
   header('Expires: ' . gmdate(DATE_RFC1123, REQUEST_TIME + $max_age));
   header('Last-Modified: ' . gmdate(DATE_RFC1123, REQUEST_TIME));
   header('Cache-Control: max-age=' . $max_age . ', private');
-  header('Content-Length: ' . strlen($content));
+  header('Content-Length: ' . drupal_strlen($content));
   header('Content-Type: text/html; charset=utf-8');
 
   // Suppress Devel module.
