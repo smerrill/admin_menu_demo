@@ -802,7 +802,7 @@ function admin_menu_flush_cache($name = NULL) {
 function admin_menu_admin_menu_cache_info() {
   $caches['admin_menu'] = array(
     'title' => t('Administration menu'),
-    'callback' => 'admin_menu_flush_caches',
+    'callback' => '_admin_menu_flush_cache',
   );
   return $caches;
 }
@@ -848,6 +848,10 @@ function update_admin_menu_cache_info() {
  */
 function _admin_menu_flush_cache($name = NULL) {
   switch ($name) {
+    case 'admin_menu':
+      admin_menu_flush_caches();
+      break;
+
     case 'menu':
       menu_rebuild();
       break;
