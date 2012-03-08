@@ -19,8 +19,6 @@
  *   product of all arguments). The expansion values may be empty; that is, you
  *   do not need to insert logic to skip map items for which no values exist,
  *   since Administration menu will take care of that.
- * - hide: (optional) Used to hide another menu path, usually a superfluous
- *   "List" item.
  *
  * @see admin_menu.map.inc
  */
@@ -30,9 +28,6 @@ function hook_admin_menu_map() {
   $map['admin/structure/types/manage/%node_type'] = array(
     // Link generated items directly to the "Content types" item.
     'parent' => 'admin/structure/types',
-    // Hide the "List" item, as this expansion will expose all available
-    // options.
-    'hide' => 'admin/structure/types/list',
     // Create expansion arguments for the '%node_type' placeholder.
     'arguments' => array(
       array(

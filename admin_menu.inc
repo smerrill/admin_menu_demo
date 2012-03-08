@@ -20,18 +20,12 @@ function admin_menu_tree($menu_name) {
   drupal_alter('admin_menu_map', $expand_map);
 
   $new_map = array();
-  $hidden = array();
   foreach ($expand_map as $path => $data) {
     // Convert named placeholders to anonymous placeholders, since the menu
     // system stores paths using anonymous placeholders.
     $replacements = array_fill_keys(array_keys($data['arguments'][0]), '%');
     $data['parent'] = strtr($data['parent'], $replacements);
     $new_map[strtr($path, $replacements)] = $data;
-
-    // Collect paths to hide.
-    if (isset($data['hide'])) {
-      $hidden[strtr($data['hide'], $replacements)] = 1;
-    }
   }
   $expand_map = $new_map;
   unset($new_map);
@@ -48,7 +42,7 @@ function admin_menu_tree($menu_name) {
 
   // Merge local tasks with static menu tree.
   $tree = menu_tree_all_data($menu_name);
-  admin_menu_merge_tree($tree, $tree_dynamic, array(), $hidden);
+  admin_menu_merge_tree($tree, $tree_dynamic, array());
 
   return $tree;
 }
@@ -147,25 +141,18 @@ function admin_menu_tree_dynamic(array $expand_map) {
  * @param $expand_map
  *   An array containing menu router path placeholder expansion argument
  *   mappings.
- * @param $hidden
- *   An array containing links to hide, keyed by path.
  *
  * @see hook_admin_menu_map()
  * @see admin_menu_tree_dynamic()
  * @see menu_tree_all_data()
  */
-function admin_menu_merge_tree(array &$tree, array $tree_dynamic, array $expand_map, array $hidden) {
+function admin_menu_merge_tree(array &$tree, array $tree_dynamic, array $expand_map) {
   foreach ($tree as $key => $data) {
     $path = $data['link']['router_path'];
 
     // Recurse into regular menu tree.
     if ($tree[$key]['below']) {
-      admin_menu_merge_tree($tree[$key]['below'], $tree_dynamic, $expand_map, $hidden);
-    }
-    // Hide link if requested, but only if there is no dynamic tree data for it.
-    elseif (isset($hidden[$path]) && !isset($tree_dynamic[$path])) {
-      $tree[$key]['link']['access'] = FALSE;
-      continue;
+      admin_menu_merge_tree($tree[$key]['below'], $tree_dynamic, $expand_map);
     }
     // Nothing to merge, if this parent path is not in our dynamic tree.
     if (!isset($tree_dynamic[$path])) {
@@ -249,7 +236,7 @@ function admin_menu_merge_tree(array &$tree, array $tree_dynamic, array $expand_
           foreach ($replacements as $placeholder => $value) {
             $new_expand_map[$placeholder] = array($value);
           }
-          admin_menu_merge_tree($item, $tree_dynamic, array($new_expand_map), $hidden);
+          admin_menu_merge_tree($item, $tree_dynamic, array($new_expand_map));
           $tree[$key]['below'] += $item;
         }
       }
