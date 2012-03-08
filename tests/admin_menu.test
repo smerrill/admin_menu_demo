@@ -123,13 +123,16 @@ class AdminMenuPermissionsTestCase extends AdminMenuWebTestCase {
   }
 
   function setUp() {
-    parent::setUp(array('node', 'contact'));
+    parent::setUp(array('node'));
   }
 
   /**
    * Test that the links are added to the page (no JS testing).
    */
   function testPermissions() {
+    module_enable(array('contact'));
+    $this->resetAll();
+
     // Anonymous users should not see the menu.
     $this->drupalGet('');
     $this->assertNoElementByXPath('//div[@id="admin-menu"]', array(), t('Administration menu not found.'));
@@ -193,6 +196,62 @@ class AdminMenuPermissionsTestCase extends AdminMenuWebTestCase {
     // Random picks are sufficient.
     $this->assertNoLinkTrailByTitle(array(t('Configuration'), t('Media')));
     $this->assertNoLinkTrailByTitle(array(t('Configuration'), t('System')));
+  }
+
+  /**
+   * Tests that user role and permission changes are properly taken up.
+   */
+  function testPermissionChanges() {
+    // Create a user who is able to change permissions.
+    $permissions = $this->basePermissions + array(
+      'administer permissions',
+    );
+    $admin_user = $this->drupalCreateUser($permissions);
+    $this->drupalLogin($admin_user);
+
+    // Extract the user role ID that was created for above permissions.
+    $rid = key(array_diff_key($admin_user->roles, array(DRUPAL_AUTHENTICATED_RID => 0)));
+
+    // Verify that Configuration does not appear.
+    $this->assertNoLinkTrailByTitle(array(t('Configuration')));
+    // Grant the 'administer site configuration' permission to ourselves.
+    $edit = array(
+      $rid . '[administer site configuration]' => TRUE,
+    );
+    $this->drupalPost('admin/people/permissions', $edit, t('Save permissions'));
+    // Verify that Configuration appears.
+    $this->assertLinkTrailByTitle(array(t('Configuration')));
+
+    // Verify that Structure » Content types does not appear.
+    $this->assertNoLinkTrailByTitle(array(t('Structure'), t('Content types')));
+    // Create a new role.
+    $edit = array(
+      'name' => 'test',
+    );
+    $this->drupalPost('admin/people/permissions/roles', $edit, t('Add role'));
+    // It should be safe to assume that the new role gets the next ID.
+    $test_rid = $rid + 1;
+    // Grant the 'administer content types' permission for the role.
+    $edit = array(
+      $test_rid . '[administer content types]' => TRUE,
+    );
+    $this->drupalPost('admin/people/permissions/' . $test_rid, $edit, t('Save permissions'));
+    // Verify that Structure » Content types does not appear.
+    $this->assertNoLinkTrailByTitle(array(t('Structure'), t('Content types')));
+
+    // Assign the role to ourselves.
+    $edit = array(
+      'roles[' . $test_rid . ']' => TRUE,
+    );
+    $this->drupalPost('user/' . $admin_user->uid . '/edit', $edit, t('Save'));
+    // Verify that Structure » Content types appears.
+    $this->assertLinkTrailByTitle(array(t('Structure'), t('Content types')));
+
+    // Delete the role.
+    $this->drupalPost('admin/people/permissions/roles/edit/' . $test_rid, array(), t('Delete role'));
+    $this->drupalPost(NULL, array(), t('Delete'));
+    // Verify that Structure » Content types does not appear.
+    $this->assertNoLinkTrailByTitle(array(t('Structure'), t('Content types')));
   }
 }
 

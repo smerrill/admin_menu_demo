@@ -685,26 +685,56 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
 /**
  * Implements hook_flush_caches().
  *
- * Flush client-side caches.
+ * Flushes client-side caches.
+ *
+ * @param int $uid
+ *   (optional) A user ID to limit the cache flush to.
  */
-function admin_menu_flush_caches() {
+function admin_menu_flush_caches($uid = NULL) {
+  $cid = 'admin_menu:';
+  if (isset($uid)) {
+    $cid .= $uid . ':';
+  }
   // Flush cached output of admin_menu.
-  cache_clear_all('admin_menu:', 'cache_menu', TRUE);
+  cache_clear_all($cid, 'cache_menu', TRUE);
   // Flush client-side cache hashes.
   drupal_static_reset('admin_menu_cache_get');
   // db_table_exists() required for SimpleTest.
   if (db_table_exists('cache_admin_menu')) {
-    cache_clear_all('*', 'cache_admin_menu', TRUE);
+    cache_clear_all(isset($uid) ? $cid : '*', 'cache_admin_menu', TRUE);
   }
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
- *
- * Form submit handler to flush client-side cache hashes when clean URLs are toggled.
+ * Implements hook_form_alter().
  */
-function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
-  $form['#submit'][] = 'admin_menu_flush_caches';
+function admin_menu_form_alter(&$form, &$form_state, $form_id) {
+  $global_flush_ids = array(
+    // Update links for clean/non-clean URLs.
+    'system_clean_url_settings' => 1,
+    // Incorporate changed user permissions.
+    'user_admin_permissions' => 1,
+    // Removing a role potentially means less permissions.
+    'user_admin_role_delete_confirm' => 1,
+    // User name and roles may be changed on the user account form.
+    'user_profile_form' => 1,
+  );
+  if (isset($global_flush_ids[$form_id])) {
+    $form['#submit'][] = 'admin_menu_form_alter_flush_cache_submit';
+  }
+
+  // Optionally limit the cache flush to a certain user ID.
+  $form_state['admin_menu_uid'] = NULL;
+  if ($form_id == 'user_profile_form') {
+    $form_state['admin_menu_uid'] = $form_state['user']->uid;
+  }
+}
+
+/**
+ * Form submission handler to flush Administration menu caches.
+ */
+function admin_menu_form_alter_flush_cache_submit($form, &$form_state) {
+  admin_menu_flush_caches($form_state['admin_menu_uid']);
 }
 
 /**
@@ -713,6 +743,6 @@ function admin_menu_form_system_clean_url_settings_alter(&$form, $form_state) {
  * Extends Devel module with Administration menu developer settings.
  */
 function admin_menu_form_devel_admin_settings_alter(&$form, &$form_state) {
-  module_load_include('inc', 'admin_menu');
+  form_load_include($form_state, 'inc', 'admin_menu');
   _admin_menu_form_devel_admin_settings_alter($form, $form_state);
 }
