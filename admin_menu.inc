@@ -436,7 +436,8 @@ function admin_menu_links_icon() {
   $links['icon']['update'] = array(
     '#title' => t('Run updates'),
     '#weight' => 50,
-    '#access' => ($GLOBALS['user']->uid == 1 || !empty($GLOBALS['update_free_access'])),
+    // @see update_access_allowed()
+    '#access' => $GLOBALS['user']->uid == 1 || !empty($GLOBALS['update_free_access']) || user_access('administer software updates'),
     '#href' => base_path() . 'update.php',
     '#options' => array(
       'external' => TRUE,
