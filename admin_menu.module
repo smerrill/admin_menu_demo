@@ -522,7 +522,7 @@ function admin_menu_admin_menu_output_build(&$content) {
 function admin_menu_admin_menu_output_alter(&$content) {
   foreach ($content['menu'] as $key => $link) {
     // Move local tasks on 'admin' into icon menu.
-    if ($link['#href'] == 'admin/tasks' || $link['#href'] == 'admin/index') {
+    if ($key == 'admin/tasks' || $key == 'admin/index') {
       $content['icon']['icon'][$key] = $link;
       unset($content['menu'][$key]);
     }
