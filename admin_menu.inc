@@ -865,6 +865,10 @@ function _admin_menu_flush_cache($name = NULL) {
 
       drupal_clear_css_cache();
       drupal_clear_js_cache();
+
+      // Clear the page cache, since cached HTML pages might link to old CSS and
+      // JS aggregates.
+      cache('page')->flush();
       break;
 
     case 'theme':
