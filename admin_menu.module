@@ -187,6 +187,10 @@ function admin_menu_page_build(&$page) {
 
   if ($setting = variable_get('admin_menu_margin_top', 1)) {
     $settings['margin_top'] = $setting;
+    // @todo Drupal.behaviors.adminMenuMarginTop is obsolete, but
+    //   hook_page_build() does not allow to set a CSS class on the body yet.
+    // @see http://drupal.org/node/1473548, http://drupal.org/node/1194528
+    //$page['#attributes']['class'][] = 'admin-menu';
   }
   if ($setting = variable_get('admin_menu_position_fixed', 0)) {
     $settings['position_fixed'] = $setting;
