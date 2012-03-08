@@ -582,6 +582,11 @@ function admin_menu_theme_settings() {
   );
   // @todo Re-confirm this with latest browser versions.
   $form['admin_menu_position_fixed']['#description'] .= '<br /><strong>' . t('In some browsers, this setting may result in a malformed page, an invisible cursor, non-selectable elements in forms, or other issues.') . '</strong>';
+  $form['admin_menu_cache_client'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cache menu in client-side browser'),
+    '#default_value' => variable_get('admin_menu_cache_client', 1),
+  );
 
   $form['tweaks'] = array(
     '#type' => 'fieldset',
