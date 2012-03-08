@@ -385,8 +385,24 @@ function admin_menu_links_menu($tree) {
       '#options' => $data['link']['localized_options'],
       '#weight' => $data['link']['weight'],
     );
+
+    // Recurse to add any child links.
+    $children = array();
     if ($data['below']) {
-      $links[$data['link']['href']] += admin_menu_links_menu($data['below']);
+      $children = admin_menu_links_menu($data['below']);
+      $links[$data['link']['href']] += $children;
+    }
+
+    // Handle links pointing to category/overview pages.
+    if ($data['link']['page_callback'] == 'system_admin_menu_block_page' || $data['link']['page_callback'] == 'system_admin_config_page') {
+      // Apply a marker for others to consume.
+      $links[$data['link']['href']]['#is_category'] = TRUE;
+      // Automatically hide empty categories.
+      // Check for empty children first for performance. Only when non-empty
+      // (typically 'admin/config'), check whether children are accessible.
+      if (empty($children) || !element_get_visible_children($children)) {
+        $links[$data['link']['href']]['#access'] = FALSE;
+      }
     }
   }
   return $links;

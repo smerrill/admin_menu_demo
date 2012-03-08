@@ -117,7 +117,7 @@ class AdminMenuPermissionsTestCase extends AdminMenuWebTestCase {
   public static function getInfo() {
     return array(
       'name' => 'Menu link access permissions',
-      'description' => 'Tests that menu links are displayed according to user permissions.',
+      'description' => 'Tests appearance of menu links depending on user permissions.',
       'group' => 'Administration menu',
     );
   }
@@ -164,6 +164,35 @@ class AdminMenuPermissionsTestCase extends AdminMenuWebTestCase {
     $this->assertNoElementByXPath('//div[@id="admin-menu"]//a[contains(@href, :path)]', array(':path' => 'admin/content'), 'Content link not found.');
     $this->assertElementByXPath('//div[@id="admin-menu"]//a[@href=:path]', array(':path' => 'http://drupal.org'), 'Icon » Drupal.org link found.');
     $this->assertElementByXPath('//div[@id="admin-menu"]//a[contains(@href, :path)]', array(':path' => 'admin/structure/contact'), 'Structure » Contact link found.');
+  }
+
+  /**
+   * Tests handling of links pointing to category/overview pages.
+   */
+  function testCategories() {
+    // Create a user with minimum permissions.
+    $admin_user = $this->drupalCreateUser($this->basePermissions);
+    $this->drupalLogin($admin_user);
+
+    // Verify that no category links appear.
+    $this->assertNoLinkTrailByTitle(array(t('Structure')));
+    $this->assertNoLinkTrailByTitle(array(t('Configuration')));
+
+    // Create a user with access to one configuration category.
+    $permissions = $this->basePermissions + array(
+      'administer users',
+    );
+    $admin_user = $this->drupalCreateUser($permissions);
+    $this->drupalLogin($admin_user);
+
+    // Verify that only expected category links appear.
+    $this->assertNoLinkTrailByTitle(array(t('Structure')));
+    $this->assertLinkTrailByTitle(array(t('People')));
+    $this->assertLinkTrailByTitle(array(t('Configuration')));
+    $this->assertLinkTrailByTitle(array(t('Configuration'), t('People')));
+    // Random picks are sufficient.
+    $this->assertNoLinkTrailByTitle(array(t('Configuration'), t('Media')));
+    $this->assertNoLinkTrailByTitle(array(t('Configuration'), t('System')));
   }
 }
 
