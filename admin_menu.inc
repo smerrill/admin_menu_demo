@@ -474,20 +474,13 @@ function admin_menu_links_icon() {
       'query' => $destination + array('token' => drupal_get_token('admin_menu/flush-cache')),
     ),
   );
-  $caches = array(
-    'admin_menu' => t('Administration menu'),
-    'cache' => t('Cache tables'),
-    'menu' => t('Menu'),
-    'registry' => t('Class registry'),
-    'requisites' => t('Page requisites'),
-    'theme' => t('Theme registry'),
-  );
-  foreach ($caches as $arg => $title) {
-    $links['icon']['flush-cache'][$arg] = array(
-      '#title' => $title,
-      '#href' => 'admin_menu/flush-cache/' . $arg,
+  $caches = module_invoke_all('admin_menu_cache_info');
+  foreach ($caches as $name => $cache) {
+    $links['icon']['flush-cache'][$name] = array(
+      '#title' => $cache['title'],
+      '#href' => 'admin_menu/flush-cache/' . $name,
       '#options' => array(
-        'query' => $destination + array('token' => drupal_get_token('admin_menu/flush-cache/' . $arg)),
+        'query' => $destination + array('token' => drupal_get_token('admin_menu/flush-cache/' . $name)),
       ),
     );
   }
@@ -770,12 +763,82 @@ function admin_menu_flush_cache($name = NULL) {
   if (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], current_path())) {
     return MENU_ACCESS_DENIED;
   }
+  if (isset($name)) {
+    $caches = module_invoke_all('admin_menu_cache_info');
+    if (!isset($caches[$name])) {
+      return MENU_NOT_FOUND;
+    }
+  }
+  else {
+    $caches[$name] = array(
+      'title' => t('Every'),
+      'callback' => 'drupal_flush_all_caches',
+    );
+  }
+  // Pass the cache to flush forward to the callback.
+  $function = $caches[$name]['callback'];
+  $function($name);
 
+  drupal_set_message(t('!title cache cleared.', array('!title' => $caches[$name]['title'])));
+
+  // The JavaScript injects a destination request parameter pointing to the
+  // originating page, so the user is redirected back to that page. Without
+  // destination parameter, the redirect ends on the front page.
+  drupal_goto();
+}
+
+/**
+ * Implements hook_admin_menu_cache_info().
+ */
+function admin_menu_admin_menu_cache_info() {
+  $caches['admin_menu'] = array(
+    'title' => t('Administration menu'),
+    'callback' => 'admin_menu_flush_caches',
+  );
+  return $caches;
+}
+
+/**
+ * Implements hook_admin_menu_cache_info() on behalf of System module.
+ */
+function system_admin_menu_cache_info() {
+  $caches = array(
+    'assets' => t('CSS and JavaScript'),
+    'cache' => t('Page and else'),
+    'menu' => t('Menu'),
+    'registry' => t('Class registry'),
+    'theme' => t('Theme registry'),
+  );
+  foreach ($caches as $name => $cache) {
+    $caches[$name] = array(
+      'title' => $cache,
+      'callback' => '_admin_menu_flush_cache',
+    );
+  }
+  return $caches;
+}
+
+/**
+ * Implements hook_admin_menu_cache_info() on behalf of Update module.
+ */
+function update_admin_menu_cache_info() {
+  $caches['update'] = array(
+    'title' => t('Update data'),
+    'callback' => '_update_cache_clear',
+  );
+  return $caches;
+}
+
+/**
+ * Flush all caches or a specific one.
+ *
+ * @param $name
+ *   (optional) Name of cache to flush.
+ *
+ * @see system_admin_menu_cache_info()
+ */
+function _admin_menu_flush_cache($name = NULL) {
   switch ($name) {
-    case 'admin_menu':
-      admin_menu_flush_caches();
-      break;
-
     case 'menu':
       menu_rebuild();
       break;
@@ -784,7 +847,6 @@ function admin_menu_flush_cache($name = NULL) {
       registry_rebuild();
       // Fall-through to clear cache tables, since registry information is
       // usually the base for other data that is cached (e.g. SimpleTests).
-
     case 'cache':
       // Don't clear cache_form - in-progress form submissions may break.
       // Ordered so clearing the page cache will always be the last action.
@@ -796,7 +858,7 @@ function admin_menu_flush_cache($name = NULL) {
       }
       break;
 
-    case 'requisites':
+    case 'assets':
       // Change query-strings on css/js files to enforce reload for all users.
       _drupal_flush_css_js();
 
@@ -808,15 +870,7 @@ function admin_menu_flush_cache($name = NULL) {
       system_rebuild_theme_data();
       drupal_theme_rebuild();
       break;
-
-    default:
-      // Flush all caches; no need to re-implement this.
-      module_load_include('inc', 'system', 'system.admin');
-      $form = $form_state = array();
-      system_clear_cache_submit($form, $form_state);
-      break;
   }
-  drupal_goto();
 }
 
 /**
