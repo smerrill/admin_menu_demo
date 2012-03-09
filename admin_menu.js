@@ -70,7 +70,7 @@ Drupal.behaviors.adminMenuCollapsePermissions = {
       // Freeze width of first column to prevent jumping.
       $('#permissions th:first', context).css({ width: $('#permissions th:first', context).width() });
       // Attach click handler.
-      $('#permissions tr:has(td.module)', context).once('admin-menu-tweak-permissions', function () {
+      $modules = $('#permissions tr:has(td.module)', context).once('admin-menu-tweak-permissions', function () {
         var $module = $(this);
         $module.bind('click.admin-menu', function () {
           // @todo Replace with .nextUntil() in jQuery 1.4.
@@ -82,7 +82,11 @@ Drupal.behaviors.adminMenuCollapsePermissions = {
             $row.toggleClass('element-hidden');
           });
         });
-      }).trigger('click.admin-menu');
+      });
+      // Get fragment from current URL.
+      var fragment = window.location.hash || '#';
+      // Collapse all but the targeted permission rows set.
+      $modules.not(':has(' + fragment + ')').trigger('click.admin-menu');
     }
   }
 };
