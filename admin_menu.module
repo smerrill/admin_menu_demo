@@ -51,7 +51,7 @@ function admin_menu_theme() {
       'render element' => 'elements',
     ),
     'admin_menu_icon' => array(
-      'variables' => array(),
+      'variables' => array('src' => NULL, 'alt' => NULL),
       'file' => 'admin_menu.inc',
     ),
   );

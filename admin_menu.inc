@@ -891,11 +891,34 @@ function _admin_menu_flush_cache($name = NULL) {
 }
 
 /**
- * Render an icon to display in the administration menu.
+ * Preprocesses variables for theme_admin_menu_icon().
+ */
+function template_preprocess_admin_menu_icon(&$variables) {
+  // Image source might have been passed in as theme variable.
+  if (!isset($variables['src'])) {
+    if (theme_get_setting('toggle_favicon')) {
+      $variables['src'] = theme_get_setting('favicon');
+    }
+    else {
+      $variables['src'] = base_path() . 'misc/favicon.ico';
+    }
+  }
+  // Strip the protocol without delimiters for transient HTTP/HTTPS support.
+  // Since the menu is cached on the server-side and client-side, the cached
+  // version might contain a HTTP link, whereas the actual page is on HTTPS.
+  // Relative paths will work fine, but theme_get_setting() returns an
+  // absolute URI.
+  $variables['src'] = preg_replace('@^https?:@', '', $variables['src']);
+  $variables['src'] = check_plain($variables['src']);
+  $variables['alt'] = t('Home');
+}
+
+/**
+ * Renders an icon to display in the administration menu.
  *
  * @ingroup themeable
  */
-function theme_admin_menu_icon() {
-  return '<img class="admin-menu-icon" src="' . (theme_get_setting('toggle_favicon') ? theme_get_setting('favicon') : base_path() . 'misc/favicon.ico') . '" width="16" height="16" alt="' . t('Home') . '" />';
+function theme_admin_menu_icon($variables) {
+  return '<img class="admin-menu-icon" src="' . $variables['src'] . '" width="16" height="16" alt="' . $variables['alt'] . '" />';
 }
 
