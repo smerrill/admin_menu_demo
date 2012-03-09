@@ -486,6 +486,28 @@ class AdminMenuCustomizedTestCase extends AdminMenuWebTestCase {
   }
 
   /**
+   * Tests external links.
+   */
+  function testCustomExternal() {
+    // Add a custom link to the node to the menu.
+    $edit = array(
+      'link_path' => 'http://example.com',
+      'link_title' => 'Example',
+      'parent' => 'management:' . $this->queryMlidByPath('admin'),
+    );
+    $this->drupalPost('admin/structure/menu/manage/management/add', $edit, t('Save'));
+
+    // Verify that the link appears in the menu.
+    $this->drupalGet('');
+    $elements = $this->xpath('//div[@id=:id]//a[@href=:href and contains(text(), :text)]', array(
+      ':id' => 'admin-menu',
+      ':href' => $edit['link_path'],
+      ':text' => $edit['link_title'],
+    ));
+    $this->assertTrue($elements, 'External link found.');
+  }
+
+  /**
    * Returns the menu link ID for a given link path in the management menu.
    */
   protected function queryMlidByPath($path) {
