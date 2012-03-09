@@ -146,11 +146,19 @@ function views_ui_admin_menu_map() {
   if (!user_access('administer views')) {
     return;
   }
-  // @todo Requires patch to views_ui.
-  $map['admin/structure/views/edit/%views_ui_cache'] = array(
+  $views = array();
+  foreach (views_get_all_views() as $name => $view) {
+    if (!$view->disabled) {
+      $views[] = $name;
+    }
+  }
+  if (empty($views)) {
+    return;
+  }
+  $map['admin/structure/views/view/%views_ui_cache'] = array(
     'parent' => 'admin/structure/views',
     'arguments' => array(
-      array('%views_ui_cache' => array_keys(views_get_all_views())),
+      array('%views_ui_cache' => $views),
     ),
   );
   return $map;
