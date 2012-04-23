@@ -483,7 +483,7 @@ function admin_menu_output() {
 function admin_menu_admin_menu_output_build(&$content) {
   // Unassign weights for categories below Configuration.
   // An alphabetical order is more natural for a dropdown menu.
-  if ($content['menu']['admin/config']) {
+  if (isset($content['menu']['admin/config'])) {
     foreach (element_children($content['menu']['admin/config']) as $key) {
       $content['menu']['admin/config'][$key]['#weight_original'] = $content['menu']['admin/config'][$key]['#weight'];
       unset($content['menu']['admin/config'][$key]['#weight']);
