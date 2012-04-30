@@ -35,7 +35,11 @@ Drupal.behaviors.adminMenu = {
     if (!$adminMenu.length && settings.admin_menu.hash) {
       Drupal.admin.getCache(settings.admin_menu.hash, function (response) {
           if (typeof response == 'string' && response.length > 0) {
-            $('body', context).prepend(response);
+            // Insert this in the same location and with the same markup that
+            // it would have had if it had been placed on the page by the
+            // server-side code.
+            // @todo Return the wrapping markup as part of the AJAX response.
+            $('body', context).append('<div class="region region-page-bottom">' + response + '</div>');
           }
           var $adminMenu = $('#admin-menu:not(.admin-menu-processed)', context);
           // Apply our behaviors.

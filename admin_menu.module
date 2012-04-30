@@ -135,6 +135,19 @@ function admin_menu_menu_link_delete($link) {
 }
 
 /**
+ * Implements hook_system_info_alter().
+ *
+ * Indicate that the 'page_bottom' region (in which the administration menu
+ * is displayed) is an overlay supplemental region that should be refreshed
+ * whenever its content is updated.
+ */
+function admin_menu_system_info_alter(&$info, $file, $type) {
+  if ($type == 'theme') {
+    $info['overlay_supplemental_regions'][] = 'page_bottom';
+  }
+}
+
+/**
  * Implements hook_page_build().
  */
 function admin_menu_page_build(&$page) {
@@ -590,7 +603,7 @@ function theme_admin_menu_links($variables) {
       '#options' => array(),
     );
     // Render children to determine whether this link is expandable.
-    if (isset($elements[$path]['#type']) || isset($elements[$path]['#theme'])) {
+    if (isset($elements[$path]['#type']) || isset($elements[$path]['#theme']) || isset($elements[$path]['#pre_render'])) {
       $elements[$path]['#admin_menu_depth'] = $depth_child;
       $elements[$path]['#children'] = drupal_render($elements[$path]);
     }

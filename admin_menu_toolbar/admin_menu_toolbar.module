@@ -30,6 +30,10 @@ function admin_menu_toolbar_page_build(&$page) {
   elseif (drupal_is_front_page()) {
     $settings['activeTrail'] = url('<front>');
   }
+  // Adjust top margin for the shortcut bar.
+  if (module_exists('shortcut') && ($setting = variable_get('admin_menu_margin_top', 1))) {
+    $settings['margin_top_shortcuts'] = $setting;
+  }
 
   $attached['js'][] = array(
     'data' => array('admin_menu' => array('toolbar' => $settings)),
@@ -43,27 +47,22 @@ function admin_menu_toolbar_page_build(&$page) {
 function admin_menu_toolbar_admin_menu_output_build(&$content) {
   // Add shortcuts menu.
   $content['shortcuts'] = array(
+    '#access' => module_exists('shortcut'),
     '#theme' => 'admin_menu_links',
     '#weight' => -200,
   );
   $content['shortcuts']['shortcuts'] = array(
     '#title' => t('Show shortcuts'),
     // @todo How do we want to trigger/store state?
-    '#attributes' => array('class' => array('admin-menu-shortcuts')),
-    //'#attributes' => array('class' => array('admin-menu-shortcuts', 'admin-menu-shortcuts-active')),
+    '#attributes' => array('class' => array('admin-menu-shortcuts', 'admin-menu-shortcuts-active')),
     '#options' => array(
       'attributes' => array('class' => 'toggle'),
     ),
   );
-  // @todo Copy this from $content['menu'] instead.
-  $content['shortcuts']['shortcuts']['node-add'] = array(
-    '#title' => t('Add content'),
-    '#href' => 'node/add',
-  );
-  $content['shortcuts']['shortcuts']['admin-content-node'] = array(
-    '#title' => t('Find content'),
-    '#href' => 'admin/content/node',
-    '#access' => user_access('administer nodes'),
+  $content['shortcuts']['shortcuts']['shortcuts'] = array(
+    '#prefix' => '<div id="toolbar">',
+    '#suffix' => '</div>',
+    '#pre_render' => array('shortcut_toolbar_pre_render'),
   );
 }
 
