@@ -30,10 +30,6 @@ function admin_menu_toolbar_page_build(&$page) {
   elseif (drupal_is_front_page()) {
     $settings['activeTrail'] = url('<front>');
   }
-  // Adjust top margin for the shortcut bar.
-  if (module_exists('shortcut') && ($setting = variable_get('admin_menu_margin_top', 1))) {
-    $settings['margin_top_shortcuts'] = $setting;
-  }
 
   $attached['js'][] = array(
     'data' => array('admin_menu' => array('toolbar' => $settings)),
@@ -53,8 +49,7 @@ function admin_menu_toolbar_admin_menu_output_build(&$content) {
   );
   $content['shortcuts']['shortcuts'] = array(
     '#title' => t('Show shortcuts'),
-    // @todo How do we want to trigger/store state?
-    '#attributes' => array('class' => array('admin-menu-shortcuts', 'admin-menu-shortcuts-active')),
+    '#attributes' => array('class' => array('admin-menu-shortcuts')),
     '#options' => array(
       'attributes' => array('class' => 'toggle'),
     ),
@@ -62,6 +57,7 @@ function admin_menu_toolbar_admin_menu_output_build(&$content) {
   $content['shortcuts']['shortcuts']['shortcuts'] = array(
     '#prefix' => '<div id="toolbar">',
     '#suffix' => '</div>',
+    // @todo Links may contain .active-trail classes.
     '#pre_render' => array('shortcut_toolbar_pre_render'),
   );
 }

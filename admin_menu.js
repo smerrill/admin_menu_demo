@@ -35,15 +35,13 @@ Drupal.behaviors.adminMenu = {
     if (!$adminMenu.length && settings.admin_menu.hash) {
       Drupal.admin.getCache(settings.admin_menu.hash, function (response) {
           if (typeof response == 'string' && response.length > 0) {
-            // Insert this in the same location and with the same markup that
-            // it would have had if it had been placed on the page by the
-            // server-side code.
-            // @todo Return the wrapping markup as part of the AJAX response.
-            $('body', context).append('<div class="region region-page-bottom">' + response + '</div>');
+            $('body', context).append(response);
           }
           var $adminMenu = $('#admin-menu:not(.admin-menu-processed)', context);
           // Apply our behaviors.
           Drupal.admin.attachBehaviors(context, settings, $adminMenu);
+          // Allow resize event handlers to recalculate sizes/positions.
+          $(window).triggerHandler('resize');
       });
     }
     // If the menu is in the output already, this means there is a new version.
@@ -141,11 +139,12 @@ Drupal.admin.getCache = function (hash, onSuccess) {
  * @see toolbar.js
  */
 Drupal.admin.height = function() {
-  var height = $('#admin-menu').outerHeight();
+  var $adminMenu = $('#admin-menu');
+  var height = $adminMenu.outerHeight();
   // In IE, Shadow filter adds some extra height, so we need to remove it from
   // the returned height.
-  if ($('#admin-menu').css('filter') && $('#admin-menu').css('filter').match(/DXImageTransform\.Microsoft\.Shadow/)) {
-    height -= $('#admin-menu').get(0).filters.item("DXImageTransform.Microsoft.Shadow").strength;
+  if ($adminMenu.css('filter') && $adminMenu.css('filter').match(/DXImageTransform\.Microsoft\.Shadow/)) {
+    height -= $adminMenu.get(0).filters.item("DXImageTransform.Microsoft.Shadow").strength;
   }
   return height;
 };

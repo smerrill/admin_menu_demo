@@ -4,19 +4,6 @@ Drupal.admin = Drupal.admin || {};
 Drupal.admin.behaviors = Drupal.admin.behaviors || {};
 
 /**
- * Apply margin to page, taking into account the shortcuts.
- *
- * @see Drupal.behaviors.adminMenuMarginTop()
- */
-Drupal.behaviors.adminMenuMarginTopShortcuts = {
-  attach: function (context, settings) {
-    if (!settings.admin_menu.suppress && settings.admin_menu.toolbar.margin_top_shortcuts) {
-      $('body:not(.admin-menu-with-shortcuts)', context).addClass('admin-menu-with-shortcuts');
-    }
-  }
-};
-
-/**
  * @ingroup admin_behaviors
  * @{
  */
@@ -33,28 +20,35 @@ Drupal.admin.behaviors.toolbarActiveTrail = function (context, settings, $adminM
 };
 
 /**
- * Toggle the shortcut drawer.
+ * Toggles the shortcuts bar.
  */
-Drupal.admin.behaviors.toggleShortcutDrawer = function (context, settings, $adminMenu) {
-  var $body = $('body', context);
-  var $shortcuts = $('li.admin-menu-shortcuts', $adminMenu);
-  var $toggle = $('.toggle', $shortcuts);
-  $toggle.toggle(
-    function () {
-      $shortcuts.addClass('admin-menu-shortcuts-inactive').removeClass('admin-menu-shortcuts-active');
-      $body.removeClass('admin-menu-with-shortcuts');
-      return false;
-    },
-    function () {
-      $shortcuts.addClass('admin-menu-shortcuts-active').removeClass('admin-menu-shortcuts-inactive');
-      $body.addClass('admin-menu-with-shortcuts');
-      return false;
+Drupal.admin.behaviors.shortcutToggle = function (context, settings, $adminMenu) {
+  var $shortcuts = $adminMenu.find('li.admin-menu-shortcuts');
+  if (!$shortcuts.length) {
+    return;
+  }
+  var storage = window.localStorage || false;
+  var storageKey = 'Drupal.admin_menu.shortcut';
+  var $body = $(context).find('body');
+  var $toggle = $shortcuts.find('.toggle');
+  $toggle.click(function () {
+    var enable = !$shortcuts.hasClass('active');
+    $shortcuts.toggleClass('active', enable);
+    if (settings.admin_menu.margin_top) {
+      $body.toggleClass('admin-menu-with-shortcuts', enable);
     }
-  );
+    // Persist toggle state across requests.
+    storage && enable ? storage.setItem(storageKey, 1) : storage.removeItem(storageKey);
+    return false;
+  });
+
+  if (!storage || storage.getItem(storageKey)) {
+    $toggle.trigger('click');
+  }
 };
 
 /**
- * @} End of "defgroup admin_behaviors".
+ * @} End of "ingroup admin_behaviors".
  */
 
 })(jQuery);
