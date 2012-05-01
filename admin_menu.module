@@ -155,7 +155,8 @@ function admin_menu_page_build(&$page) {
     return;
   }
   // Performance: Skip this entirely for AJAX requests.
-  if (strpos($_GET['q'], 'js/') === 0) {
+  $current_path = current_path();
+  if (strpos($current_path, 'js/') === 0) {
     return;
   }
   global $user, $language_interface;
@@ -224,10 +225,10 @@ function admin_menu_page_build(&$page) {
   if ($setting = variable_get('admin_menu_tweak_tabs', 0)) {
     $settings['tweak_tabs'] = $setting;
   }
-  if ($_GET['q'] == 'admin/modules' || strpos($_GET['q'], 'admin/modules/list') === 0) {
+  if ($current_path == 'admin/modules' || strpos($current_path, 'admin/modules/list') === 0) {
     $settings['tweak_modules'] = variable_get('admin_menu_tweak_modules', 0);
   }
-  if ($_GET['q'] == 'admin/people/permissions' || $_GET['q'] == 'admin/people/permissions/list') {
+  if ($current_path == 'admin/people/permissions' || $current_path == 'admin/people/permissions/list') {
     $settings['tweak_permissions'] = variable_get('admin_menu_tweak_permissions', 0);
   }
 
@@ -333,7 +334,7 @@ function admin_menu_js_cache() {
   if (is_object($cache)) {
     header('X-Drupal-Cache: HIT');
     // Restore the metadata cached with the page.
-    $_GET['q'] = $cache->data['path'];
+    _current_path($cache->data['path']);
     date_default_timezone_set(drupal_get_user_timezone());
 
     drupal_serve_page_from_cache($cache);

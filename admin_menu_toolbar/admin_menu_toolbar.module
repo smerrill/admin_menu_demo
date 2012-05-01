@@ -23,7 +23,7 @@ function admin_menu_toolbar_page_build(&$page) {
   $settings = array();
   // Add current path to support menu item highlighting.
   // @todo Compile real active trail here?
-  $args = explode('/', $_GET['q']);
+  $args = arg();
   if ($args[0] == 'admin' && !empty($args[1])) {
     $settings['activeTrail'] = url($args[0] . '/' . $args[1]);
   }
