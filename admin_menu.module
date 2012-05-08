@@ -107,7 +107,7 @@ function admin_menu_menu() {
  */
 function admin_menu_menu_alter(&$items) {
   // Flush client-side caches whenever the menu is rebuilt.
-  admin_menu_flush_caches();
+  admin_menu_cache_flush();
 }
 
 /**
@@ -115,7 +115,7 @@ function admin_menu_menu_alter(&$items) {
  */
 function admin_menu_menu_link_insert($link) {
   // Flush all of our caches to pick up the link.
-  admin_menu_flush_caches();
+  admin_menu_cache_flush();
 }
 
 /**
@@ -123,7 +123,7 @@ function admin_menu_menu_link_insert($link) {
  */
 function admin_menu_menu_link_update($link) {
   // Flush all of our caches to pick up the link.
-  admin_menu_flush_caches();
+  admin_menu_cache_flush();
 }
 
 /**
@@ -131,7 +131,7 @@ function admin_menu_menu_link_update($link) {
  */
 function admin_menu_menu_link_delete($link) {
   // Flush all of our caches to pick up the link.
-  admin_menu_flush_caches();
+  admin_menu_cache_flush();
 }
 
 /**
@@ -711,15 +711,18 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
 }
 
 /**
- * Implements hook_flush_caches().
+ * Implements hook_cache_flush().
  *
  * Flushes client-side caches.
  *
  * @param int $uid
  *   (optional) A user ID to limit the cache flush to.
+ *
+ * @todo Move custom cache flushing into an own function.
  */
-function admin_menu_flush_caches($uid = NULL) {
+function admin_menu_cache_flush($uid = NULL) {
   $cid = 'admin_menu:';
+  // When a user ID was passed, limit cache flushes to that.
   if (isset($uid)) {
     $cid .= $uid . ':';
   }
@@ -727,10 +730,10 @@ function admin_menu_flush_caches($uid = NULL) {
   cache('menu')->deletePrefix($cid);
   // Flush client-side cache hashes.
   drupal_static_reset('admin_menu_cache_get');
-  // db_table_exists() required for SimpleTest.
-  if (db_table_exists('cache_admin_menu')) {
-    isset($uid) ? cache('admin_menu')->deletePrefix($cid) : cache('admin_menu')->flush();
-  }
+  cache('admin_menu')->deletePrefix($cid);
+
+  // Return value is only used by drupal_flush_all_caches().
+  return array('admin_menu');
 }
 
 /**
@@ -769,7 +772,7 @@ function admin_menu_form_alter(&$form, &$form_state, $form_id) {
  * Form submission handler to flush Administration menu caches.
  */
 function admin_menu_form_alter_flush_cache_submit($form, &$form_state) {
-  admin_menu_flush_caches($form_state['admin_menu_uid']);
+  admin_menu_cache_flush($form_state['admin_menu_uid']);
 }
 
 /**

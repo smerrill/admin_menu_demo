@@ -688,7 +688,6 @@ function admin_menu_toggle_modules() {
     return MENU_ACCESS_DENIED;
   }
 
-  $rebuild = FALSE;
   $saved_state = variable_get('admin_menu_devel_modules_enabled', NULL);
   if (isset($saved_state)) {
     // Re-enable modules that were enabled before.
@@ -713,20 +712,6 @@ function admin_menu_toggle_modules() {
     else {
       drupal_set_message(t('No developer modules are enabled.'));
     }
-  }
-  if ($rebuild) {
-    // Make sure everything is rebuilt, basically a combination of the calls
-    // from system_modules() and system_modules_submit().
-    drupal_theme_rebuild();
-    menu_rebuild();
-    cache('cache')->delete('schema');
-    cache_clear_all();
-    drupal_clear_css_cache();
-    drupal_clear_js_cache();
-    // Synchronize to catch any actions that were added or removed.
-    actions_synchronize();
-    // Finally, flush admin_menu's cache.
-    admin_menu_flush_caches();
   }
   drupal_goto();
 }
@@ -851,7 +836,7 @@ function update_admin_menu_cache_info() {
 function _admin_menu_flush_cache($name = NULL) {
   switch ($name) {
     case 'admin_menu':
-      admin_menu_flush_caches();
+      admin_menu_cache_flush();
       break;
 
     case 'menu':
