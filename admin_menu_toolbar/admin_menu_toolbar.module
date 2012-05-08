@@ -41,20 +41,28 @@ function admin_menu_toolbar_page_build(&$page) {
  * Implements hook_admin_menu_output_build().
  */
 function admin_menu_toolbar_admin_menu_output_build(&$content) {
-  // Add shortcuts menu.
-  $content['shortcuts'] = array(
+  // Add shortcuts toggle.
+  $content['shortcut-toggle'] = array(
     '#access' => module_exists('shortcut'),
-    '#theme' => 'admin_menu_links',
     '#weight' => -200,
-  );
-  $content['shortcuts']['shortcuts'] = array(
+    '#type' => 'link',
     '#title' => t('Show shortcuts'),
-    '#attributes' => array('class' => array('admin-menu-shortcuts')),
+    '#href' => '',
     '#options' => array(
-      'attributes' => array('class' => 'toggle'),
+      'attributes' => array('class' => 'shortcut-toggle'),
     ),
   );
-  $content['shortcuts']['shortcuts']['shortcuts'] = array(
+
+  // Add shortcuts bar.
+  $content['shortcut'] = array(
+    '#access' => module_exists('shortcut'),
+    '#weight' => 200,
+    '#prefix' => '<div class="shortcut-toolbar">',
+    '#suffix' => '</div>',
+  );
+  $content['shortcut']['shortcuts'] = array(
+    // Shortcut module's CSS relies on Toolbar module's markup.
+    // @see http://drupal.org/node/1217038
     '#prefix' => '<div id="toolbar">',
     '#suffix' => '</div>',
     // @todo Links may contain .active-trail classes.

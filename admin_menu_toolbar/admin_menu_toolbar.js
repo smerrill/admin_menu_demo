@@ -23,22 +23,24 @@ Drupal.admin.behaviors.toolbarActiveTrail = function (context, settings, $adminM
  * Toggles the shortcuts bar.
  */
 Drupal.admin.behaviors.shortcutToggle = function (context, settings, $adminMenu) {
-  var $shortcuts = $adminMenu.find('li.admin-menu-shortcuts');
+  var $shortcuts = $adminMenu.find('.shortcut-toolbar');
   if (!$shortcuts.length) {
     return;
   }
   var storage = window.localStorage || false;
   var storageKey = 'Drupal.admin_menu.shortcut';
   var $body = $(context).find('body');
-  var $toggle = $shortcuts.find('.toggle');
+  var $toggle = $adminMenu.find('.shortcut-toggle');
   $toggle.click(function () {
     var enable = !$shortcuts.hasClass('active');
     $shortcuts.toggleClass('active', enable);
+    $toggle.toggleClass('active', enable);
     if (settings.admin_menu.margin_top) {
       $body.toggleClass('admin-menu-with-shortcuts', enable);
     }
     // Persist toggle state across requests.
     storage && enable ? storage.setItem(storageKey, 1) : storage.removeItem(storageKey);
+    this.blur();
     return false;
   });
 
