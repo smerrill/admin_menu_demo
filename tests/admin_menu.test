@@ -5,12 +5,12 @@
  * Tests for the Administration menu module.
  */
 
+use Drupal\simpletest\WebTestBase;
+
 /**
  * Base class for all administration menu web test cases.
  */
-class AdminMenuWebTestCase extends DrupalWebTestCase {
-  protected $profile = 'testing';
-
+class AdminMenuWebTestCase extends WebTestBase {
   protected $basePermissions = array(
     'system' => 'access administration pages',
     'admin_menu' => 'access administration menu',
