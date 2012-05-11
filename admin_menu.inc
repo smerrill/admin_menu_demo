@@ -571,17 +571,17 @@ function admin_menu_links_user() {
  */
 function admin_menu_links_search() {
   $links = array(
+    '#theme' => 'admin_menu_links',
+    '#weight' => 150,
+  );
+  $links['search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search'),
     '#title_display' => 'invisible',
     '#attributes' => array(
       'placeholder' => t('Search'),
+      'class' => array('admin-menu-search'),
     ),
-    // Cannot use .admin-menu-action, as it applies a wonky/special right
-    // viewport alignment.
-    '#prefix' => '<li class="admin-menu-search">',
-    '#suffix' => '</li>',
-    '#weight' => 200,
   );
   return $links;
 }

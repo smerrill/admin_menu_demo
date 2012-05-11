@@ -264,7 +264,7 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
     var self = this, $self = $(this);
 
     // Append the results container.
-    var $results = $('<ul class="admin-menu-search-results" />').insertAfter(self);
+    var $results = $('<ul class="dropdown admin-menu-search-results" />').insertAfter(self);
 
     // Initialize the current search needle.
     self.needle = $self.val();
@@ -275,20 +275,20 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
         // Update needle and remove previous results.
         self.needle = event.target.value;
         $results.empty();
-        $('li', $adminMenu).removeClass('highlight');
+        $adminMenu.find('li').removeClass('highlight');
 
         // Only search if the needle is longer than 3 characters.
         if (event.target.value.length >= 3) {
           // Select all links that match the search term and are not siblings
           // of the actions menu.
           // Separate selector and .filter() to leverage Sizzle cache.
-          $('li:not(.admin-menu-action, .admin-menu-action li) > a', $adminMenu).filter(':containsi("' + event.target.value + '")', $adminMenu).each(function () {
+          $adminMenu.find('li:not(.admin-menu-action, .admin-menu-action li) > a').filter(':containsi("' + event.target.value + '")').each(function () {
             var $match = $(this);
             var $parent = $match.parent();
             var result = $match.text();
 
             // Add the top-level category to the result.
-            var $category = $('#admin-menu-wrapper > ul > li', $adminMenu).has(this);
+            var $category = $adminMenu.find('#admin-menu-wrapper > ul > li').has(this);
             if ($category.length) {
               result = $category.children('a').text() + ': ' + result;
             }

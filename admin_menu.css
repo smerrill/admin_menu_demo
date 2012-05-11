@@ -203,7 +203,7 @@ body.admin-menu {
   border: none;
 }
 
-#admin-menu .admin-menu-search-results {
+#admin-menu .dropdown .admin-menu-search-results {
   display: block !important;
   left: auto;
 }
