@@ -44,11 +44,13 @@ Drupal.behaviors.adminMenu = {
     if (!$adminMenu.length && settings.admin_menu.hash) {
       Drupal.admin.getCache(settings.admin_menu.hash, function (response) {
           if (typeof response == 'string' && response.length > 0) {
-            $('body', context).prepend(response);
+            $('body', context).append(response);
           }
           var $adminMenu = $('#admin-menu:not(.admin-menu-processed)', context);
           // Apply our behaviors.
           Drupal.admin.attachBehaviors(context, settings, $adminMenu);
+          // Allow resize event handlers to recalculate sizes/positions.
+          $(window).triggerHandler('resize');
       });
     }
     // If the menu is in the output already, this means there is a new version.
@@ -79,7 +81,7 @@ Drupal.behaviors.adminMenuCollapsePermissions = {
       // Freeze width of first column to prevent jumping.
       $('#permissions th:first', context).css({ width: $('#permissions th:first', context).width() });
       // Attach click handler.
-      $('#permissions tr:has(td.module)', context).once('admin-menu-tweak-permissions', function () {
+      $modules = $('#permissions tr:has(td.module)', context).once('admin-menu-tweak-permissions', function () {
         var $module = $(this);
         $module.bind('click.admin-menu', function () {
           // @todo Replace with .nextUntil() in jQuery 1.4.
@@ -91,7 +93,11 @@ Drupal.behaviors.adminMenuCollapsePermissions = {
             $row.toggleClass('element-hidden');
           });
         });
-      }).trigger('click.admin-menu');
+      });
+      // Get fragment from current URL.
+      var fragment = window.location.hash || '#';
+      // Collapse all but the targeted permission rows set.
+      $modules.not(':has(' + fragment + ')').trigger('click.admin-menu');
     }
   }
 };
@@ -134,6 +140,22 @@ Drupal.admin.getCache = function (hash, onSuccess) {
       Drupal.admin.hashes.hash = status;
     }
   });
+};
+
+/**
+ * TableHeader callback to determine top viewport offset.
+ *
+ * @see toolbar.js
+ */
+Drupal.admin.height = function() {
+  var $adminMenu = $('#admin-menu');
+  var height = $adminMenu.outerHeight();
+  // In IE, Shadow filter adds some extra height, so we need to remove it from
+  // the returned height.
+  if ($adminMenu.css('filter') && $adminMenu.css('filter').match(/DXImageTransform\.Microsoft\.Shadow/)) {
+    height -= $adminMenu.get(0).filters.item("DXImageTransform.Microsoft.Shadow").strength;
+  }
+  return height;
 };
 
 /**

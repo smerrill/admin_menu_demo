@@ -3,4 +3,3 @@ description = Administration and debugging functionality for developers and site
 package = Administration
 core = 7.x
 scripts[] = admin_devel.js
-files[] = admin_devel.module
