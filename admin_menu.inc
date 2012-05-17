@@ -740,6 +740,7 @@ function _admin_menu_developer_modules() {
     'devel_node_access',
     'devel_themer',
     'field_ui',
+    'fontyourface_ui',
     'form_controller',
     'imagecache_ui',
     'journal',
