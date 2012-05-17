@@ -168,16 +168,17 @@ function admin_menu_page_build(&$page) {
     '#attached' => array(),
   );
   $attached = &$page['page_bottom']['admin_menu']['#attached'];
+  $options = array('every_page' => TRUE);
 
-  $attached['css'][] = $path . '/admin_menu.css';
+  $attached['css'][$path . '/admin_menu.css'] = $options;
   if ($user->uid == 1) {
-    $attached['css'][] = $path . '/admin_menu.uid1.css';
+    $attached['css'][$path . '/admin_menu.uid1.css'] = $options;
   }
   // Previous versions used the 'defer' attribute to increase browser rendering
   // performance. At least starting with Firefox 3.6, deferred .js files are
   // loaded, but Drupal.behaviors are not contained in the DOM when drupal.js
   // executes Drupal.attachBehaviors().
-  $attached['js'][] = $path . '/admin_menu.js';
+  $attached['js'][$path . '/admin_menu.js'] = $options;
 
   // Destination query strings are applied via JS.
   $settings['destination'] = drupal_http_build_query(drupal_get_destination());
