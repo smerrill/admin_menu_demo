@@ -140,6 +140,8 @@ function admin_menu_menu_link_delete($link) {
  * Indicate that the 'page_bottom' region (in which the administration menu
  * is displayed) is an overlay supplemental region that should be refreshed
  * whenever its content is updated.
+ *
+ * @see toolbar_system_info_alter()
  */
 function admin_menu_system_info_alter(&$info, $file, $type) {
   if ($type == 'theme') {
@@ -459,9 +461,15 @@ function admin_menu_output() {
     // Add site name as CSS class for development/staging theming purposes. We
     // leverage the cookie domain instead of HTTP_HOST to account for many (but
     // not all) multi-domain setups (e.g. language-based sub-domains).
-    $class_site = 'admin-menu-site' . drupal_strtolower(preg_replace('/[^a-zA-Z0-9-]/', '-', $GLOBALS['cookie_domain']));
+    $classes = 'admin-menu-site' . drupal_strtolower(preg_replace('/[^a-zA-Z0-9-]/', '-', $GLOBALS['cookie_domain']));
+    // Displace overlay.
+    // @see Drupal.overlay.create
+    // @see toolbar_preprocess_toolbar()
+    if (module_exists('overlay')) {
+      $classes .= ' overlay-displace-top';
+    }
     // @todo Always output container to harden JS-less support.
-    $content['#prefix'] = '<div id="admin-menu" class="' . $class_site . '"><div id="admin-menu-wrapper">';
+    $content['#prefix'] = '<div id="admin-menu" class="' . $classes . '"><div id="admin-menu-wrapper">';
     $content['#suffix'] = '</div></div>';
 
     // Load menu builder functions.
