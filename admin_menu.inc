@@ -732,6 +732,7 @@ function _admin_menu_developer_modules() {
     'cache_disable',
     'coder',
     'content_copy',
+    'context_ui',
     'debug',
     'delete_all',
     'demo',
