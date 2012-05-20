@@ -849,7 +849,7 @@ function _admin_menu_flush_cache($name = NULL) {
       break;
 
     case 'menu':
-      menu_rebuild();
+      menu_router_rebuild();
       break;
 
     case 'registry':
