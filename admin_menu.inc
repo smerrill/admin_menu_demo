@@ -584,7 +584,7 @@ function admin_menu_theme_settings() {
   $form['admin_menu_position_fixed'] = array(
     '#type' => 'checkbox',
     '#title' => t('Keep menu at top of page'),
-    '#default_value' => variable_get('admin_menu_position_fixed', 0),
+    '#default_value' => variable_get('admin_menu_position_fixed', 1),
     '#description' => t('Displays the administration menu always at the top of the browser viewport (even when scrolling the page).'),
   );
   // @todo Re-confirm this with latest browser versions.

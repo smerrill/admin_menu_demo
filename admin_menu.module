@@ -214,7 +214,7 @@ function admin_menu_page_build(&$page) {
     // @see http://drupal.org/node/1473548, http://drupal.org/node/1194528
     //$page['#attributes']['class'][] = 'admin-menu';
   }
-  if ($setting = variable_get('admin_menu_position_fixed', 0)) {
+  if ($setting = variable_get('admin_menu_position_fixed', 1)) {
     $settings['position_fixed'] = $setting;
 
     // In fixed positioning, supply a callback function for tableheader.js to
