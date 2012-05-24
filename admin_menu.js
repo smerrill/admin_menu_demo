@@ -85,10 +85,11 @@ Drupal.behaviors.adminMenuCollapsePermissions = {
           });
         });
       });
-      // Get fragment from current URL.
-      var fragment = window.location.hash || '#';
       // Collapse all but the targeted permission rows set.
-      $modules.not(':has(' + fragment + ')').trigger('click.admin-menu');
+      if (window.location.hash.length) {
+        $modules = $modules.not(':has(' + window.location.hash + ')');
+      }
+      $modules.trigger('click.admin-menu');
     }
   }
 };
