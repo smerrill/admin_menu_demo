@@ -65,7 +65,6 @@ function admin_menu_menu() {
   // @see http://drupal.org/project/js
   $items['js/admin_menu/cache'] = array(
     'page callback' => 'admin_menu_js_cache',
-    'delivery callback' => 'admin_menu_deliver',
     'access arguments' => array('access administration menu'),
     'type' => MENU_CALLBACK,
   );
@@ -358,28 +357,8 @@ function admin_menu_js_cache() {
   drupal_add_http_header('Cache-Control', 'private, max-age=' . $max_age);
 
   // Retrieve and return the rendered menu.
-  return admin_menu_output();
-}
-
-/**
- * Delivery callback for client-side HTTP caching.
- *
- * @see admin_menu_js_cache()
- */
-function admin_menu_deliver($page_callback_result) {
-  drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
-
-  // Send appropriate language header for browsers.
-  global $language;
-  drupal_add_http_header('Content-Language', $language->language);
-
-  // The page callback is always admin_menu_js_cache(), which always returns a
-  // string, and is only accessed when the user actually has access to it.
-  // Therefore, we do not care for the other possible page callback results.
-  print $page_callback_result;
-
-  // Perform end-of-request tasks. The page cache is created here.
-  drupal_page_footer();
+  $content = admin_menu_output();
+  return new Symfony\Component\HttpFoundation\Response($content);
 }
 
 /**

@@ -125,6 +125,15 @@ Drupal.admin.getCache = function (hash, onSuccess) {
     cache: true,
     type: 'GET',
     dataType: 'text', // Prevent auto-evaluation of response.
+    // @todo Drupal's new HttpKernel treats any XMLHttpRequest as Ajax request,
+    //   which breaks simple HTML responses. Even without the offending override
+    //   in ContentNegotiation::getContentType(), the HttpKernel fails to fall
+    //   back to text/html and returns a unknown media type HTTP error, since
+    //   jQuery sends a Accept:text/plain header.
+    accepts: {
+      html: 'text/html',
+      text: 'text/html'
+    },
     global: false, // Do not trigger global AJAX events.
     url: Drupal.settings.admin_menu.basePath.replace(/admin_menu/, 'js/admin_menu/cache/' + hash),
     success: onSuccess,
