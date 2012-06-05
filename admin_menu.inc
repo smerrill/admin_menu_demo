@@ -694,7 +694,7 @@ function admin_menu_toggle_modules() {
   // @todo Update for built-in token handling; http://drupal.org/node/755584
   $token = request()->query->get('token');
   if (!isset($token) || !drupal_valid_token($token, current_path())) {
-    drupal_access_denied();
+    throw new Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
   }
 
   $saved_state = variable_get('admin_menu_devel_modules_enabled', NULL);
@@ -770,13 +770,13 @@ function admin_menu_flush_cache($name = NULL) {
   // @todo Update for built-in token handling; http://drupal.org/node/755584
   $token = request()->query->get('token');
   if (!isset($token) || !drupal_valid_token($token, current_path())) {
-    drupal_access_denied();
+    throw new Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
   }
 
   if (isset($name)) {
     $caches = module_invoke_all('admin_menu_cache_info');
     if (!isset($caches[$name])) {
-      drupal_not_found();
+      throw new Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
     }
   }
   else {
