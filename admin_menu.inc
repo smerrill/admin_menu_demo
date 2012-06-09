@@ -379,6 +379,13 @@ function admin_menu_links_menu($tree) {
     // Remove description to prevent mouseover tooltip clashes.
     unset($data['link']['localized_options']['attributes']['title']);
 
+    // Make action links (typically "Add ...") appear first in dropdowns.
+    // They might appear first already, but only as long as there is no link
+    // that comes alphabetically first (e.g., a node type with label "Ad").
+    if ($data['link']['type'] & MENU_IS_LOCAL_ACTION) {
+      $data['link']['weight'] -= 1000;
+    }
+
     $links[$data['link']['href']] = array(
       '#title' => $data['link']['title'],
       '#href' => $data['link']['href'],
@@ -599,7 +606,7 @@ function admin_menu_theme_settings() {
   $form['admin_menu_position_fixed'] = array(
     '#type' => 'checkbox',
     '#title' => t('Keep menu at top of page'),
-    '#default_value' => variable_get('admin_menu_position_fixed', 0),
+    '#default_value' => variable_get('admin_menu_position_fixed', 1),
     '#description' => t('Displays the administration menu always at the top of the browser viewport (even when scrolling the page).'),
   );
   // @todo Re-confirm this with latest browser versions.
@@ -762,6 +769,7 @@ function _admin_menu_developer_modules() {
     'cache_disable',
     'coder',
     'content_copy',
+    'context_ui',
     'debug',
     'delete_all',
     'demo',
@@ -769,6 +777,7 @@ function _admin_menu_developer_modules() {
     'devel_node_access',
     'devel_themer',
     'field_ui',
+    'fontyourface_ui',
     'form_controller',
     'imagecache_ui',
     'journal',

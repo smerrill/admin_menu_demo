@@ -94,10 +94,11 @@ Drupal.behaviors.adminMenuCollapsePermissions = {
           });
         });
       });
-      // Get fragment from current URL.
-      var fragment = window.location.hash || '#';
       // Collapse all but the targeted permission rows set.
-      $modules.not(':has(' + fragment + ')').trigger('click.admin-menu');
+      if (window.location.hash.length) {
+        $modules = $modules.not(':has(' + window.location.hash + ')');
+      }
+      $modules.trigger('click.admin-menu');
     }
   }
 };
@@ -190,9 +191,13 @@ Drupal.admin.behaviors.positionFixed = function (context, settings, $adminMenu) 
  */
 Drupal.admin.behaviors.pageTabs = function (context, settings, $adminMenu) {
   if (settings.admin_menu.tweak_tabs) {
-    $('ul.tabs.primary li', context).addClass('admin-menu-tab').appendTo('#admin-menu-wrapper > ul');
-    $('ul.tabs.secondary', context).appendTo('#admin-menu-wrapper > ul > li.admin-menu-tab.active').removeClass('secondary');
-    $('ul.tabs.primary', context).remove();
+    var $tabs = $(context).find('ul.tabs.primary');
+    $adminMenu.find('#admin-menu-wrapper > ul').eq(1)
+      .append($tabs.find('li').addClass('admin-menu-tab'));
+    $(context).find('ul.tabs.secondary')
+      .appendTo('#admin-menu-wrapper > ul > li.admin-menu-tab.active')
+      .removeClass('secondary');
+    $tabs.remove();
   }
 };
 
