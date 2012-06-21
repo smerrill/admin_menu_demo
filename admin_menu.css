@@ -34,7 +34,8 @@
   background: transparent url(images/icon_users.png) 90% center no-repeat;
   padding-right: 22px;
 }
-#admin-menu .dropdown .admin-menu-action {
+#admin-menu .dropdown .admin-menu-action,
+#admin-menu .dropdown .admin-menu-search {
   float: right;
 }
 #admin-menu .dropdown .admin-menu-action a {
@@ -182,6 +183,42 @@ body.admin-menu {
 #admin-menu .dropdown li li.iehover li.iehover li.iehover a {
   color: #FFF;
   width: 90%; /* IE */
+}
+
+/* Search form */
+#admin-menu .admin-menu-search .form-item {
+  margin: 0;
+  padding: 0;
+}
+#admin-menu .admin-menu-search input {
+  background: #fff url('images/search.png') top right no-repeat;
+  border: none;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  font-size: 10px;
+  margin: 1px 0;
+  outline: none;
+  padding: 2px 22px 2px 4px;
+  width: 158px;
+}
+
+#admin-menu .dropdown .admin-menu-search-results {
+  display: block !important;
+  left: auto !important;
+  top: 100%;
+}
+#admin-menu .admin-menu-search-results,
+#admin-menu .admin-menu-search-results li {
+  width: 186px;
+}
+
+#admin-menu li.highlight {
+  background-color: #eee !important;
+}
+#admin-menu li.highlight > a {
+  border-color: #ccc !important;
+  color: #111 !important;
 }
 
 /* #210615: Mozilla on Mac fix */

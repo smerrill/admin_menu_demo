@@ -572,6 +572,28 @@ function admin_menu_links_user() {
 }
 
 /**
+ * Build search widget.
+ *
+ * @see theme_admin_menu_links()
+ */
+function admin_menu_links_search() {
+  $links = array(
+    '#theme' => 'admin_menu_links',
+    '#weight' => 150,
+  );
+  $links['search'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'attribute',
+    '#attributes' => array(
+      'placeholder' => t('Search'),
+      'class' => array('admin-menu-search'),
+    ),
+  );
+  return $links;
+}
+
+/**
  * Form builder function for module settings.
  */
 function admin_menu_theme_settings() {
