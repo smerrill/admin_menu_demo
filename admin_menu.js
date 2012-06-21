@@ -256,41 +256,44 @@ Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
  * Apply the search bar functionality.
  */
 Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
-  // Having an ID and/or creating it with JS would help.
+  // @todo Add a HTML ID.
   var $input = $('input.admin-menu-search', $adminMenu);
   // Initialize the current search needle.
   var needle = $input.val();
-  // Caches lowercase value of needle.
-  var needleMatch;
+  // Cache of all links that can be matched in the menu.
+  var links;
+  // Minimum search needle length.
+  var needleMinLength = 2;
   // Append the results container.
   var $results = $('<div />').insertAfter($input);
-  // Build an array of all links we can look up.
-  var links;
 
-  // highlight selected result.
+  /**
+   * Highlights selected result.
+   *
+   * @todo Check whether this indirection is really required.
+   */
   function resultsHandler(e) {
     var $this = $(this);
     var show = e.type === 'mouseenter' || e.type === 'focusin';
-    $this.toggleClass('highlight', show);
     $this.trigger(show ? 'showPath' : 'hidePath', [this]);
   }
 
-  // Show menu in context.
-  // can't use mouseenter, the delay makes problems.
+  /**
+   * Shows the link in the menu that corresponds to a search result.
+   */
   function highlightPathHandler(e, link) {
     var $original = $(link).data('original-link');
-    var $parents = $original.parents('#admin-menu .dropdown li ul');
     var show = e.type === 'showPath';
+    // Toggle an additional CSS class to visually highlight the matching link.
+    // @todo Consider using same visual appearance as regular hover.
     $original.toggleClass('highlight', show);
-    if (show) {
-      $parents.css({left: 'auto', display: 'block'});
-    }
-    else {
-      $parents.css({left: '-999em', display: 'none'});
-    }
+    $original.trigger(show ? 'mouseenter' : 'mouseleave');
   }
 
-  function buildLinksCache($root) {
+  /**
+   * Builds the search index.
+   */
+  function buildSearchIndex($root) {
     return $root
       .find('li:not(.admin-menu-action, .admin-menu-action li) > a')
       .map(function () {
@@ -303,6 +306,9 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
       });
   }
 
+  /**
+   * Searches the index for a given needle and returns matching entries.
+   */
   function findMatches(needle, links) {
     var needleMatch = needle.toLowerCase();
     // Select matching links from the cache.
@@ -311,39 +317,49 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
     });
   }
 
+  /**
+   * Builds the search result list in a detached DOM node.
+   */
   function buildResultsList(matches) {
     var $html =$('<ul class="dropdown admin-menu-search-results" />');
     $.each(matches, function () {
       var result = this.text;
       var $element = $(this.element);
+
+      // Check whether there is a top-level category that can be prepended.
       var $category = $element.closest('#admin-menu-wrapper > ul > li');
       if ($category.length) {
         result = $category.find('> a').text() + ': ' + result;
       }
-      var $result = $('<li><a href="' + $element.attr('href') +'">' + result +'</a></li>');
+
+      var $result = $('<li><a href="' + $element.attr('href') + '">' + result + '</a></li>');
       $result.data('original-link', $(this.element).parent());
       $html.append($result);
     });
     return $html;
   }
 
+  /**
+   * Executes the search upon user input.
+   */
   function keyupHandler() {
     var matches, $html, value = $(this).val();
     // Only proceed if the search needle has changed.
     if (value !== needle) {
       needle = value;
-      // Wait for building the cache.
-      if (needle.length > 1 && !links) {
-        links = buildLinksCache($adminMenu);
+      // Initialize the cache of menu links upon first search.
+      if (!links && needle.length >= needleMinLength) {
+        // @todo Limit to links in dropdown menus; i.e., skip menu additions.
+        links = buildSearchIndex($adminMenu);
       }
-      // Empty results when deleting search text.
-      if (needle.length < 3) {
+      // Empty results container when deleting search text.
+      if (needle.length < needleMinLength) {
         $results.empty();
       }
-      // Only search if the needle is longer than 3 characters.
-      if (needle.length >= 3 && links) {
+      // Only search if the needle is long enough.
+      if (needle.length >= needleMinLength && links) {
         matches = findMatches(needle, links);
-        // Build the list in the detached DOM node.
+        // Build the list in a detached DOM node.
         $html = buildResultsList(matches);
         // Display results.
         $results.empty().append($html);
@@ -351,17 +367,12 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
     }
   }
 
-  // The best after CSS hover.
+  // Attach showPath/hidePath handler to search result entries.
   $results.delegate('li', 'mouseenter mouseleave focus blur', resultsHandler);
-
-  // Show the menu in situation.
+  // Attach hover/active highlight behavior to search result entries.
   $adminMenu.delegate('.admin-menu-search-results li', 'showPath hidePath', highlightPathHandler);
-
+  // Attach the search input event handler.
   $input.bind('keyup', keyupHandler);
-
-  // @todo make better.
-  $input.bind('mouseenter focus', function () { $results.show(); });
-  $results.bind('mouseleave', function () { $results.hide(); });
 };
 
 /**
