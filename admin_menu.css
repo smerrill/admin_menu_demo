@@ -192,20 +192,21 @@ body.admin-menu {
 }
 #admin-menu .admin-menu-search input {
   background: #fff url('images/search.png') top right no-repeat;
+  border: none;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-  outline: none;
-  width: 158px;
-  padding: 2px 22px 2px 4px;
-  margin: 1px;
   font-size: 10px;
-  border: none;
+  margin: 1px 0;
+  outline: none;
+  padding: 2px 22px 2px 4px;
+  width: 158px;
 }
 
 #admin-menu .dropdown .admin-menu-search-results {
   display: block !important;
-  left: auto;
+  left: auto !important;
+  top: 100%;
 }
 #admin-menu .admin-menu-search-results,
 #admin-menu .admin-menu-search-results li {

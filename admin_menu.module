@@ -624,6 +624,7 @@ function theme_admin_menu_links($variables) {
     }
 
     $link = '';
+    // Handle menu links.
     if (isset($elements[$path]['#href'])) {
       // Strip destination query string from href attribute and apply a CSS class
       // for our JavaScript behavior instead.
@@ -634,7 +635,8 @@ function theme_admin_menu_links($variables) {
 
       $link .= l($elements[$path]['#title'], $elements[$path]['#href'], $elements[$path]['#options']);
     }
-    elseif (isset($elements[$path]['#title'])) {
+    // Handle plain text items, but do not interfere with menu additions.
+    elseif (!isset($elements[$path]['#type']) && isset($elements[$path]['#title'])) {
       if (!empty($elements[$path]['#options']['html'])) {
         $title = $elements[$path]['#title'];
       }

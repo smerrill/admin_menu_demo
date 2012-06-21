@@ -1,14 +1,5 @@
 (function($) {
 
-/**
- * Extends jQuery with a case-insensitive *:containsi selector.
- */
-$.extend($.expr[':'], {
-  'containsi': function (elem, i, match, array) {
-    return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || '').toLowerCase()) >= 0;
-  }
-});
-
 Drupal.admin = Drupal.admin || {};
 Drupal.admin.behaviors = Drupal.admin.behaviors || {};
 Drupal.admin.hashes = Drupal.admin.hashes || {};
@@ -265,56 +256,112 @@ Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
  * Apply the search bar functionality.
  */
 Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
-  $('.admin-menu-search input', $adminMenu).each(function () {
-    var self = this, $self = $(this);
+  // Having an ID and/or creating it with JS would help.
+  var $input = $('input.admin-menu-search', $adminMenu);
+  // Initialize the current search needle.
+  var needle = $input.val();
+  // Caches lowercase value of needle.
+  var needleMatch;
+  // Append the results container.
+  var $results = $('<div />').insertAfter($input);
+  // Build an array of all links we can look up.
+  var links;
 
-    // Append the results container.
-    var $results = $('<ul class="dropdown admin-menu-search-results" />').insertAfter(self);
+  // highlight selected result.
+  function resultsHandler(e) {
+    var $this = $(this);
+    var show = e.type === 'mouseenter' || e.type === 'focusin';
+    $this.toggleClass('highlight', show);
+    $this.trigger(show ? 'showPath' : 'hidePath', [this]);
+  }
 
-    // Initialize the current search needle.
-    self.needle = $self.val();
+  // Show menu in context.
+  // can't use mouseenter, the delay makes problems.
+  function highlightPathHandler(e, link) {
+    var $original = $(link).data('original-link');
+    var $parents = $original.parents('#admin-menu .dropdown li ul');
+    var show = e.type === 'showPath';
+    $original.toggleClass('highlight', show);
+    if (show) {
+      $parents.css({left: 'auto', display: 'block'});
+    }
+    else {
+      $parents.css({left: '-999em', display: 'none'});
+    }
+  }
 
-    $self.keyup(function (event) {
-      // Only proceed if the search needle has changed.
-      if (self.needle != event.target.value) {
-        // Update needle and remove previous results.
-        self.needle = event.target.value;
-        $results.empty();
-        $adminMenu.find('li').removeClass('highlight');
+  function buildLinksCache($root) {
+    return $root
+      .find('li:not(.admin-menu-action, .admin-menu-action li) > a')
+      .map(function () {
+        var text = (this.textContent || this.innerText);
+        return {
+          text: text,
+          textMatch: text.toLowerCase(),
+          element: this
+        };
+      });
+  }
 
-        // Only search if the needle is longer than 3 characters.
-        if (event.target.value.length >= 3) {
-          // Select all links that match the search term and are not siblings
-          // of the actions menu.
-          // Separate selector and .filter() to leverage Sizzle cache.
-          $adminMenu.find('li:not(.admin-menu-action, .admin-menu-action li) > a').filter(':containsi("' + event.target.value + '")').each(function () {
-            var $match = $(this);
-            var $parent = $match.parent();
-            var result = $match.text();
-
-            // Add the top-level category to the result.
-            var $category = $adminMenu.find('#admin-menu-wrapper > ul > li').has(this);
-            if ($category.length) {
-              result = $category.children('a').text() + ': ' + result;
-            }
-
-            $('<li><a href="' + $match.attr('href') + '">' + result + '</a></li>')
-              .appendTo($results)
-              .hover(function () {
-                $parent.addClass('highlight');
-                $match.trigger('mouseenter');
-              }, function () {
-                $parent.removeClass('highlight');
-                $match.trigger('mouseleave');
-              });
-          });
-          // Show the search results.
-          // @todo Why do they appear without this?
-          //$self.trigger('mouseenter');
-        }
-      }
+  function findMatches(needle, links) {
+    var needleMatch = needle.toLowerCase();
+    // Select matching links from the cache.
+    return $.grep(links, function (link) {
+      return link.textMatch.indexOf(needleMatch) !== -1;
     });
-  });
+  }
+
+  function buildResultsList(matches) {
+    var $html =$('<ul class="dropdown admin-menu-search-results" />');
+    $.each(matches, function () {
+      var result = this.text;
+      var $element = $(this.element);
+      var $category = $element.closest('#admin-menu-wrapper > ul > li');
+      if ($category.length) {
+        result = $category.find('> a').text() + ': ' + result;
+      }
+      var $result = $('<li><a href="' + $element.attr('href') +'">' + result +'</a></li>');
+      $result.data('original-link', $(this.element).parent());
+      $html.append($result);
+    });
+    return $html;
+  }
+
+  function keyupHandler() {
+    var matches, $html, value = $(this).val();
+    // Only proceed if the search needle has changed.
+    if (value !== needle) {
+      needle = value;
+      // Wait for building the cache.
+      if (needle.length > 1 && !links) {
+        links = buildLinksCache($adminMenu);
+      }
+      // Empty results when deleting search text.
+      if (needle.length < 3) {
+        $results.empty();
+      }
+      // Only search if the needle is longer than 3 characters.
+      if (needle.length >= 3 && links) {
+        matches = findMatches(needle, links);
+        // Build the list in the detached DOM node.
+        $html = buildResultsList(matches);
+        // Display results.
+        $results.empty().append($html);
+      }
+    }
+  }
+
+  // The best after CSS hover.
+  $results.delegate('li', 'mouseenter mouseleave focus blur', resultsHandler);
+
+  // Show the menu in situation.
+  $adminMenu.delegate('.admin-menu-search-results li', 'showPath hidePath', highlightPathHandler);
+
+  $input.bind('keyup', keyupHandler);
+
+  // @todo make better.
+  $input.bind('mouseenter focus', function () { $results.show(); });
+  $results.bind('mouseleave', function () { $results.hide(); });
 };
 
 /**

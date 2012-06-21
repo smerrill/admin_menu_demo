@@ -584,7 +584,7 @@ function admin_menu_links_search() {
   $links['search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search'),
-    '#title_display' => 'invisible',
+    '#title_display' => 'attribute',
     '#attributes' => array(
       'placeholder' => t('Search'),
       'class' => array('admin-menu-search'),
