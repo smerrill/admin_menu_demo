@@ -268,26 +268,31 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
   var $results = $('<div />').insertAfter($input);
 
   /**
-   * Highlights selected result.
-   *
-   * @todo Check whether this indirection is really required.
+   * Executes the search upon user input.
    */
-  function resultsHandler(e) {
-    var $this = $(this);
-    var show = e.type === 'mouseenter' || e.type === 'focusin';
-    $this.trigger(show ? 'showPath' : 'hidePath', [this]);
-  }
-
-  /**
-   * Shows the link in the menu that corresponds to a search result.
-   */
-  function highlightPathHandler(e, link) {
-    var $original = $(link).data('original-link');
-    var show = e.type === 'showPath';
-    // Toggle an additional CSS class to visually highlight the matching link.
-    // @todo Consider using same visual appearance as regular hover.
-    $original.toggleClass('highlight', show);
-    $original.trigger(show ? 'mouseenter' : 'mouseleave');
+  function keyupHandler() {
+    var matches, $html, value = $(this).val();
+    // Only proceed if the search needle has changed.
+    if (value !== needle) {
+      needle = value;
+      // Initialize the cache of menu links upon first search.
+      if (!links && needle.length >= needleMinLength) {
+        // @todo Limit to links in dropdown menus; i.e., skip menu additions.
+        links = buildSearchIndex($adminMenu);
+      }
+      // Empty results container when deleting search text.
+      if (needle.length < needleMinLength) {
+        $results.empty();
+      }
+      // Only search if the needle is long enough.
+      if (needle.length >= needleMinLength && links) {
+        matches = findMatches(needle, links);
+        // Build the list in a detached DOM node.
+        $html = buildResultsList(matches);
+        // Display results.
+        $results.empty().append($html);
+      }
+    }
   }
 
   /**
@@ -298,6 +303,10 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
       .find('li:not(.admin-menu-action, .admin-menu-action li) > a')
       .map(function () {
         var text = (this.textContent || this.innerText);
+        // Skip menu entries that do not contain any text (e.g., the icon).
+        if (typeof text === 'undefined') {
+          return;
+        }
         return {
           text: text,
           textMatch: text.toLowerCase(),
@@ -340,31 +349,26 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
   }
 
   /**
-   * Executes the search upon user input.
+   * Highlights selected result.
+   *
+   * @todo Check whether this indirection is really required.
    */
-  function keyupHandler() {
-    var matches, $html, value = $(this).val();
-    // Only proceed if the search needle has changed.
-    if (value !== needle) {
-      needle = value;
-      // Initialize the cache of menu links upon first search.
-      if (!links && needle.length >= needleMinLength) {
-        // @todo Limit to links in dropdown menus; i.e., skip menu additions.
-        links = buildSearchIndex($adminMenu);
-      }
-      // Empty results container when deleting search text.
-      if (needle.length < needleMinLength) {
-        $results.empty();
-      }
-      // Only search if the needle is long enough.
-      if (needle.length >= needleMinLength && links) {
-        matches = findMatches(needle, links);
-        // Build the list in a detached DOM node.
-        $html = buildResultsList(matches);
-        // Display results.
-        $results.empty().append($html);
-      }
-    }
+  function resultsHandler(e) {
+    var $this = $(this);
+    var show = e.type === 'mouseenter' || e.type === 'focusin';
+    $this.trigger(show ? 'showPath' : 'hidePath', [this]);
+  }
+
+  /**
+   * Shows the link in the menu that corresponds to a search result.
+   */
+  function highlightPathHandler(e, link) {
+    var $original = $(link).data('original-link');
+    var show = e.type === 'showPath';
+    // Toggle an additional CSS class to visually highlight the matching link.
+    // @todo Consider using same visual appearance as regular hover.
+    $original.toggleClass('highlight', show);
+    $original.trigger(show ? 'mouseenter' : 'mouseleave');
   }
 
   // Attach showPath/hidePath handler to search result entries.
