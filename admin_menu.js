@@ -287,7 +287,7 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
       // Initialize the cache of menu links upon first search.
       if (!links && needle.length >= needleMinLength) {
         // @todo Limit to links in dropdown menus; i.e., skip menu additions.
-        links = buildSearchIndex($adminMenu);
+        links = buildSearchIndex($adminMenu.find('li:not(.admin-menu-action, .admin-menu-action li) > a'));
       }
       // Empty results container when deleting search text.
       if (needle.length < needleMinLength) {
@@ -307,9 +307,8 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
   /**
    * Builds the search index.
    */
-  function buildSearchIndex($root) {
-    return $root
-      .find('li:not(.admin-menu-action, .admin-menu-action li) > a')
+  function buildSearchIndex($links) {
+    return $links
       .map(function () {
         var text = (this.textContent || this.innerText);
         // Skip menu entries that do not contain any text (e.g., the icon).
@@ -339,15 +338,16 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
    * Builds the search result list in a detached DOM node.
    */
   function buildResultsList(matches) {
-    var $html =$('<ul class="dropdown admin-menu-search-results" />');
+    var $html = $('<ul class="dropdown admin-menu-search-results" />');
     $.each(matches, function () {
       var result = this.text;
       var $element = $(this.element);
 
       // Check whether there is a top-level category that can be prepended.
       var $category = $element.closest('#admin-menu-wrapper > ul > li');
-      if ($category.length) {
-        result = $category.find('> a').text() + ': ' + result;
+      var categoryText = $category.find('> a').text()
+      if ($category.length && categoryText) {
+        result = categoryText + ': ' + result;
       }
 
       var $result = $('<li><a href="' + $element.attr('href') + '">' + result + '</a></li>');
@@ -359,8 +359,6 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
 
   /**
    * Highlights selected result.
-   *
-   * @todo Check whether this indirection is really required.
    */
   function resultsHandler(e) {
     var $this = $(this);
@@ -369,23 +367,36 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
   }
 
   /**
+   * Closes the search results and clears the search input.
+   */
+  function resultsClickHandler(e, link) {
+    var $original = $(this).data('original-link');
+    $original.trigger('mouseleave');
+    $input.val('').trigger('keyup');
+  }
+
+  /**
    * Shows the link in the menu that corresponds to a search result.
    */
   function highlightPathHandler(e, link) {
-    var $original = $(link).data('original-link');
-    var show = e.type === 'showPath';
-    // Toggle an additional CSS class to visually highlight the matching link.
-    // @todo Consider using same visual appearance as regular hover.
-    $original.toggleClass('highlight', show);
-    $original.trigger(show ? 'mouseenter' : 'mouseleave');
+    if (link) {
+      var $original = $(link).data('original-link');
+      var show = e.type === 'showPath';
+      // Toggle an additional CSS class to visually highlight the matching link.
+      // @todo Consider using same visual appearance as regular hover.
+      $original.toggleClass('highlight', show);
+      $original.trigger(show ? 'mouseenter' : 'mouseleave');
+    }
   }
 
   // Attach showPath/hidePath handler to search result entries.
   $results.delegate('li', 'mouseenter mouseleave focus blur', resultsHandler);
+  // Hide the result list after a link has been clicked, useful for overlay.
+  $results.delegate('li', 'click', resultsClickHandler);
   // Attach hover/active highlight behavior to search result entries.
   $adminMenu.delegate('.admin-menu-search-results li', 'showPath hidePath', highlightPathHandler);
   // Attach the search input event handler.
-  $input.bind('keyup', keyupHandler);
+  $input.bind('keyup search', keyupHandler);
 };
 
 /**
