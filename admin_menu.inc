@@ -461,7 +461,7 @@ function admin_menu_links_icon() {
     '#href' => 'http://drupal.org',
   );
   // Add links to project issue queues.
-  foreach (module_list(FALSE, TRUE) as $module) {
+  foreach (module_list() as $module) {
     $info = drupal_parse_info_file(drupal_get_path('module', $module) . '/' . $module . '.info');
     if (!isset($info['project']) || isset($links['icon']['drupal.org'][$info['project']])) {
       continue;
@@ -731,7 +731,7 @@ function admin_menu_toggle_modules() {
     // Allow site admins to override this variable via settings.php.
     $devel_modules = variable_get('admin_menu_devel_modules', _admin_menu_developer_modules());
     // Store currently enabled modules in a variable.
-    $devel_modules = array_intersect(module_list(FALSE, FALSE), $devel_modules);
+    $devel_modules = array_intersect(module_list(), $devel_modules);
     $devel_modules = array_diff($devel_modules, variable_get('admin_menu_devel_modules_skip', array()));
     if (!empty($devel_modules)) {
       variable_set('admin_menu_devel_modules_enabled', $devel_modules);
@@ -836,6 +836,7 @@ function admin_menu_admin_menu_cache_info() {
 function system_admin_menu_cache_info() {
   $caches = array(
     'assets' => t('CSS and JavaScript'),
+    'bootstrap' => t('Bootstrap'),
     'cache' => t('Page and else'),
     'menu' => t('Menu'),
     'registry' => t('Class registry'),
@@ -877,6 +878,10 @@ function _admin_menu_flush_cache($name = NULL) {
 
     case 'menu':
       menu_router_rebuild();
+      break;
+
+    case 'bootstrap':
+      cache('bootstrap')->flush();
       break;
 
     case 'registry':
