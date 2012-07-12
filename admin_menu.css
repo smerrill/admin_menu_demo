@@ -191,7 +191,7 @@ body.admin-menu {
   padding: 0;
 }
 #admin-menu .admin-menu-search input {
-  background: #fff url('images/search.png') top right no-repeat;
+  background: #fff none center right no-repeat;
   border: none;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
