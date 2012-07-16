@@ -326,6 +326,9 @@ function admin_menu_cache_set($cid, $data) {
 function admin_menu_js_cache() {
   global $conf;
 
+  // Suppress Devel module.
+  $GLOBALS['devel_shutdown'] = FALSE;
+
   // Enforce page caching.
   $conf['system.performance']['cache'] = 1;
   drupal_page_is_cacheable(TRUE);
