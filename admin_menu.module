@@ -651,12 +651,12 @@ function theme_admin_menu_links($variables) {
  */
 function admin_menu_element_sort($a, $b) {
   // @see element_sort()
-  $a_weight = (is_array($a) && isset($a['#weight'])) ? $a['#weight'] : 0;
-  $b_weight = (is_array($b) && isset($b['#weight'])) ? $b['#weight'] : 0;
+  $a_weight = isset($a['#weight']) ? $a['#weight'] : 0;
+  $b_weight = isset($b['#weight']) ? $b['#weight'] : 0;
   if ($a_weight == $b_weight) {
     // @see element_sort_by_title()
-    $a_title = (is_array($a) && isset($a['#title'])) ? $a['#title'] : '';
-    $b_title = (is_array($b) && isset($b['#title'])) ? $b['#title'] : '';
+    $a_title = isset($a['#title']) ? $a['#title'] : '';
+    $b_title = isset($b['#title']) ? $b['#title'] : '';
     return strnatcasecmp($a_title, $b_title);
   }
   return ($a_weight < $b_weight) ? -1 : 1;
