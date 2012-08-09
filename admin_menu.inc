@@ -714,7 +714,7 @@ function _admin_menu_form_devel_admin_settings_alter(&$form, $form_state) {
  */
 function admin_menu_toggle_modules() {
   // @todo Update for built-in token handling; http://drupal.org/node/755584
-  $token = request()->query->get('token');
+  $token = drupal_container()->get('request')->query->get('token');
   if (!isset($token) || !drupal_valid_token($token, current_path())) {
     throw new Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
   }
@@ -790,7 +790,7 @@ function _admin_menu_developer_modules() {
  */
 function admin_menu_flush_cache($name = NULL) {
   // @todo Update for built-in token handling; http://drupal.org/node/755584
-  $token = request()->query->get('token');
+  $token = drupal_container()->get('request')->query->get('token');
   if (!isset($token) || !drupal_valid_token($token, current_path())) {
     throw new Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
   }
