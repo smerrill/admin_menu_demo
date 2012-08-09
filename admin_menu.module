@@ -184,7 +184,7 @@ function admin_menu_page_build(&$page) {
 
   // If the client supports JavaScript and we have a cached menu for the current
   // user, only output the hash for the client-side HTTP cache callback URL.
-  $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . drupal_container()->get(LANGUAGE_TYPE_INTERFACE)->langcode;
+  $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . language_manager(LANGUAGE_TYPE_INTERFACE)->langcode;
   if (!empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
     $settings['hash'] = $hash;
     // The base path to use for cache requests depends on whether clean URLs
@@ -422,7 +422,7 @@ function admin_menu_output() {
   global $user;
 
   $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
-  $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . drupal_container()->get(LANGUAGE_TYPE_INTERFACE)->langcode;
+  $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . language_manager(LANGUAGE_TYPE_INTERFACE)->langcode;
 
   // Try to load and output administration menu from server-side cache.
   // @todo Duplicates the page cache? Page cache ID contains the hash that is
