@@ -27,7 +27,7 @@ function admin_devel_form_admin_menu_theme_settings_alter_rebuild_submit($form, 
     ->condition('module', 'system')
     ->execute();
   // Rebuild menu links from current menu router items.
-  menu_rebuild();
+  menu_router_rebuild();
 
   drupal_set_message(t('System links derived from menu router paths have been rebuilt.'));
 }
