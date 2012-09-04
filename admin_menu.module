@@ -5,6 +5,8 @@
  * Render an administrative menu as a dropdown menu at the top of the window.
  */
 
+use Drupal\Core\Template\Attribute;
+
 /**
  * Implements hook_help().
  */
@@ -557,7 +559,7 @@ function admin_menu_admin_menu_output_alter(&$content) {
  * @param $variables
  *   - elements: A renderable array of links using the following keys:
  *     - #attributes: Optional array of attributes for the list item, processed
- *       via drupal_attributes().
+ *       via Drupal\Core\Template\Attribute.
  *     - #title: Title of the link, passed to l().
  *     - #href: Optional path of the link, passed to l(). When omitted, the
  *       element's '#title' is rendered without link.
@@ -627,14 +629,14 @@ function theme_admin_menu_links($variables) {
         $title = check_plain($elements[$path]['#title']);
       }
       if (!empty($elements[$path]['#options']['attributes'])) {
-        $link .= '<span' . drupal_attributes($elements[$path]['#options']['attributes']) . '>' . $title . '</span>';
+        $link .= '<span' . new Attribute($elements[$path]['#options']['attributes']) . '>' . $title . '</span>';
       }
       else {
         $link .= $title;
       }
     }
 
-    $output .= '<li' . drupal_attributes($elements[$path]['#attributes']) . '>';
+    $output .= '<li' . new Attribute($elements[$path]['#attributes']) . '>';
     $output .= $link . $elements[$path]['#children'];
     $output .= '</li>';
   }
