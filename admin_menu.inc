@@ -839,7 +839,6 @@ function system_admin_menu_cache_info() {
     'bootstrap' => t('Bootstrap'),
     'cache' => t('Page and else'),
     'menu' => t('Menu'),
-    'registry' => t('Class registry'),
     'theme' => t('Theme registry'),
   );
   foreach ($caches as $name => $cache) {
@@ -884,17 +883,9 @@ function _admin_menu_flush_cache($name = NULL) {
       cache('bootstrap')->flush();
       break;
 
-    case 'registry':
-      registry_rebuild();
-      // Fall-through to clear cache tables, since registry information is
-      // usually the base for other data that is cached (e.g. SimpleTests).
     case 'cache':
-      // Don't clear cache_form - in-progress form submissions may break.
-      // Ordered so clearing the page cache will always be the last action.
       // @see drupal_flush_all_caches()
-      $core = array('cache', 'bootstrap', 'filter', 'page');
-      $cache_bins = array_merge(module_invoke_all('flush_caches'), $core);
-      foreach ($cache_bins as $bin) {
+      foreach (module_invoke_all('cache_flush') as $bin) {
         cache($bin)->flush();
       }
       break;
