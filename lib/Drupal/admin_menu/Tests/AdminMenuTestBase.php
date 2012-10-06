@@ -26,8 +26,6 @@ class AdminMenuTestBase extends WebTestBase {
 
     // Disable client-side caching.
     variable_set('admin_menu_cache_client', FALSE);
-    // Disable Clean URLs to ensure drupal.org testbot compatibility.
-    variable_set('clean_url', 0);
   }
 
   /**

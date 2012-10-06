@@ -121,12 +121,12 @@ class AdminMenuPermissionsTest extends AdminMenuTestBase {
     // Verify that Structure » Content types does not appear.
     $this->assertNoLinkTrailByTitle(array(t('Structure'), t('Content types')));
     // Create a new role.
+    $test_rid = drupal_strtolower($this->randomName(8));
     $edit = array(
-      'name' => 'test',
+      'role[name]' => 'test',
+      'role[rid]' => $test_rid,
     );
-    $this->drupalPost('admin/people/permissions/roles', $edit, t('Add role'));
-    // It should be safe to assume that the new role gets the next ID.
-    $test_rid = $rid + 1;
+    $this->drupalPost('admin/people/roles', $edit, t('Add role'));
     // Grant the 'administer content types' permission for the role.
     $edit = array(
       $test_rid . '[administer content types]' => TRUE,
@@ -144,7 +144,7 @@ class AdminMenuPermissionsTest extends AdminMenuTestBase {
     $this->assertLinkTrailByTitle(array(t('Structure'), t('Content types')));
 
     // Delete the role.
-    $this->drupalPost('admin/people/permissions/roles/edit/' . $test_rid, array(), t('Delete role'));
+    $this->drupalPost('admin/people/roles/edit/' . $test_rid, array(), t('Delete role'));
     $this->drupalPost(NULL, array(), t('Delete'));
     // Verify that Structure » Content types does not appear.
     $this->assertNoLinkTrailByTitle(array(t('Structure'), t('Content types')));

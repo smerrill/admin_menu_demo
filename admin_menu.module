@@ -723,7 +723,7 @@ function admin_menu_cache_flush($uid = NULL) {
   $tags = array('admin_menu' => TRUE);
   // When a user ID was passed, limit cache flushes to that.
   if (isset($uid)) {
-    $tags += array('user' => $uid);
+    $tags['user'] = $uid;
   }
   // Flush cached output of admin_menu.
   cache('menu')->invalidateTags($tags);
@@ -740,8 +740,6 @@ function admin_menu_cache_flush($uid = NULL) {
  */
 function admin_menu_form_alter(&$form, &$form_state, $form_id) {
   $global_flush_ids = array(
-    // Update links for clean/non-clean URLs.
-    'system_clean_url_settings' => 1,
     // Incorporate changed user permissions.
     'user_admin_permissions' => 1,
     // Removing a role potentially means less permissions.
@@ -755,7 +753,7 @@ function admin_menu_form_alter(&$form, &$form_state, $form_id) {
     // Optionally limit the cache flush to a certain user ID.
     $form_state['admin_menu_uid'] = NULL;
     if ($form_id == 'user_profile_form') {
-      $form_state['admin_menu_uid'] = $form_state['user']->uid;
+      $form_state['admin_menu_uid'] = $form_state['entity']->uid;
     }
   }
 
