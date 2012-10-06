@@ -152,6 +152,39 @@ function admin_menu_system_info_alter(&$info, $file, $type) {
 }
 
 /**
+ * Implements hook_library_info().
+ */
+function admin_menu_library_info() {
+  $path = drupal_get_path('module', 'admin_menu');
+  // Previous versions used the 'defer' attribute to increase browser rendering
+  // performance. At least starting with Firefox 3.6, deferred .js files are
+  // loaded, but Drupal.behaviors are not contained in the DOM when drupal.js
+  // executes Drupal.attachBehaviors().
+  $options = array('every_page' => TRUE);
+  // @todo D8: every_page is broken for System libraries.
+  // @see http://drupal.org/node/1805452
+  $options = array();
+
+  $libraries['drupal.admin'] = array(
+    'title' => 'Administration menu',
+    'version' => '1.0',
+    'css' => array(
+      $path . '/admin_menu.css' => $options,
+    ),
+    'js' => array(
+      $path . '/admin_menu.js' => $options,
+    ),
+    'dependencies' => array(
+      array('system', 'drupalSettings'),
+      array('system', 'jquery'),
+      array('system', 'drupal'),
+      array('system', 'jquery.once'),
+    ),
+  );
+  return $libraries;
+}
+
+/**
  * Implements hook_page_build().
  */
 function admin_menu_page_build(&$page) {
@@ -167,20 +200,21 @@ function admin_menu_page_build(&$page) {
   $path = drupal_get_path('module', 'admin_menu');
 
   $page['page_bottom']['admin_menu'] = array(
-    '#attached' => array(),
+    '#attached' => array(
+      'library' => array(
+        array('admin_menu', 'drupal.admin'),
+      ),
+    ),
   );
   $attached = &$page['page_bottom']['admin_menu']['#attached'];
   $options = array('every_page' => TRUE);
+  // @todo D8: every_page is broken for System libraries.
+  // @see http://drupal.org/node/1805452
+  $options = array();
 
-  $attached['css'][$path . '/admin_menu.css'] = $options;
   if ($user->uid == 1) {
     $attached['css'][$path . '/admin_menu.uid1.css'] = $options;
   }
-  // Previous versions used the 'defer' attribute to increase browser rendering
-  // performance. At least starting with Firefox 3.6, deferred .js files are
-  // loaded, but Drupal.behaviors are not contained in the DOM when drupal.js
-  // executes Drupal.attachBehaviors().
-  $attached['js'][$path . '/admin_menu.js'] = $options;
 
   // Destination query strings are applied via JS.
   $settings['destination'] = drupal_http_build_query(drupal_get_destination());

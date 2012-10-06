@@ -8,26 +8,48 @@
  */
 
 /**
+ * Implements hook_library_info().
+ */
+function admin_menu_toolbar_library_info() {
+  $path = drupal_get_path('module', 'admin_menu_toolbar');
+  $options = array('every_page' => TRUE);
+  // @todo D8: every_page is broken for System libraries.
+  // @see http://drupal.org/node/1805452
+  $options = array();
+
+  $libraries['drupal.admin'] = array(
+    'title' => 'Administration menu toolbar',
+    'version' => '1.0',
+    'css' => array(
+      $path . '/admin_menu_toolbar.css' => $options,
+    ),
+    'js' => array(
+      $path . '/admin_menu_toolbar.js' => $options,
+    ),
+    'dependencies' => array(
+      array('admin_menu', 'drupal.admin'),
+    ),
+  );
+  // @todo Stop-gap fix until cached rendering is resolved.
+  // @see http://drupal.org/node/1567622
+  if (module_exists('shortcut')) {
+    $shortcut_path = drupal_get_path('module', 'shortcut');
+    $libraries['drupal.admin']['css'][$shortcut_path . '/shortcut.base.css'] = $options;
+    $libraries['drupal.admin']['css'][$shortcut_path . '/shortcut.theme.css'] = $options;
+  }
+  return $libraries;
+}
+
+/**
  * Implementation of hook_page_build().
  */
 function admin_menu_toolbar_page_build(&$page) {
   if (!isset($page['page_bottom']['admin_menu'])) {
     return;
   }
-  $path = drupal_get_path('module', 'admin_menu_toolbar');
   $attached = &$page['page_bottom']['admin_menu']['#attached'];
-  $options = array('every_page' => TRUE);
 
-  $attached['css'][$path . '/admin_menu_toolbar.css'] = $options;
-  $attached['js'][$path . '/admin_menu_toolbar.js'] = $options;
-
-  // @todo Stop-gap fix until cached rendering is resolved.
-  // @see http://drupal.org/node/1567622
-  if (module_exists('shortcut')) {
-    $shortcut_path = drupal_get_path('module', 'shortcut');
-    $attached['css'][$shortcut_path . '/shortcut.base.css'] = $options;
-    $attached['css'][$shortcut_path . '/shortcut.theme.css'] = $options;
-  }
+  $attached['library'][] = array('admin_menu_toolbar', 'drupal.admin');
 
   $settings = array();
   // Add current path to support menu item highlighting.
