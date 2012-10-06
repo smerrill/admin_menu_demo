@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Cache\CacheBackendInterface;
 
 /**
  * Implements hook_help().
@@ -311,12 +312,16 @@ function admin_menu_cache_get($cid) {
  * This should only be used for client-side cache hashes. Use cache_menu for
  * administration menu content.
  *
- * @param $cid
- *   The cache ID of the data to retrieve.
+ * @param string $cid
+ *   The cache ID of the data to set.
+ * @param string $data
+ *   The client-side cache hash.
+ * @param array $tags
+ *   The cache tags for the data to set.
  */
-function admin_menu_cache_set($cid, $data) {
+function admin_menu_cache_set($cid, $data, array $tags) {
   if (variable_get('admin_menu_cache_client', TRUE)) {
-    cache('admin_menu')->set($cid, $data);
+    cache('admin_menu')->set($cid, $data, CacheBackendInterface::CACHE_PERMANENT, $tags);
   }
 }
 
@@ -424,7 +429,9 @@ function admin_menu_output() {
   global $user;
 
   $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
-  $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . language(LANGUAGE_TYPE_INTERFACE)->langcode;
+  $langcode = language(LANGUAGE_TYPE_INTERFACE)->langcode;
+  $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . $langcode;
+  $tags = array('admin_menu' => TRUE, 'user' => $user->uid, 'language' => $langcode);
 
   // Try to load and output administration menu from server-side cache.
   // @todo Duplicates the page cache? Page cache ID contains the hash that is
@@ -487,13 +494,13 @@ function admin_menu_output() {
 
     // Cache the menu for this user.
     if ($cache_server_enabled) {
-      cache('menu')->set($cid, $content);
+      cache('menu')->set($cid, $content, CacheBackendInterface::CACHE_PERMANENT, $tags);
     }
   }
 
   // Store the new hash for this user.
   if (!empty($_COOKIE['has_js'])) {
-    admin_menu_cache_set($cid, md5($content));
+    admin_menu_cache_set($cid, md5($content), $tags);
   }
 
   return $content;
@@ -713,16 +720,16 @@ function admin_menu_translated_menu_link_alter(&$item, $map) {
  * @todo Move custom cache flushing into an own function.
  */
 function admin_menu_cache_flush($uid = NULL) {
-  $cid = 'admin_menu:';
+  $tags = array('admin_menu' => TRUE);
   // When a user ID was passed, limit cache flushes to that.
   if (isset($uid)) {
-    $cid .= $uid . ':';
+    $tags += array('user' => $uid);
   }
   // Flush cached output of admin_menu.
-  cache('menu')->deletePrefix($cid);
+  cache('menu')->invalidateTags($tags);
   // Flush client-side cache hashes.
   drupal_static_reset('admin_menu_cache_get');
-  cache('admin_menu')->deletePrefix($cid);
+  cache('admin_menu')->invalidateTags($tags);
 
   // Return value is only used by drupal_flush_all_caches().
   return array('admin_menu');
