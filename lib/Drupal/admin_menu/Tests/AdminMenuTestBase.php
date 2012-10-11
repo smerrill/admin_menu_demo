@@ -12,7 +12,7 @@ use Drupal\simpletest\WebTestBase;
 /**
  * Base class for all administration menu web test cases.
  */
-class AdminMenuTestBase extends WebTestBase {
+abstract class AdminMenuTestBase extends WebTestBase {
 
   public static $modules = array('admin_menu');
 
