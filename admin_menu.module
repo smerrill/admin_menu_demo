@@ -502,7 +502,7 @@ function admin_menu_output() {
     module_load_include('inc', 'admin_menu');
 
     // Add administration menu.
-    $content['menu'] = admin_menu_links_menu(admin_menu_tree('management'));
+    $content['menu'] = admin_menu_links_menu(admin_menu_tree('admin'));
     $content['menu']['#theme'] = 'admin_menu_links';
     // Ensure the menu tree is rendered between the icon and user links.
     $content['menu']['#weight'] = 0;
