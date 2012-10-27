@@ -836,7 +836,7 @@ function admin_menu_admin_menu_cache_info() {
 function system_admin_menu_cache_info() {
   $caches = array(
     'assets' => t('CSS and JavaScript'),
-    'bootstrap' => t('Bootstrap'),
+    'bootstrap' => t('Bootstrap and configuration'),
     'cache' => t('Page and else'),
     'menu' => t('Menu'),
     'theme' => t('Theme registry'),
@@ -881,6 +881,7 @@ function _admin_menu_flush_cache($name = NULL) {
 
     case 'bootstrap':
       cache('bootstrap')->flush();
+      cache('config')->flush();
       break;
 
     case 'cache':
