@@ -31,3 +31,18 @@ function admin_devel_form_admin_menu_theme_settings_alter_rebuild_submit($form, 
 
   drupal_set_message(t('System links derived from menu router paths have been rebuilt.'));
 }
+
+/**
+ * Implements hook_admin_menu_cache_info() on behalf of Simpletest module.
+ */
+function simpletest_admin_menu_cache_info() {
+  $caches['simpletest'] = array(
+    'title' => t('Test classes'),
+    'callback' => '_admin_devel_simpletest_cache_clear',
+  );
+  return $caches;
+}
+
+function _admin_devel_simpletest_cache_clear() {
+  cache()->delete('simpletest');
+}
