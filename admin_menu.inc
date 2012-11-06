@@ -441,6 +441,9 @@ function admin_menu_links_icon() {
     '#weight' => 50,
     '#access' => user_access('administer site configuration'),
     '#href' => 'admin/reports/status/run-cron',
+    '#options' => array(
+      'query' => $destination,
+    ),
   );
   // Add link to run update.php.
   $links['icon']['update'] = array(
