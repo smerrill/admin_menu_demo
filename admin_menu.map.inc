@@ -44,11 +44,16 @@ function menu_admin_menu_map() {
  * Implements hook_admin_menu_map() on behalf of Node module.
  */
 function node_admin_menu_map() {
-  if (!user_access('administer content types')) {
-    return;
+  if (user_access('administer content types')) {
+    $map['admin/structure/types/manage/%node_type'] = array(
+      'parent' => 'admin/structure/types',
+      'arguments' => array(
+        array('%node_type' => array_keys(node_type_get_types())),
+      ),
+    );
   }
-  $map['admin/structure/types/manage/%node_type'] = array(
-    'parent' => 'admin/structure/types',
+  $map['node/add/%node_type'] = array(
+    'parent' => 'node/add',
     'arguments' => array(
       array('%node_type' => array_keys(node_type_get_types())),
     ),
