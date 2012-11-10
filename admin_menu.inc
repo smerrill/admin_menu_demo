@@ -599,7 +599,7 @@ function admin_menu_links_search() {
 /**
  * Form builder function for module settings.
  */
-function admin_menu_theme_settings() {
+function admin_menu_admin_settings_form($form, &$form_state) {
   $form['admin_menu_margin_top'] = array(
     '#type' => 'checkbox',
     '#title' => t('Adjust top margin'),

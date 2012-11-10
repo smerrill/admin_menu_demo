@@ -84,7 +84,7 @@ function admin_menu_menu() {
     'title' => 'Administration menu',
     'description' => 'Adjust administration menu settings.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('admin_menu_theme_settings'),
+    'page arguments' => array('admin_menu_admin_settings_form'),
     'access arguments' => array('administer site configuration'),
     'file' => 'admin_menu.inc',
   );
