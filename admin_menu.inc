@@ -654,12 +654,8 @@ function admin_menu_admin_settings_form($form, &$form_state) {
   // currently enabled modules, which makes this setting pointless if developer
   // modules are currently disabled.
   $all_modules = array();
-  $result = db_query("SELECT name, filename, info FROM {system} WHERE type = 'module' ORDER BY name ASC");
-  foreach ($result as $module) {
-    if (file_exists($module->filename)) {
-      $info = unserialize($module->info);
-      $all_modules[$module->name] = $info['name'];
-    }
+  foreach (system_rebuild_module_data() as $module => $file) {
+    $all_modules[$module] = $file->info['name'];
   }
   $devel_modules = variable_get('admin_menu_devel_modules', _admin_menu_developer_modules());
   $devel_modules = array_intersect_key($all_modules, array_flip($devel_modules));
