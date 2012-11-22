@@ -32,7 +32,7 @@ function admin_menu_toolbar_library_info() {
   );
   // @todo Stop-gap fix until cached rendering is resolved.
   // @see http://drupal.org/node/1567622
-  if (module_exists('shortcut')) {
+  if (0 && module_exists('shortcut')) {
     $shortcut_path = drupal_get_path('module', 'shortcut');
     $libraries['drupal.admin']['css'][$shortcut_path . '/shortcut.base.css'] = $options;
     $libraries['drupal.admin']['css'][$shortcut_path . '/shortcut.theme.css'] = $options;
@@ -72,6 +72,7 @@ function admin_menu_toolbar_page_build(&$page) {
  * Implements hook_admin_menu_output_build().
  */
 function admin_menu_toolbar_admin_menu_output_build(&$content) {
+  return;
   // Add shortcuts toggle.
   $content['shortcut-toggle'] = array(
     '#access' => module_exists('shortcut'),
