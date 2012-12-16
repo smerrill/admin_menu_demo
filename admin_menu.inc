@@ -879,14 +879,14 @@ function _admin_menu_flush_cache($name = NULL) {
       break;
 
     case 'bootstrap':
-      cache('bootstrap')->flush();
-      cache('config')->flush();
+      cache('bootstrap')->deleteAll();
+      cache('config')->deleteAll();
       break;
 
     case 'cache':
       // @see drupal_flush_all_caches()
       foreach (module_invoke_all('cache_flush') as $bin) {
-        cache($bin)->flush();
+        cache($bin)->deleteAll();
       }
       break;
 
@@ -899,7 +899,7 @@ function _admin_menu_flush_cache($name = NULL) {
 
       // Clear the page cache, since cached HTML pages might link to old CSS and
       // JS aggregates.
-      cache('page')->flush();
+      cache('page')->deleteAll();
       break;
 
     case 'theme':
