@@ -25,10 +25,7 @@ class AdminMenuLinkTypesTest extends AdminMenuTestBase {
   function setUp() {
     parent::setUp();
 
-    $permissions = module_invoke_all('permission');
-    $permissions = array_keys($permissions);
-    $this->admin_user = $this->drupalCreateUser($permissions);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->root_user);
   }
 
   /**

@@ -25,10 +25,7 @@ class AdminMenuCustomizedTest extends AdminMenuTestBase {
   function setUp() {
     parent::setUp();
 
-    $this->admin_user = $this->drupalCreateUser($this->basePermissions + array(
-      'administer menu',
-    ));
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->root_user);
   }
 
   /**
