@@ -52,9 +52,9 @@ class AdminMenuCustomizedTest extends AdminMenuTestBase {
     $edit = array(
       'link_path' => 'node/' . $node->nid,
       'link_title' => $text,
-      'parent' => 'management:' . $this->queryMlidByPath('admin'),
+      'parent' => 'admin:' . $this->queryMlidByPath('admin'),
     );
-    $this->drupalPost('admin/structure/menu/manage/management/add', $edit, t('Save'));
+    $this->drupalPost('admin/structure/menu/manage/admin/add', $edit, t('Save'));
 
     // Verify that the link appears in the menu.
     $this->drupalGet('node');
@@ -81,9 +81,9 @@ class AdminMenuCustomizedTest extends AdminMenuTestBase {
     $edit = array(
       'link_path' => 'http://example.com',
       'link_title' => 'Example',
-      'parent' => 'management:' . $this->queryMlidByPath('admin'),
+      'parent' => 'admin:' . $this->queryMlidByPath('admin'),
     );
-    $this->drupalPost('admin/structure/menu/manage/management/add', $edit, t('Save'));
+    $this->drupalPost('admin/structure/menu/manage/admin/add', $edit, t('Save'));
 
     // Verify that the link appears in the menu.
     $this->drupalGet('');
@@ -96,11 +96,11 @@ class AdminMenuCustomizedTest extends AdminMenuTestBase {
   }
 
   /**
-   * Returns the menu link ID for a given link path in the management menu.
+   * Returns the menu link ID for a given link path in the admin menu.
    */
   protected function queryMlidByPath($path) {
     return db_query('SELECT mlid FROM {menu_links} WHERE menu_name = :menu AND link_path = :path', array(
-      ':menu' => 'management',
+      ':menu' => 'admin',
       ':path' => $path,
     ))->fetchField();
   }
