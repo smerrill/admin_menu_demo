@@ -66,61 +66,56 @@ function node_admin_menu_map() {
  */
 function field_ui_admin_menu_map() {
   $map = array();
-  foreach (entity_get_info() as $obj_type => $info) {
-    foreach ($info['bundles'] as $bundle_name => $bundle_info) {
+  foreach (entity_get_bundles() as $entity_type => $bundles) {
+    foreach ($bundles as $bundle_name => $bundle_info) {
       if (isset($bundle_info['admin'])) {
         $arguments = array();
-        switch ($obj_type) {
+        switch ($entity_type) {
           case 'comment':
             $fields = array();
-            foreach (field_info_instances($obj_type, $bundle_name) as $field) {
+            foreach (field_info_instances($entity_type, $bundle_name) as $field) {
               $fields[] = $field['field_name'];
-            }
-            // @todo Make Comment module expose the original node type bundle,
-            //   pretty please.
-            if (drupal_substr($bundle_name, 0, 13) == 'comment_node_') {
-              $bundle_name = drupal_substr($bundle_name, 13);
             }
             // @todo Doesn't work yet. Why?
             $arguments = array(
-              '%comment_node_type' => array($bundle_name),
-              '%field_ui_menu' => $fields,
+              '%comment_node_type' => array($bundle_info['node bundle']),
+              '%field_ui_instance' => $fields,
             );
             break;
 
           case 'node':
             $fields = array();
-            foreach (field_info_instances($obj_type, $bundle_name) as $field) {
+            foreach (field_info_instances($entity_type, $bundle_name) as $field) {
               $fields[] = $field['field_name'];
             }
             $arguments = array(
               '%node_type' => array($bundle_name),
-              '%field_ui_menu' => $fields,
+              '%field_ui_instance' => $fields,
             );
             break;
 
           case 'taxonomy_term':
             $fields = array();
-            foreach (field_info_instances($obj_type, $bundle_name) as $field) {
+            foreach (field_info_instances($entity_type, $bundle_name) as $field) {
               $fields[] = $field['field_name'];
             }
             // Map machine_name to vid.
             $arguments = array(
-              '%taxonomy_vocabulary_machine_name' => array($bundle_name),
-              '%field_ui_menu' => $fields,
+              '%taxonomy_vocabulary' => array($bundle_name),
+              '%field_ui_instance' => $fields,
             );
             break;
 
           case 'user':
             $arguments = array(
-              '%field_ui_menu' => array_keys(field_info_fields('user')),
+              '%field_ui_instance' => array_keys(field_info_fields('user')),
             );
             break;
         }
         if (!empty($arguments)) {
           $path = $bundle_info['admin']['path'];
-          $map["$path/fields/%field_ui_menu"]['parent'] = "$path/fields";
-          $map["$path/fields/%field_ui_menu"]['arguments'][] = $arguments;
+          $map["$path/fields/%field_ui_instance"]['parent'] = "$path/fields";
+          $map["$path/fields/%field_ui_instance"]['arguments'][] = $arguments;
         }
       }
     }
@@ -135,10 +130,10 @@ function taxonomy_admin_menu_map() {
   if (!user_access('administer taxonomy')) {
     return;
   }
-  $map['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name'] = array(
+  $map['admin/structure/taxonomy/%taxonomy_vocabulary'] = array(
     'parent' => 'admin/structure/taxonomy',
     'arguments' => array(
-      array('%taxonomy_vocabulary_machine_name' => array_keys(taxonomy_vocabulary_get_names())),
+      array('%taxonomy_vocabulary' => array_keys(taxonomy_vocabulary_get_names())),
     ),
   );
   return $map;
