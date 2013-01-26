@@ -6,6 +6,13 @@
  */
 
 /**
+ * Implements hook_page_build().
+ */
+function admin_devel_page_build(&$page) {
+  $page['#attached']['js'][] = drupal_get_path('module', 'admin_devel') . '/admin_devel.js';
+}
+
+/**
  * Implements hook_form_FORMID_alter().
  */
 function admin_devel_form_admin_menu_admin_settings_form_alter(&$form, &$form_state) {
