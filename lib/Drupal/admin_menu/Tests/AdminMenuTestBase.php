@@ -24,6 +24,10 @@ abstract class AdminMenuTestBase extends WebTestBase {
   function setUp() {
     parent::setUp();
 
+    // @todo Core: Missing uid on $this->root_user.
+    // @see http://drupal.org/node/1899862
+    $this->root_user->uid = 1;
+
     // Disable client-side caching.
     variable_set('admin_menu_cache_client', FALSE);
   }
