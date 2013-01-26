@@ -510,15 +510,18 @@ function admin_menu_links_icon() {
     ),
   );
 
-  // Add Devel module links.
+  // Add Devel module menu links.
   if (module_exists('devel')) {
-    // Add variable editor.
-    $links['icon']['devel-variables'] = array(
-      '#title' => t('Variable editor'),
-      '#weight' => 20,
-      '#access' => user_access('access devel information'),
-      '#href' => 'devel/variable',
-    );
+    $devel_tree = menu_tree_all_data('devel');
+    if ($devel_tree = admin_menu_links_menu($devel_tree)) {
+      $links['icon']['devel'] = array(
+        '#title' => t('Devel'),
+        '#href' => '#',
+        '#options' => array(
+          'external' => TRUE,
+        ),
+      ) + $devel_tree;
+    }
   }
 
   return $links;
@@ -940,4 +943,3 @@ function template_preprocess_admin_menu_icon(&$variables) {
 function theme_admin_menu_icon($variables) {
   return '<img class="admin-menu-icon" src="' . $variables['src'] . '" width="16" height="16" alt="' . $variables['alt'] . '" />';
 }
-
