@@ -787,6 +787,8 @@ function admin_menu_form_alter(&$form, &$form_state, $form_id) {
     // Optionally limit the cache flush to a certain user ID.
     $form_state['admin_menu_uid'] = NULL;
     if ($form_id == 'user_profile_form') {
+      // @todo Core: Button-level submit handlers are braindead.
+      $form['actions']['submit']['#submit'][] = 'admin_menu_form_alter_flush_cache_submit';
       $form_state['admin_menu_uid'] = $form_state['entity']->uid;
     }
   }

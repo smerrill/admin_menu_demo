@@ -123,8 +123,8 @@ class AdminMenuPermissionsTest extends AdminMenuTestBase {
     // Create a new role.
     $test_rid = drupal_strtolower($this->randomName(8));
     $edit = array(
-      'role[name]' => 'test',
-      'role[rid]' => $test_rid,
+      'role[label]' => 'test',
+      'role[id]' => $test_rid,
     );
     $this->drupalPost('admin/people/roles', $edit, t('Add role'));
     // Grant the 'administer content types' permission for the role.
