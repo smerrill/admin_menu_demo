@@ -618,15 +618,16 @@ function admin_menu_admin_settings_form($form, &$form_state) {
   );
   // @todo Re-confirm this with latest browser versions.
   $form['admin_menu_position_fixed']['#description'] .= '<br /><strong>' . t('In some browsers, this setting may result in a malformed page, an invisible cursor, non-selectable elements in forms, or other issues.') . '</strong>';
-  $form['admin_menu_cache_client'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Cache menu in client-side browser'),
-    '#default_value' => variable_get('admin_menu_cache_client', 1),
+
+  $form['advanced'] = array(
+    '#type' => 'vertical_tabs',
+    '#title' => t('Advanced settings'),
   );
 
   $form['tweaks'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Advanced settings'),
+    '#type' => 'details',
+    '#title' => t('System tweaks'),
+    '#group' => 'advanced',
   );
   $form['tweaks']['admin_menu_tweak_modules'] = array(
     '#type' => 'checkbox',
@@ -654,6 +655,16 @@ function admin_menu_admin_settings_form($form, &$form_state) {
     '#description' => t('Moves the tabs on all pages into the administration menu. Only possible for themes using the CSS classes <code>tabs primary</code> and <code>tabs secondary</code>.'),
   );
 
+  $form['performance'] = array(
+    '#type' => 'details',
+    '#title' => t('Performance'),
+    '#group' => 'advanced',
+  );
+  $form['performance']['admin_menu_cache_client'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cache menu in client-side browser'),
+    '#default_value' => variable_get('admin_menu_cache_client', 1),
+  );
   // Fetch all available modules manually, since module_list() only returns
   // currently enabled modules, which makes this setting pointless if developer
   // modules are currently disabled.
@@ -663,7 +674,7 @@ function admin_menu_admin_settings_form($form, &$form_state) {
   }
   $devel_modules = variable_get('admin_menu_devel_modules', _admin_menu_developer_modules());
   $devel_modules = array_intersect_key($all_modules, array_flip($devel_modules));
-  $form['tweaks']['admin_menu_devel_modules_skip'] = array(
+  $form['performance']['admin_menu_devel_modules_skip'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Developer modules to keep enabled'),
     '#default_value' => variable_get('admin_menu_devel_modules_skip', array()),
