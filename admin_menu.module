@@ -444,6 +444,12 @@ function admin_menu_output() {
   $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
   $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . $language->language;
 
+  // Determine whether we need to show all components and disable all caches.
+  // @todo D8: Implement a proper plugin system to make this property obsolete.
+  if ($is_admin = current_path() == 'admin/config/administration/admin_menu' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $cache_server_enabled = FALSE;
+  }
+
   // Try to load and output administration menu from server-side cache.
   // @todo Duplicates the page cache? Page cache ID contains the hash that is
   //   generated at the bottom of this function, which is based on $content,
@@ -461,6 +467,17 @@ function admin_menu_output() {
 
   // Rebuild the output.
   if (!isset($content)) {
+    // Retrieve enabled components to display and make them available for others.
+    $components = drupal_map_assoc(variable_get('admin_menu_components', array(
+      'admin_menu.icon',
+      'admin_menu.menu',
+      'admin_menu.account',
+    )));
+    $content['#components'] = $components;
+    if ($is_admin) {
+      $content['#is_admin'] = TRUE;
+    }
+
     // Add site name as CSS class for development/staging theming purposes. We
     // leverage the cookie domain instead of HTTP_HOST to account for many (but
     // not all) multi-domain setups (e.g. language-based sub-domains).
@@ -479,15 +496,27 @@ function admin_menu_output() {
     module_load_include('inc', 'admin_menu');
 
     // Add administration menu.
-    $content['menu'] = admin_menu_links_menu(admin_menu_tree('management'));
-    $content['menu']['#theme'] = 'admin_menu_links';
-    // Ensure the menu tree is rendered between the icon and user links.
-    $content['menu']['#weight'] = 0;
+    if (isset($components['admin_menu.menu']) || $is_admin) {
+      $content['menu'] = admin_menu_links_menu(admin_menu_tree('management'));
+      $content['menu']['#theme'] = 'admin_menu_links';
+      $content['menu']['#wrapper_attributes']['id'] = 'admin-menu-menu';
+      // Ensure the menu tree is rendered between the icon and user links.
+      $content['menu']['#weight'] = 0;
+    }
 
     // Add menu additions.
-    $content['icon'] = admin_menu_links_icon();
-    $content['user'] = admin_menu_links_user();
-    $content['search'] = admin_menu_links_search();
+    if (isset($components['admin_menu.icon']) || $is_admin) {
+      $content['icon'] = admin_menu_links_icon();
+    }
+    if (isset($components['admin_menu.account']) || $is_admin) {
+      $content['account'] = admin_menu_links_account();
+    }
+    if (isset($components['admin_menu.users']) || $is_admin) {
+      $content['users'] = admin_menu_links_users();
+    }
+    if (isset($components['admin_menu.search']) || $is_admin) {
+      $content['search'] = admin_menu_links_search();
+    }
 
     // Allow modules to enhance the menu.
     // Uses '_output' suffix for consistency with the alter hook (see below).
@@ -521,6 +550,10 @@ function admin_menu_output() {
  * Implements hook_admin_menu_output_build().
  */
 function admin_menu_admin_menu_output_build(&$content) {
+  if (!isset($content['menu'])) {
+    return;
+  }
+
   // Unassign weights for categories below Configuration.
   // An alphabetical order is more natural for a dropdown menu.
   if (isset($content['menu']['admin/config'])) {
@@ -661,7 +694,9 @@ function theme_admin_menu_links($variables) {
   // @todo #attributes probably required for UL, but already used for LI.
   // @todo Use $element['#children'] here instead.
   if ($output) {
-    $output = "\n" . '<ul class="dropdown">' . $output . '</ul>';
+    $elements['#wrapper_attributes']['class'][] = 'dropdown';
+    $attributes = drupal_attributes($elements['#wrapper_attributes']);
+    $output = "\n" . '<ul' . $attributes . '>' . $output . '</ul>';
   }
   return $output;
 }
@@ -748,6 +783,7 @@ function admin_menu_flush_caches($uid = NULL) {
  */
 function admin_menu_form_alter(&$form, &$form_state, $form_id) {
   $global_flush_ids = array(
+    'admin_menu_theme_settings' => 1,
     // Update links for clean/non-clean URLs.
     'system_clean_url_settings' => 1,
     // Incorporate changed user permissions.
