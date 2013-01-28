@@ -41,6 +41,17 @@ function admin_menu_toolbar_library_info() {
 }
 
 /**
+ * Implements hook_form_FORMID_alter().
+ */
+function admin_menu_toolbar_form_admin_menu_admin_settings_form_alter(&$form) {
+  // Add the shortcut links as component on behalf of Shortcut module.
+  $form['plugins']['admin_menu_components']['#options']['shortcut.links'] = t('Shortcuts');
+  // The shortcut bar consists of two elements, so we target their class names
+  // instead of cluttering the markup with additional IDs.
+  $form['plugins']['admin_menu_components']['shortcut.links']['#attributes']['rel'] = '.shortcut-toggle, .shortcut-toolbar';
+}
+
+/**
  * Implementation of hook_page_build().
  */
 function admin_menu_toolbar_page_build(&$page) {
@@ -72,7 +83,9 @@ function admin_menu_toolbar_page_build(&$page) {
  * Implements hook_admin_menu_output_build().
  */
 function admin_menu_toolbar_admin_menu_output_build(&$content) {
-  return;
+  if (empty($content['#components']['shortcut.links']) && !$content['#complete']) {
+    return;
+  }
   // Add shortcuts toggle.
   $content['shortcut-toggle'] = array(
     '#access' => module_exists('shortcut'),

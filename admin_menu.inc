@@ -601,7 +601,7 @@ function admin_menu_links_search() {
   $links = array(
     '#theme' => 'admin_menu_links',
     '#wrapper_attributes' => array('id' => 'admin-menu-search'),
-    '#weight' => 200,
+    '#weight' => 180,
   );
   $links['search'] = array(
     '#type' => 'textfield',
@@ -655,16 +655,11 @@ function admin_menu_admin_settings_form($form, &$form_state) {
       'admin_menu.account' => t('Account links'),
     ),
   );
-  $form['plugins']['admin_menu_components']['#default_value'] = variable_get('admin_menu_components', array_keys($form['plugins']['admin_menu_components']['#options']));
+  $form['plugins']['admin_menu_components']['#default_value'] = array_keys(array_filter(variable_get('admin_menu_components', $form['plugins']['admin_menu_components']['#options'])));
 
-  // Assign 'rel' attributes to all options to achieve a live preview.
-  // Unfortunately, #states relies on wrapping .form-wrapper classes, so it
-  // cannot be used here.
+  $process = element_info_property('checkboxes', '#process', array());
+  $form['plugins']['admin_menu_components']['#process'] = array_merge(array('admin_menu_settings_process_components'), $process);
   $form['#attached']['js'][] = drupal_get_path('module', 'admin_menu') . '/admin_menu.admin.js';
-  foreach ($form['plugins']['admin_menu_components']['#options'] as $key => $label) {
-    $id = preg_replace('/[^a-z]/', '-', $key);
-    $form['plugins']['admin_menu_components'][$key]['#attributes']['rel'] = '#' . $id;
-  }
 
   $form['tweaks'] = array(
     '#type' => 'details',
@@ -728,6 +723,32 @@ function admin_menu_admin_settings_form($form, &$form_state) {
   );
 
   return system_settings_form($form);
+}
+
+/**
+ * #process callback for component plugin form element in admin_menu_theme_settings().
+ */
+function admin_menu_settings_process_components($element) {
+  // Assign 'rel' attributes to all options to achieve a live preview.
+  // Unfortunately, #states relies on wrapping .form-wrapper classes, so it
+  // cannot be used here.
+  foreach ($element['#options'] as $key => $label) {
+    if (!isset($element[$key]['#attributes']['rel'])) {
+      $id = preg_replace('/[^a-z]/', '-', $key);
+      $element[$key]['#attributes']['rel'] = '#' . $id;
+    }
+  }
+  return $element;
+}
+
+/**
+ * Form validation handler for admin_menu_theme_settings().
+ */
+function admin_menu_theme_settings_validate(&$form, &$form_state) {
+  // Change the configured components to Boolean values.
+  foreach ($form_state['values']['admin_menu_components'] as $component => &$enabled) {
+    $enabled = (bool) $enabled;
+  }
 }
 
 /**
