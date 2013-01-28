@@ -425,6 +425,7 @@ function admin_menu_links_icon() {
 
   $links = array(
     '#theme' => 'admin_menu_links',
+    '#wrapper_attributes' => array('id' => 'admin-menu-icon'),
     '#weight' => -100,
   );
   $links['icon'] = array(
@@ -529,22 +530,15 @@ function admin_menu_links_icon() {
 }
 
 /**
- * Build user/action links; mostly account information and links.
+ * Builds the account links.
  *
  * @see theme_admin_menu_links()
  */
-function admin_menu_links_user() {
+function admin_menu_links_account() {
   $links = array(
     '#theme' => 'admin_menu_links',
+    '#wrapper_attributes' => array('id' => 'admin-menu-account'),
     '#weight' => 100,
-  );
-  // Add link to show current authenticated/anonymous users.
-  $links['user-counter'] = array(
-    '#title' => admin_menu_get_user_count(),
-    '#description' => t('Current anonymous / authenticated users'),
-    '#weight' => -90,
-    '#attributes' => array('class' => array('admin-menu-action', 'admin-menu-users')),
-    '#href' => (user_access('administer users') ? 'admin/people/people' : 'user'),
   );
   $links['account'] = array(
     '#title' => $GLOBALS['user']->name,
@@ -558,7 +552,6 @@ function admin_menu_links_user() {
     '#attributes' => array('class' => array('admin-menu-action')),
     '#href' => 'user/logout',
   );
-
   // Add Devel module switch user links.
   $switch_links = module_invoke('devel', 'switch_user_list');
   if (!empty($switch_links) && count($switch_links) > 1) {
@@ -574,7 +567,28 @@ function admin_menu_links_user() {
       );
     }
   }
+  return $links;
+}
 
+/**
+ * Builds user counter.
+ *
+ * @see theme_admin_menu_links()
+ */
+function admin_menu_links_users() {
+  $links = array(
+    '#theme' => 'admin_menu_links',
+    '#wrapper_attributes' => array('id' => 'admin-menu-users'),
+    '#weight' => 150,
+  );
+  // Add link to show current authenticated/anonymous users.
+  $links['user-counter'] = array(
+    '#title' => admin_menu_get_user_count(),
+    '#description' => t('Current anonymous / authenticated users'),
+    '#weight' => -90,
+    '#attributes' => array('class' => array('admin-menu-action', 'admin-menu-users')),
+    '#href' => (user_access('administer users') ? 'admin/people/people' : 'user'),
+  );
   return $links;
 }
 
@@ -586,7 +600,8 @@ function admin_menu_links_user() {
 function admin_menu_links_search() {
   $links = array(
     '#theme' => 'admin_menu_links',
-    '#weight' => 150,
+    '#wrapper_attributes' => array('id' => 'admin-menu-search'),
+    '#weight' => 200,
   );
   $links['search'] = array(
     '#type' => 'textfield',
@@ -623,6 +638,33 @@ function admin_menu_admin_settings_form($form, &$form_state) {
     '#type' => 'vertical_tabs',
     '#title' => t('Advanced settings'),
   );
+
+  $form['plugins'] = array(
+    '#type' => 'details',
+    '#title' => t('Plugins'),
+    '#group' => 'advanced',
+  );
+  $form['plugins']['admin_menu_components'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Enabled components'),
+    '#options' => array(
+      'admin_menu.icon' => t('Icon menu'),
+      'admin_menu.menu' => t('Administration menu'),
+      'admin_menu.search' => t('Search bar'),
+      'admin_menu.users' => t('User counts'),
+      'admin_menu.account' => t('Account links'),
+    ),
+  );
+  $form['plugins']['admin_menu_components']['#default_value'] = variable_get('admin_menu_components', array_keys($form['plugins']['admin_menu_components']['#options']));
+
+  // Assign 'rel' attributes to all options to achieve a live preview.
+  // Unfortunately, #states relies on wrapping .form-wrapper classes, so it
+  // cannot be used here.
+  $form['#attached']['js'][] = drupal_get_path('module', 'admin_menu') . '/admin_menu.admin.js';
+  foreach ($form['plugins']['admin_menu_components']['#options'] as $key => $label) {
+    $id = preg_replace('/[^a-z]/', '-', $key);
+    $form['plugins']['admin_menu_components'][$key]['#attributes']['rel'] = '#' . $id;
+  }
 
   $form['tweaks'] = array(
     '#type' => 'details',

@@ -107,17 +107,23 @@ function admin_menu_toolbar_admin_menu_output_build(&$content) {
  */
 function admin_menu_toolbar_admin_menu_output_alter(&$content) {
   // Add a class to top-level items for styling.
-  foreach (element_children($content['menu']) as $link) {
-    $content['menu'][$link]['#attributes']['class'][] = 'admin-menu-toolbar-category';
+  if (isset($content['menu'])) {
+    foreach (element_children($content['menu']) as $link) {
+      $content['menu'][$link]['#attributes']['class'][] = 'admin-menu-toolbar-category';
+    }
   }
 
   // Alter icon.
-  unset($content['icon']['icon']['#theme']);
-  $content['icon']['icon']['#title'] = '<span>' . t('Home') . '</span>';
-  $content['icon']['icon']['#attributes']['class'][] = 'admin-menu-toolbar-category';
+  if (isset($content['icon'])) {
+    unset($content['icon']['icon']['#theme']);
+    $content['icon']['icon']['#title'] = '<span>' . t('Home') . '</span>';
+    $content['icon']['icon']['#attributes']['class'][] = 'admin-menu-toolbar-category';
+  }
 
   // Alter user account link.
-  $content['user']['account']['#title'] = t('Hello <strong>@username</strong>', array('@username' => $content['user']['account']['#title']));
-  $content['user']['account']['#options']['html'] = TRUE;
+  if (isset($content['account'])) {
+    $content['account']['account']['#title'] = t('Hello <strong>@username</strong>', array('@username' => $content['account']['account']['#title']));
+    $content['account']['account']['#options']['html'] = TRUE;
+  }
 }
 
