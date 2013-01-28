@@ -182,10 +182,16 @@ function admin_menu_page_build(&$page) {
   // Destination query strings are applied via JS.
   $settings['destination'] = drupal_http_build_query(drupal_get_destination());
 
+  // Determine whether we need to show all components and disable all caches.
+  $complete = FALSE;
+  if (current_path() == 'admin/config/administration/admin_menu' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $complete = TRUE;
+  }
+
   // If the client supports JavaScript and we have a cached menu for the current
   // user, only output the hash for the client-side HTTP cache callback URL.
   $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . $language->language;
-  if (!empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
+  if (!$complete && !empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
     $settings['hash'] = $hash;
     // The base path to use for cache requests depends on whether clean URLs
     // are enabled, whether Drupal runs in a sub-directory, and on the language
@@ -198,10 +204,10 @@ function admin_menu_page_build(&$page) {
   }
   // Otherwise, add the full menu to the page.
   else {
-    $page['page_bottom']['admin_menu']['#markup'] = admin_menu_output();
+    $page['page_bottom']['admin_menu']['#markup'] = admin_menu_output($complete);
   }
 
-  $replacements = module_invoke_all('admin_menu_replacements');
+  $replacements = module_invoke_all('admin_menu_replacements', $complete);
   if (!empty($replacements)) {
     $settings['replacements'] = $replacements;
   }
@@ -387,10 +393,17 @@ function admin_menu_deliver($page_callback_result) {
 /**
  * Implements hook_admin_menu_replacements().
  */
-function admin_menu_admin_menu_replacements() {
+function admin_menu_admin_menu_replacements($complete) {
   $items = array();
-  if ($user_count = admin_menu_get_user_count()) {
-    $items['.admin-menu-users a'] = $user_count;
+  // If the complete menu is output, then it is uncached and will contain the
+  // current counts already.
+  if (!$complete) {
+    // Check whether the users count component is enabled.
+    $components = variable_get('admin_menu_components', array());
+    if (!empty($components['admin_menu.users']) && ($user_count = admin_menu_get_user_count())) {
+      // Replace the counters in the cached menu output with current counts.
+      $items['.admin-menu-users a'] = $user_count;
+    }
   }
   return $items;
 }
@@ -437,18 +450,17 @@ function admin_menu_session_count($timestamp = 0, $anonymous = TRUE) {
 
 /**
  * Build the administration menu output.
+ *
+ * @param bool $complete
+ *   (optional) Whether to build to the complete menu including all components
+ *   and ignore the cache. Defaults to FALSE. Internally used for the settings
+ *   page.
  */
-function admin_menu_output() {
+function admin_menu_output($complete = FALSE) {
   global $user, $language;
 
-  $cache_server_enabled = variable_get('admin_menu_cache_server', TRUE);
+  $cache_server_enabled = !$complete && variable_get('admin_menu_cache_server', TRUE);
   $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . $language->language;
-
-  // Determine whether we need to show all components and disable all caches.
-  // @todo D8: Implement a proper plugin system to make this property obsolete.
-  if ($is_admin = current_path() == 'admin/config/administration/admin_menu' && $_SERVER['REQUEST_METHOD'] == 'GET') {
-    $cache_server_enabled = FALSE;
-  }
 
   // Try to load and output administration menu from server-side cache.
   // @todo Duplicates the page cache? Page cache ID contains the hash that is
@@ -468,15 +480,14 @@ function admin_menu_output() {
   // Rebuild the output.
   if (!isset($content)) {
     // Retrieve enabled components to display and make them available for others.
-    $components = drupal_map_assoc(variable_get('admin_menu_components', array(
-      'admin_menu.icon',
-      'admin_menu.menu',
-      'admin_menu.account',
-    )));
+    $components = variable_get('admin_menu_components', array());
+    $components += array(
+      'admin_menu.menu' => TRUE,
+      'admin_menu.icon' => TRUE,
+      'admin_menu.account' => TRUE,
+    );
     $content['#components'] = $components;
-    if ($is_admin) {
-      $content['#is_admin'] = TRUE;
-    }
+    $content['#complete'] = $complete;
 
     // Add site name as CSS class for development/staging theming purposes. We
     // leverage the cookie domain instead of HTTP_HOST to account for many (but
@@ -495,8 +506,11 @@ function admin_menu_output() {
     // Load menu builder functions.
     module_load_include('inc', 'admin_menu');
 
+    // @todo Move the below callbacks into hook_admin_menu_build()
+    //   implementations (and $module.admin_menu.inc).
+
     // Add administration menu.
-    if (isset($components['admin_menu.menu']) || $is_admin) {
+    if (!empty($components['admin_menu.menu']) || $complete) {
       $content['menu'] = admin_menu_links_menu(admin_menu_tree('management'));
       $content['menu']['#theme'] = 'admin_menu_links';
       $content['menu']['#wrapper_attributes']['id'] = 'admin-menu-menu';
@@ -505,16 +519,16 @@ function admin_menu_output() {
     }
 
     // Add menu additions.
-    if (isset($components['admin_menu.icon']) || $is_admin) {
+    if (!empty($components['admin_menu.icon']) || $complete) {
       $content['icon'] = admin_menu_links_icon();
     }
-    if (isset($components['admin_menu.account']) || $is_admin) {
+    if (!empty($components['admin_menu.account']) || $complete) {
       $content['account'] = admin_menu_links_account();
     }
-    if (isset($components['admin_menu.users']) || $is_admin) {
+    if (!empty($components['admin_menu.users']) || $complete) {
       $content['users'] = admin_menu_links_users();
     }
-    if (isset($components['admin_menu.search']) || $is_admin) {
+    if (!empty($components['admin_menu.search']) || $complete) {
       $content['search'] = admin_menu_links_search();
     }
 
@@ -539,7 +553,7 @@ function admin_menu_output() {
   }
 
   // Store the new hash for this user.
-  if (!empty($_COOKIE['has_js'])) {
+  if (!empty($_COOKIE['has_js']) && !$complete) {
     admin_menu_cache_set($cid, md5($content));
   }
 
