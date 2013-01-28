@@ -2,4 +2,4 @@ name = Administration menu
 description = "Provides a dropdown menu to most administrative tasks and other common destinations (to users with the proper permissions)."
 package = Administration
 core = 8.x
-configure = admin/config/administration/admin_menu
+configure = admin/config/admin/admin_menu
