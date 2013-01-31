@@ -541,7 +541,7 @@ function admin_menu_links_account() {
     '#weight' => 100,
   );
   $links['account'] = array(
-    '#title' => $GLOBALS['user']->name,
+    '#title' => user_format_name($GLOBALS['user']),
     '#weight' => -99,
     '#attributes' => array('class' => array('admin-menu-action', 'admin-menu-account')),
     '#href' => 'user/' . $GLOBALS['user']->uid,
