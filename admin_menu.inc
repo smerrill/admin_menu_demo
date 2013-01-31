@@ -515,7 +515,8 @@ function admin_menu_links_icon() {
   // Add Devel module menu links.
   if (module_exists('devel')) {
     $devel_tree = menu_build_tree('devel');
-    if ($devel_links = admin_menu_links_menu($devel_tree)) {
+    $devel_links = admin_menu_links_menu($devel_tree);
+    if (element_get_visible_children($devel_links)) {
       $links['icon']['devel'] = array(
         '#title' => t('Development'),
         '#weight' => 30,
