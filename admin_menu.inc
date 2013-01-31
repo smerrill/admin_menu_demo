@@ -518,10 +518,6 @@ function admin_menu_links_icon() {
       $links['icon']['devel'] = array(
         '#title' => t('Development'),
         '#weight' => 30,
-        '#href' => '#',
-        '#options' => array(
-          'external' => TRUE,
-        ),
       ) + $devel_links;
     }
   }

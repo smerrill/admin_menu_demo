@@ -706,7 +706,7 @@ function theme_admin_menu_links($variables) {
         $elements[$path]['#options']['attributes']['class'][] = 'admin-menu-destination';
       }
 
-      $link .= l($elements[$path]['#title'], $elements[$path]['#href'], $elements[$path]['#options']);
+      $link = l($elements[$path]['#title'], $elements[$path]['#href'], $elements[$path]['#options']);
     }
     // Handle plain text items, but do not interfere with menu additions.
     elseif (!isset($elements[$path]['#type']) && isset($elements[$path]['#title'])) {
@@ -716,12 +716,11 @@ function theme_admin_menu_links($variables) {
       else {
         $title = check_plain($elements[$path]['#title']);
       }
-      if (!empty($elements[$path]['#options']['attributes'])) {
-        $link .= '<span' . new Attribute($elements[$path]['#options']['attributes']) . '>' . $title . '</span>';
+      $attributes = '';
+      if (isset($elements[$path]['#options']['attributes'])) {
+        $attributes = new Attribute($elements[$path]['#options']['attributes']);
       }
-      else {
-        $link .= $title;
-      }
+      $link = '<span' . $attributes . '>' . $title . '</span>';
     }
 
     $output .= '<li' . new Attribute($elements[$path]['#attributes']) . '>';
