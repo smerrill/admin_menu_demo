@@ -496,12 +496,13 @@ function admin_menu_links_icon() {
       ),
     );
   }
+
   // Add link to toggle developer modules (performance).
   $saved_state = variable_get('admin_menu_devel_modules_enabled', NULL);
   $links['icon']['toggle-modules'] = array(
     '#title' => isset($saved_state) ? t('Enable developer modules') : t('Disable developer modules'),
     '#weight' => 88,
-    '#access' => user_access('administer site configuration'),
+    '#access' => user_access('administer modules'),
     '#href' => 'admin_menu/toggle-modules',
     '#options' => array(
       'query' => $destination + array('token' => drupal_get_token('admin_menu/toggle-modules')),

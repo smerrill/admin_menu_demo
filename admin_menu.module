@@ -89,7 +89,7 @@ function admin_menu_menu() {
   // Menu link callbacks.
   $items['admin_menu/toggle-modules'] = array(
     'page callback' => 'admin_menu_toggle_modules',
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array('administer modules'),
     'type' => MENU_CALLBACK,
     'file' => 'admin_menu.inc',
   );
