@@ -228,7 +228,7 @@ function admin_menu_page_build(&$page) {
   // If the client supports JavaScript and we have a cached menu for the current
   // user, only output the hash for the client-side HTTP cache callback URL.
   $cid = 'admin_menu:' . $user->uid . ':' . session_id() . ':' . language(LANGUAGE_TYPE_INTERFACE)->langcode;
-  if (!$complete && !empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
+  if (!$complete && ($hash = admin_menu_cache_get($cid))) {
     $settings['hash'] = $hash;
     // The base path to use for cache requests depends on whether clean URLs
     // are enabled, whether Drupal runs in a sub-directory, and on the language
@@ -576,7 +576,7 @@ function admin_menu_output($complete = FALSE) {
   }
 
   // Store the new hash for this user.
-  if (!empty($_COOKIE['has_js']) && !$complete) {
+  if (!$complete) {
     admin_menu_cache_set($cid, md5($content), $tags);
   }
 
