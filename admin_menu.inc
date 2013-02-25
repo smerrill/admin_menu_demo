@@ -551,18 +551,20 @@ function admin_menu_links_account() {
     '#href' => 'user/logout',
   );
   // Add Devel module switch user links.
-  $switch_links = module_invoke('devel', 'switch_user_list');
-  if (!empty($switch_links) && count($switch_links) > 1) {
-    foreach ($switch_links as $uid => $link) {
-      $links['account'][$link['title']] = array(
-        '#title' => $link['title'],
-        '#description' => $link['attributes']['title'],
-        '#href' => $link['href'],
-        '#options' => array(
-          'query' => $link['query'],
-          'html' => !empty($link['html']),
-        ),
-      );
+  if (!module_exists('masquerade')) {
+    $switch_links = module_invoke('devel', 'switch_user_list');
+    if (!empty($switch_links) && count($switch_links) > 1) {
+      foreach ($switch_links as $uid => $link) {
+        $links['account'][$uid] = array(
+          '#title' => $link['title'],
+          '#description' => $link['attributes']['title'],
+          '#href' => $link['href'],
+          '#options' => array(
+            'query' => $link['query'],
+            'html' => !empty($link['html']),
+          ),
+        );
+      }
     }
   }
   return $links;
