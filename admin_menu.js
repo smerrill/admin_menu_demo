@@ -1,4 +1,4 @@
-(function($) {
+(function($, Drupal) {
 
 Drupal.admin = Drupal.admin || {};
 Drupal.admin.behaviors = Drupal.admin.behaviors || {};
@@ -33,7 +33,7 @@ Drupal.behaviors.adminMenu = {
     // Client-side caching; if administration menu is not in the output, it is
     // fetched from the server and cached in the browser.
     if (!$adminMenu.length && settings.admin_menu.hash) {
-      Drupal.admin.getCache(settings.admin_menu.hash, function (response) {
+      Drupal.admin.getCache(settings.admin_menu.hash, settings, function (response) {
           if (typeof response == 'string' && response.length > 0) {
             $('body', context).append(response);
           }
@@ -117,7 +117,7 @@ Drupal.behaviors.adminMenuMarginTop = {
  * @param onSuccess
  *   A callback function invoked when the cache request was successful.
  */
-Drupal.admin.getCache = function (hash, onSuccess) {
+Drupal.admin.getCache = function (hash, settings, onSuccess) {
   if (Drupal.admin.hashes.hash !== undefined) {
     return Drupal.admin.hashes.hash;
   }
@@ -135,7 +135,7 @@ Drupal.admin.getCache = function (hash, onSuccess) {
       text: 'text/html'
     },
     global: false, // Do not trigger global AJAX events.
-    url: Drupal.settings.admin_menu.basePath.replace(/admin_menu/, 'js/admin_menu/cache/' + hash),
+    url: settings.admin_menu.basePath.replace(/admin_menu/, 'js/admin_menu/cache/' + hash),
     success: onSuccess,
     complete: function (XMLHttpRequest, status) {
       Drupal.admin.hashes.hash = status;
@@ -216,7 +216,7 @@ Drupal.admin.behaviors.replacements = function (context, settings, $adminMenu) {
 Drupal.admin.behaviors.destination = function (context, settings, $adminMenu) {
   if (settings.admin_menu.destination) {
     $('a.admin-menu-destination', $adminMenu).each(function() {
-      this.search += (!this.search.length ? '?' : '&') + Drupal.settings.admin_menu.destination;
+      this.search += (!this.search.length ? '?' : '&') + settings.admin_menu.destination;
     });
   }
 };
@@ -403,4 +403,4 @@ Drupal.admin.behaviors.search = function (context, settings, $adminMenu) {
  * @} End of "defgroup admin_behaviors".
  */
 
-})(jQuery);
+})(jQuery, Drupal);
