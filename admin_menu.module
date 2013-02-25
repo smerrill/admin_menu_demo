@@ -26,6 +26,23 @@ function admin_menu_help($path, $arg) {
 }
 
 /**
+ * Implements hook_hook_info().
+ */
+function admin_menu_hook_info() {
+  $hooks = array(
+    'admin_menu_cache_info',
+    'admin_menu_map',
+    'admin_menu_output_build',
+    'admin_menu_output_alter',
+    'admin_menu_replacements',
+  );
+  $hooks = array_fill_keys($hooks, array(
+    'group' => 'admin_menu',
+  ));
+  return $hooks;
+}
+
+/**
  * Implements hook_permission().
  */
 function admin_menu_permission() {
