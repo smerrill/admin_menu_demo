@@ -466,7 +466,7 @@ function admin_menu_links_icon() {
   );
   // Add links to project issue queues.
   foreach (module_list() as $module) {
-    $info = drupal_parse_info_file(drupal_get_path('module', $module) . '/' . $module . '.info');
+    $info = drupal_parse_info_file(drupal_get_path('module', $module) . '/' . $module . '.info.yml');
     if (!isset($info['project']) || isset($links['icon']['drupal.org'][$info['project']])) {
       continue;
     }
