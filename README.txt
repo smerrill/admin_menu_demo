@@ -1,6 +1,6 @@
 -- GIT --
 
-This is awesome.
+This is very awesome.
 
 -- SUMMARY --
 
