@@ -20,6 +20,7 @@ To submit bug reports and feature suggestions, or to track changes:
 
 None.
 
+A working git installation.
 
 -- INSTALLATION --
 
